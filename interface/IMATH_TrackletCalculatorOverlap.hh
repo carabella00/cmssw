@@ -235,7 +235,7 @@ public:
   
   //projection to z
   //
-  var_inv   invt{"invt",&t_final, 0., 18, 26, 1, var_inv::mode::both, 13};
+  var_inv   invt{"invt",&t_final, 0., 18, 26, 1, var_inv::mode::pos, 13};
 
   var_mult       x7{"x7",&x2, &a2};
   

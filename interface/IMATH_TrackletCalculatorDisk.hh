@@ -158,7 +158,7 @@ public:
   var_add  phi0{"phi0",&phi1,&phi0a, 2*dphisector};
   var_mult rinv{"rinv",&a2n, &delta0, 4*maxrinv};
   var_mult t{"t",&a, &deltaZ, 15.8};
-  var_subtract  z0{"z0",&z1abs,&z0a,40.};
+  var_add  z0{"z0",&z1abs,&z0b,40.};
 
   var_adjustK rinv_final{"rinv_final",&rinv, kphi1/kr*pow(2,rinv_shift)};
   var_adjustK phi0_final{"phi0_final",&phi0, kphi1*pow(2,phi0_shift)};
@@ -231,7 +231,7 @@ public:
   
   //projection to z
   //
-  var_inv   invt{"invt",&t_final, 0., 18, 26, 1, var_inv::mode::both, 13};
+  var_inv   invt{"invt",&t_final, 0., 18, 26, 1, var_inv::mode::pos, 13};
 
   var_mult       x7{"x7",&x2, &a2};
   

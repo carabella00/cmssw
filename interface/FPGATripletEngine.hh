@@ -84,6 +84,11 @@ public:
     readTables();
   }
 
+  ~FPGATripletEngine() {
+    if (writeTripletTables)
+      writeTables();
+  }
+
   void addOutput(FPGAMemoryBase* memory,string output){
     if (writetrace) {
       cout << "In "<<name_<<" adding output to "<<memory->getName()
@@ -153,6 +158,8 @@ public:
       }
     }
 
+    tmpSPTable_.clear();
+
     for(unsigned int i=0; i<stubpairs_.size(); ++i){
       for(unsigned int j=0; j<stubpairs_.at(i)->nStubPairs(); ++j){
 	if(print)
@@ -173,6 +180,10 @@ public:
           
 	  for(int ibin=start;ibin<=last;ibin++) {
             for(unsigned int k=0;k<thirdvmstubs_.size();k++){
+              string vmsteSuffix = thirdvmstubs_.at(k)->getLastPartOfName();
+              vmsteSuffix = vmsteSuffix.substr(0,vmsteSuffix.find_last_of('n'));
+              if (stubpairs_.at(i)->getLastPartOfName() != vmsteSuffix)
+                continue;
               for(unsigned int l=0;l<thirdvmstubs_.at(k)->nStubsBinned(ibin);l++){
                 if (debug1) {
                   cout << "In "<<getName()<<" have third stub"<<endl;
@@ -237,10 +248,26 @@ public:
                          <<FPGAStub::benddecode(thirdstub.first->bend().value(),thirdstub.first->isPSmodule())
                          <<endl;
                   }		
-                  continue;
+                  if (!writeTripletTables)
+                    continue;
                 }
-                          
+                if (writeTripletTables)
+                  table_[index] = true;
+
+                const unsigned spIndex = stubpairs_.at(i)->getIndex(j);
+                const string &tedName = stubpairs_.at(i)->getTEDName(j);
+                if (!tmpSPTable_.count(tedName))
+                  tmpSPTable_[tedName];
+                if (spIndex >= tmpSPTable_.at(tedName).size())
+                  tmpSPTable_.at(tedName).resize (spIndex + 1);
+                tmpSPTable_.at(tedName).at(spIndex).push_back (stubpairs_.at(i)->getName());
+
                 if (debug1) cout << "Adding layer-layer pair in " <<getName()<<endl;
+                if (writeSeeds) {
+                  ofstream fout("seeds.txt", ofstream::app);
+                  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+                  fout.close();
+                }
                 stubtriplets_->addStubs(thirdstub, (stubpairs_.at(i))->getStub1(j), (stubpairs_.at(i))->getStub2(j));
 
                 countpass++;
@@ -265,6 +292,10 @@ public:
 
           for(int ibin=start;ibin<=last;ibin++) {
             for(unsigned int k=0;k<thirdvmstubs_.size();k++){
+              string vmsteSuffix = thirdvmstubs_.at(k)->getLastPartOfName();
+              vmsteSuffix = vmsteSuffix.substr(0,vmsteSuffix.find_last_of('n'));
+              if (stubpairs_.at(i)->getLastPartOfName() != vmsteSuffix)
+                continue;
               for(unsigned int l=0;l<thirdvmstubs_.at(k)->nStubsBinned(ibin);l++){
                 if (countall>=MAXTRE) break;
                 countall++;
@@ -317,10 +348,26 @@ public:
                          <<FPGAStub::benddecode(thirdstub.first->bend().value(),thirdstub.first->isPSmodule())
                          <<endl;
                   }		
-                  continue;
+                  if (!writeTripletTables)
+                    continue;
                 }
-                
+                if (writeTripletTables)
+                  table_[index] = true;
+
+                const unsigned spIndex = stubpairs_.at(i)->getIndex(j);
+                const string &tedName = stubpairs_.at(i)->getTEDName(j);
+                if (!tmpSPTable_.count(tedName))
+                  tmpSPTable_[tedName];
+                if (spIndex >= tmpSPTable_.at(tedName).size())
+                  tmpSPTable_.at(tedName).resize (spIndex + 1);
+                tmpSPTable_.at(tedName).at(spIndex).push_back (stubpairs_.at(i)->getName());
+
                 if (debug1) cout << "Adding layer-disk pair in " <<getName()<<endl;
+                if (writeSeeds) {
+                  ofstream fout("seeds.txt", ofstream::app);
+                  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+                  fout.close();
+                }
                 stubtriplets_->addStubs(thirdstub, (stubpairs_.at(i))->getStub1(j), (stubpairs_.at(i))->getStub2(j));
                 countpass++;
               }
@@ -339,6 +386,10 @@ public:
 
 	  for(int ibin=start;ibin<=last;ibin++) {
             for(unsigned int k=0;k<thirdvmstubs_.size();k++){
+              string vmsteSuffix = thirdvmstubs_.at(k)->getLastPartOfName();
+              vmsteSuffix = vmsteSuffix.substr(0,vmsteSuffix.find_last_of('n'));
+              if (stubpairs_.at(i)->getLastPartOfName() != vmsteSuffix)
+                continue;
               for(unsigned int l=0;l<thirdvmstubs_.at(k)->nStubsBinned(ibin);l++){
                 if (countall>=MAXTRE) break;
                 countall++;
@@ -391,16 +442,51 @@ public:
                          <<FPGAStub::benddecode(thirdstub.first->bend().value(),thirdstub.first->isPSmodule())
                          <<endl;
                   }		
-                  continue;
+                  if (!writeTripletTables)
+                    continue;
                 }
-                
+                if (writeTripletTables)
+                  table_[index] = true;
+
+                const unsigned spIndex = stubpairs_.at(i)->getIndex(j);
+                const string &tedName = stubpairs_.at(i)->getTEDName(j);
+                if (!tmpSPTable_.count(tedName))
+                  tmpSPTable_[tedName];
+                if (spIndex >= tmpSPTable_.at(tedName).size())
+                  tmpSPTable_.at(tedName).resize (spIndex + 1);
+                tmpSPTable_.at(tedName).at(spIndex).push_back (stubpairs_.at(i)->getName());
+
                 if (debug1) cout << "Adding layer-disk pair in " <<getName()<<endl;
+                if (writeSeeds) {
+                  ofstream fout("seeds.txt", ofstream::app);
+                  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+                  fout.close();
+                }
                 stubtriplets_->addStubs(thirdstub, (stubpairs_.at(i))->getStub1(j), (stubpairs_.at(i))->getStub2(j));
                 countpass++;
               }
             }
           }
         }
+      }
+    }
+
+    for (const auto &tedName : tmpSPTable_) {
+      for (unsigned spIndex = 0; spIndex < tedName.second.size(); spIndex++) {
+        if (tedName.second.at(spIndex).empty())
+          continue;
+        vector<string> entry(tedName.second.at(spIndex));
+        sort(entry.begin(), entry.end());
+        entry.erase(unique(entry.begin(), entry.end()), entry.end());
+        const string &spName = entry.at (0);
+
+        if (!spTable_.count(tedName.first))
+          spTable_[tedName.first];
+        if (spIndex >= spTable_.at(tedName.first).size())
+          spTable_.at(tedName.first).resize (spIndex + 1);
+        if (!spTable_.at(tedName.first).at(spIndex).count(spName))
+          spTable_.at(tedName.first).at(spIndex)[spName] = 0;
+        spTable_.at(tedName.first).at(spIndex)[spName]++;
       }
     }
       
@@ -425,6 +511,31 @@ public:
       table_.push_back(num > 0 ? true : false);
     }
     fin.close ();
+  }
+
+  void writeTables() {
+    ofstream fout;
+    stringstream tableName;
+
+    tableName << "table/table_" << name_ << "_" << iSector_ << ".txt";
+
+    fout.open(tableName.str(), ofstream::out);
+    for (const auto &entry : table_)
+      fout << entry << endl;
+    fout.close();
+
+    for (const auto &tedName : spTable_){
+      tableName.str("");
+      tableName << "table/table_" << tedName.first << "_" << name_ << "_" << iSector_ << ".txt";
+
+      fout.open(tableName.str(), ofstream::out);
+      for (const auto &entry : tedName.second){
+        for (const auto &spName : entry)
+          fout << spName.first << ":" << spName.second << " ";
+        fout << endl;
+      }
+      fout.close();
+    }
   }
 
 
@@ -460,6 +571,8 @@ public:
     
     FPGAStubTriplets* stubtriplets_;
 
+    map<string, vector<vector<string> > > tmpSPTable_;
+    map<string, vector<map<string, unsigned> > > spTable_;
     vector<bool> table_;
 
     int secondphibits_;

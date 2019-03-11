@@ -60,6 +60,11 @@ public:
     if (phimin_>phimax_)  phimin_-=two_pi;
   }
 
+  ~FPGASector() {
+    for (unsigned i = 0; i < TRE_.size(); i++)
+      delete TRE_[i];
+  }
+
   void addStub(L1TStub stub, string dtc) {
     
     if (hourglass) {

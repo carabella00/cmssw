@@ -18,6 +18,7 @@ public:
   virtual ~FPGAMemoryBase(){}
 
   string getName() const {return name_;}
+  string getLastPartOfName() const {return name_.substr(name_.find_last_of('_')+1);}
 
   virtual void clean()=0;
 

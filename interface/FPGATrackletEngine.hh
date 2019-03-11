@@ -65,12 +65,23 @@ public:
 
     //dct1_=name[6]-'0';
     //dct2_=name[17]-'0';
-
+    
     innerphibits_=-1;
     outerphibits_=-1;
 
     extra_=(layer1_==2&&layer2_==3);
 
+    iSeed_ = -1;
+    if (layer1_ == 1 && layer2_ == 2) iSeed_ = 0;
+    else if (layer1_ == 3 && layer2_ == 4) iSeed_ = 2;
+    else if (layer1_ == 5 && layer2_ == 6) iSeed_ = 3;
+    else if (disk1_ == 1 && disk2_ == 2) iSeed_ = 4;
+    else if (disk1_ == 3 && disk2_ == 4) iSeed_ = 5;
+    else if (disk1_ == 1 && layer2_ == 1) iSeed_ = 6;
+    else if (disk1_ == 1 && layer2_ == 2) iSeed_ = 7;
+    else if (layer1_ == 1 && disk2_ == 1) iSeed_ = 6;
+    else if (layer1_ == 2 && disk2_ == 1) iSeed_ = 7;
+    else if (layer1_ == 2 && layer2_ == 3) iSeed_ = 1;
   }
 
   void addOutput(FPGAMemoryBase* memory,string output){
@@ -215,6 +226,11 @@ public:
 	    }
 	    
 	    if (debug1) cout << "Adding layer-disk pair in " <<getName()<<endl;
+            if (writeSeeds) {
+              ofstream fout("seeds.txt", ofstream::app);
+              fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+              fout.close();
+            }
 	    stubpairs_->addStubPair(innerstub,outerstub);
 	    countpass++;
 	  }
@@ -251,6 +267,11 @@ public:
 	    if (start!=ibin) rbin+=8;
 	    if (rbin<rbinfirst) continue;
 	    if (rbin-rbinfirst>rdiffmax) continue;
+            if (writeSeeds) {
+              ofstream fout("seeds.txt", ofstream::app);
+              fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+              fout.close();
+            }
 	    stubpairs_->addStubPair(innerstub,outerstub);
 	    countpass++;
 	  }
@@ -276,6 +297,7 @@ public:
 	  if (extra_) {
 	    lookupbits=innerstub.first->getVMBitsExtra().value();
 	  }
+          lookupbits&=1023;
 	  int zdiffmax=(lookupbits>>7);	
 	  int newbin=(lookupbits&127);
 	  int bin=newbin/8;
@@ -370,6 +392,11 @@ public:
 	      }
 	      		
 	      if (debug1) cout << "Adding layer-layer pair in " <<getName()<<endl;
+              if (writeSeeds) {
+                ofstream fout("seeds.txt", ofstream::app);
+                fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+                fout.close();
+              }
 	      stubpairs_->addStubPair(innerstub,outerstub);
 
 	      countpass++;
@@ -381,7 +408,7 @@ public:
 	  
 	  if (debug1) cout << getName()<<"["<<iSector_<<"] Disk-disk pair" <<endl;
 	  
-	  int lookupbits=innerstub.first->getVMBits().value();
+	  int lookupbits=innerstub.first->getVMBits().value()&511;
 	  bool negdisk=innerstub.first->disk().value()<0;
 	  int rdiffmax=(lookupbits>>6);	
 	  int newbin=(lookupbits&63);
@@ -463,6 +490,11 @@ public:
 
 	      if (debug1) cout << "Adding disk-disk pair in " <<getName()<<endl;
 	      
+              if (writeSeeds) {
+                ofstream fout("seeds.txt", ofstream::app);
+                fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
+                fout.close();
+              }
 	      stubpairs_->addStubPair(innerstub,outerstub);
 	      countpass++;
 	
@@ -889,7 +921,7 @@ private:
   int innerphibits_;
   int outerphibits_;
   
-  
+  int iSeed_;
 };
 
 #endif

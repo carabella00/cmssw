@@ -83,12 +83,17 @@ public:
   int eventid() const { return eventid_; }
   int trackid() const { return trackid_; }
   int type() const { return type_; }
-  double pt() { return pt_; }
-  double eta() { return eta_; }
-  double phi() { return phi_; }
-  double vx() { return vx_; }
-  double vy() { return vy_; }
-  double vz() { return vz_; }
+  double pt() const { return pt_; }
+  double eta() const { return eta_; }
+  double phi() const { return phi_; }
+  double vx() const { return vx_; }
+  double vy() const { return vy_; }
+  double vz() const { return vz_; }
+
+  double px() const { return pt_ * cos(phi_); }
+  double py() const { return pt_ * sin(phi_); }
+  double dxy() const { return (-vx() * py() + vy() * px()) / pt(); }
+  double d0() const { return -dxy(); }
 
 private:
 

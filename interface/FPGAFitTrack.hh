@@ -1367,10 +1367,15 @@ class FPGAFitTrack:public FPGAProcessBase{
 
     if ((hourglassExtended && nMatches>=1) || nMatches>=2) { // aedit , should've been >=2
      countFit++;
-          if (fakefit) trackFitFake(bestTracklet);
-          else trackFitNew(bestTracklet);
+     if (fakefit) trackFitFake(bestTracklet);
+     else trackFitNew(bestTracklet);
      if (bestTracklet->fit()){
       assert(trackfit_!=0);
+      if (writeSeeds) {
+	ofstream fout("seeds.txt", ofstream::app);
+	fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << bestTracklet->getISeed() << endl;
+	fout.close();
+      }
       trackfit_->addTrack(bestTracklet);
       tracks.push_back(bestTracklet->getTrack());
      }

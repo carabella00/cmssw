@@ -194,6 +194,11 @@ public:
     for(unsigned int i=0;i<inputtracklets_.size();i++) {
       for(unsigned int j=0;j<inputtracklets_[i]->nTracks();j++) {
         if(inputtracklets_[i]->getTrack(j)->getTrack()->duplicate()==0) {
+          if (writeSeeds) {
+            ofstream fout("seeds.txt", ofstream::app);
+            fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << inputtracklets_[i]->getTrack(j)->getISeed() << endl;
+            fout.close();
+          }
           outputtracklets_[i]->addTrack(inputtracklets_[i]->getTrack(j));
         }
         //For root file:

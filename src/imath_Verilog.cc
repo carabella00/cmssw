@@ -1,4 +1,4 @@
-#include "L1Trigger/TrackFindingTracklet/interface/imath.h"
+#include "../interface/imath.h"
 
 void var_inv::writeLUT(std:: ofstream& fs, Verilog) const
 {

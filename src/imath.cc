@@ -5,7 +5,7 @@
 // Date:   March 2018
 //
 
-#include "imath.h"
+#include "../interface/imath.h"
 
 std::string var_base::itos(int i)
 {

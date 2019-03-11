@@ -1,4 +1,4 @@
-#include "L1Trigger/TrackFindingTracklet/interface/imath.h"
+#include "../interface/imath.h"
 
 bool var_base::calculate(int debug_level)
 {

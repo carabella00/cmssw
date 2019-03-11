@@ -58,7 +58,7 @@ public:
 
     //cout << "In writeTPROJ "<<tracklets_.size()<<"\t"<<name_<<" "<<layer_<<" "<<disk_<<endl;
 
-    std::string fname="MemPrints/VMProjections/VMProjections_";
+    std::string fname="../data/MemPrints/VMProjections/VMProjections_";
     fname+=getName();
     //get rid of duplicates
     int len = fname.size();

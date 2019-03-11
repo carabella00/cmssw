@@ -90,7 +90,7 @@ public:
 
   void writeStubs(bool first) {
 
-    std::string fname="MemPrints/VMStubsME/VMStubs_";
+    std::string fname="../data/MemPrints/VMStubsME/VMStubs_";
     fname+=getName();
     //get rid of duplicates
     int len = fname.size();

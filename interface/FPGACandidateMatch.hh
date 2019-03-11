@@ -79,7 +79,7 @@ public:
 
   void writeCM(bool first) {
 
-    std::string fname="MemPrints/Matches/CandidateMatches_";
+    std::string fname="../data/MemPrints/Matches/CandidateMatches_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

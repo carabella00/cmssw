@@ -103,7 +103,7 @@ public:
 
   void writeTPROJ(bool first) {
     
-    std::string fname="MemPrints/TrackletProjections/TrackletProjections_";
+    std::string fname="../data/MemPrints/TrackletProjections/TrackletProjections_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

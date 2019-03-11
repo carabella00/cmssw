@@ -50,7 +50,7 @@ public:
 
   void writeST(bool first) {
 
-    std::string fname="MemPrints/StubPairs/StubTriplets_";
+    std::string fname="../data/MemPrints/StubPairs/StubTriplets_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

@@ -455,7 +455,7 @@ public:
 
   void writeStubs(bool first)
   {
-    string fname="MemPrints/InputStubs/InputStubs_";
+    string fname="../data/MemPrints/InputStubs/InputStubs_";
     fname+=getName();
     fname+="_";
     ostringstream oss;
@@ -491,7 +491,7 @@ public:
   void writeInputStubs(bool first, bool w2, bool padded) {
     
     //Barrel
-    std::string fname="MemPrints/InputStubs/InputStubs_";
+    std::string fname="../data/MemPrints/InputStubs/InputStubs_";
     fname+=getName();
     fname+="_";
     ostringstream oss;
@@ -659,7 +659,7 @@ public:
 
     //forward
 
-    fname="MemPrints/InputStubs/InputStubsDiskF_";
+    fname="../data/MemPrints/InputStubs/InputStubsDiskF_";
     fname+=getName();
     fname+="_";
     ostringstream ossF;
@@ -801,7 +801,7 @@ public:
 
     //back
 
-    fname="MemPrints/InputStubs/InputStubsDiskB_";
+    fname="../data/MemPrints/InputStubs/InputStubsDiskB_";
     fname+=getName();
     fname+="_";
     ostringstream ossB;

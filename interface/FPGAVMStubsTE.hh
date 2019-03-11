@@ -224,7 +224,7 @@ public:
 
   void writeStubs(bool first) {
 
-    std::string fname="MemPrints/VMStubsTE/VMStubs_";
+    std::string fname="../data/MemPrints/VMStubsTE/VMStubs_";
     fname+=getName();
     //get rid of duplicates
     int len = fname.size();

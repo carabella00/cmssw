@@ -51,7 +51,7 @@ public:
 
   void writeSP(bool first) {
 
-    std::string fname="MemPrints/StubPairs/StubPairs_";
+    std::string fname="../data/MemPrints/StubPairs/StubPairs_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

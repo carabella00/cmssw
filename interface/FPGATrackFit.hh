@@ -129,7 +129,7 @@ public:
   }
   void writeTF(bool first) {
 
-    std::string fname="MemPrints/FitTrack/TrackFit_";
+    std::string fname="../data/MemPrints/FitTrack/TrackFit_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

@@ -98,7 +98,7 @@ public:
 
   void writeMC(bool first) {
 
-    std::string fname="MemPrints/Matches/FullMatches_";
+    std::string fname="../data/MemPrints/Matches/FullMatches_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

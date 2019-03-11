@@ -87,7 +87,7 @@ public:
 
   void writeCT(bool first) {
 
-    std::string fname="./MemPrints/CleanTrack/CleanTrack_";
+    std::string fname="../data/MemPrints/CleanTrack/CleanTrack_";
     fname+=getName();
     fname+="_";
     ostringstream oss;

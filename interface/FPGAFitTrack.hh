@@ -763,7 +763,11 @@ class FPGAFitTrack:public FPGAProcessBase{
    for (unsigned i=0;i<nlayers;i++){
     r[i]=rmean[layers[i]-1];
     if (layers[i]==tracklet->layer()) {
-     realrstub[i]=tracklet->innerStub()->r();
+	if (tracklet->isOverlap()) {
+	  realrstub[i]=tracklet->outerStub()->r();
+	} else {
+	  realrstub[i]=tracklet->innerStub()->r();
+	}
      //r[i]=realrstub[i]; //test
     }
     if (layers[i]==tracklet->layer()+1) {
@@ -820,30 +824,32 @@ class FPGAFitTrack:public FPGAProcessBase{
    }
 
 
-   for (unsigned int i=0;i<nlayers;i++){
-    if (r[i]>60.0) continue;
-    for (unsigned int ii=0;ii<nlayers;ii++){
-     if (r[ii]>60.0) continue;
-
-     double tder=derivatives->gettdzcorr(i,ii);
-     double zder=derivatives->getz0dzcorr(i,ii);
-
-     double dr=realrstub[i]-r[i];
-
-     MinvDt[2][2*ii+1]+=dr*tder;
-     MinvDt[3][2*ii+1]+=dr*zder;
-
-     int itder=derivatives->getitdzcorr(i,ii);
-     int izder=derivatives->getiz0dzcorr(i,ii);
-
-     int idr=dr/kr;
-
-     iMinvDt[2][2*ii+1]+=((idr*itder)>>rcorrbits);
-     iMinvDt[3][2*ii+1]+=((idr*izder)>>rcorrbits);
-
-    }    
+   if (!exactderivatives) {
+     for (unsigned int i=0;i<nlayers;i++){
+       if (r[i]>60.0) continue;
+       for (unsigned int ii=0;ii<nlayers;ii++){
+	 if (r[ii]>60.0) continue;
+	 
+	 double tder=derivatives->gettdzcorr(i,ii);
+	 double zder=derivatives->getz0dzcorr(i,ii);
+	 
+	 double dr=realrstub[i]-r[i];
+	 
+	 MinvDt[2][2*ii+1]+=dr*tder;
+	 MinvDt[3][2*ii+1]+=dr*zder;
+	 
+	 int itder=derivatives->getitdzcorr(i,ii);
+	 int izder=derivatives->getiz0dzcorr(i,ii);
+	 
+	 int idr=dr/kr;
+	 
+	 iMinvDt[2][2*ii+1]+=((idr*itder)>>rcorrbits);
+	 iMinvDt[3][2*ii+1]+=((idr*izder)>>rcorrbits);
+	 
+       }    
+     }
    }
-
+   
 
 
 

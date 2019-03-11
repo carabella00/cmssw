@@ -55,7 +55,9 @@ public:
     dz_=2*dzmax/zbins_;
 
     zmeand2_=zmean[disk2-1];
-    rmeanl3_=rmean[layer3-1];
+    rmeanl3_=0.;
+    if (layer3 > 0)
+      rmeanl3_=rmean[layer3-1];
 
     for (int irbin=0;irbin<rbins_;irbin++) {
       for (int izbin=0;izbin<zbins_;izbin++) {

@@ -1,11 +1,17 @@
 #ifndef FPGACONSTANTS_H
 #define FPGACONSTANTS_H
 
+//uncomment for standalone compilation
+#define STANDALONE
+
+
 //Uncomment if you want root output
 //#define USEROOT
 
 //Uncomment to run the hybrid algorithm
+#ifndef STANDALONE 
 #define USEHYBRID
+#endif
 
 //Uncomment to run the HLS version of the KF if using the Hybrid (instead of the C++ KF).
 //(Please also follow the instructions in L1Trigger/TrackFindingTMTT/README_HLS.txt).
@@ -25,7 +31,7 @@ static std::string geomext=hourglass?(hourglassExtended?"hourglassExtended":"hou
 
 static int TMUX = 6;
 
-static std::string fitpatternfile="fitpattern.txt";
+static std::string fitpatternfile="../data/fitpattern.txt";
 
 //If this string is non-empty we will write ascii file with
 //processed events
@@ -76,6 +82,7 @@ static bool writeHitEff=false;
 static bool writeTETables=false;
 static bool writeVMTables=false;
 
+static bool writeCabling=false;
 
 static bool writeHitPattern=false;
 static bool writeTrackletParsOverlap=false;
@@ -84,8 +91,9 @@ static bool writeTrackletParsDisk=false;
 static bool writeAllCT=false; //write out .dat file containing all output tracks in bitwise format
 
 static bool writeVariance=false; //write out residuals for variand matrix determination
-static bool writeResEff=true; //write files for making resolution & efficiency plots for standable code version
-static bool writePars=true; //write files for making plots of track parameters
+static bool writeResEff=false; //write files for making resolution & efficiency plots for standable code version
+static bool writePars=false; //write files for making plots of track parameters
+
 static bool writeMatchEff=false; //write files for making plots with truth matched efficiency
 
 

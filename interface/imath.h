@@ -109,7 +109,9 @@
 #define IMATH_H
 
 //use root if uncommented
-//#define IMATH_ROOT
+#ifdef STANDALONE
+#define IMATH_ROOT
+#endif
 
 #include <limits>
 #include <iostream>

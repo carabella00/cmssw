@@ -1014,6 +1014,18 @@ public:
     double sigmaz=0.15/sqrt(12.0);
     double sigmaz2=5.0/sqrt(12.0);
 
+    double sigmazpsbarrel=sigmaz;   //This is a bit of a hack - these weights should be properly determined
+    if (fabs(t)>2.0) sigmazpsbarrel=sigmaz*fabs(t)/2.0;
+    if (fabs(t)>3.8) sigmazpsbarrel=sigmaz*fabs(t);
+
+
+    double sigmax2sdisk=0.009/sqrt(12.0);
+    double sigmaz2sdisk=5.0/sqrt(12.0);
+
+    double sigmaxpsdisk=0.01/sqrt(12.0);
+    double sigmazpsdisk=0.15/sqrt(12.0);
+
+    
     unsigned int n=nlayers+ndisks;
     
     assert(n<=6);
@@ -1042,9 +1054,9 @@ public:
       D[0][j]=0.0;
       D[1][j]=0.0;
       if (ri<60.0) {
-	D[2][j]=(2/rinv)*asin(0.5*ri*rinv)/sigmaz;
-	D[3][j]=1.0/sigmaz;
-        sigma[j]=sigmaz;
+	D[2][j]=(2/rinv)*asin(0.5*ri*rinv)/sigmazpsbarrel;
+	D[3][j]=1.0/sigmazpsbarrel;
+        sigma[j]=sigmazpsbarrel;
         kfactor[j]=kz;
       } else {
 	D[2][j]=(2/rinv)*asin(0.5*ri*rinv)/sigmaz2;
@@ -1084,7 +1096,10 @@ public:
 
       rnew[i+nlayers]=r;
 
-      sigma[j]=sigmax;
+      sigma[j]=sigmax2sdisk;
+      if (fabs(alpha[i])<1e-10) {
+	sigma[j]=sigmaxpsdisk;
+      }
       
       D[0][j]=(phimultiplier*dphidrinv+rmultiplier*drdrinv)/sigma[j];
       D[1][j]=(phimultiplier*dphidphi0+rmultiplier*drdphi0)/sigma[j];
@@ -1095,19 +1110,19 @@ public:
       j++;
 
       if (fabs(alpha[i])<1e-10) {
-	D[0][j]=drdrinv/sigmaz;
-	D[1][j]=drdphi0/sigmaz;
-	D[2][j]=drdt/sigmaz;
-	D[3][j]=drdz0/sigmaz;
-        sigma[j]=sigmaz;
+	D[0][j]=drdrinv/sigmazpsdisk;
+	D[1][j]=drdphi0/sigmazpsdisk;
+	D[2][j]=drdt/sigmazpsdisk;
+	D[3][j]=drdz0/sigmazpsdisk;
+        sigma[j]=sigmazpsdisk;
         kfactor[j]=kr;
       }
       else {
-	D[0][j]=drdrinv/sigmaz2;
-	D[1][j]=drdphi0/sigmaz2;
-	D[2][j]=drdt/sigmaz2;
-	D[3][j]=drdz0/sigmaz2;
-        sigma[j]=sigmaz2;
+	D[0][j]=drdrinv/sigmaz2sdisk;
+	D[1][j]=drdphi0/sigmaz2sdisk;
+	D[2][j]=drdt/sigmaz2sdisk;
+	D[3][j]=drdz0/sigmaz2sdisk;
+        sigma[j]=sigmaz2sdisk;
         kfactor[j]=kr;
       }
 
@@ -1177,10 +1192,10 @@ public:
 	iMinvDt[3][2*i]=(1<<fitz0bitshift)*MinvDt[3][2*i]*kphi1/kzpars;
 
 	if (rnew[i]<60.0) {
-	  MinvDt[0][2*i+1]/=sigmaz;
-	  MinvDt[1][2*i+1]/=sigmaz;
-	  MinvDt[2][2*i+1]/=sigmaz;
-	  MinvDt[3][2*i+1]/=sigmaz;
+	  MinvDt[0][2*i+1]/=sigmazpsbarrel;
+	  MinvDt[1][2*i+1]/=sigmazpsbarrel;
+	  MinvDt[2][2*i+1]/=sigmazpsbarrel;
+	  MinvDt[3][2*i+1]/=sigmazpsbarrel;
 
 	  iMinvDt[0][2*i+1]=(1<<fitrinvbitshift)*MinvDt[0][2*i+1]*kzproj/krinvpars;
 	  iMinvDt[1][2*i+1]=(1<<fitphi0bitshift)*MinvDt[1][2*i+1]*kzproj/kphi0pars;
@@ -1204,16 +1219,16 @@ public:
       //Secondly the disks
       else {
 
-	if (fabs(alpha[i])<1e-10) {
-	  MinvDt[0][2*i]*=(rnew[i]/sigmax);
-	  MinvDt[1][2*i]*=(rnew[i]/sigmax);
-	  MinvDt[2][2*i]*=(rnew[i]/sigmax);
-	  MinvDt[3][2*i]*=(rnew[i]/sigmax);
+	if (fabs(alpha[i-nlayers])<1e-10) {
+	  MinvDt[0][2*i]*=(rnew[i]/sigmaxpsdisk);
+	  MinvDt[1][2*i]*=(rnew[i]/sigmaxpsdisk);
+	  MinvDt[2][2*i]*=(rnew[i]/sigmaxpsdisk);
+	  MinvDt[3][2*i]*=(rnew[i]/sigmaxpsdisk);
 	} else {
-	  MinvDt[0][2*i]*=(rnew[i]/sigmax);
-	  MinvDt[1][2*i]*=(rnew[i]/sigmax);
-	  MinvDt[2][2*i]*=(rnew[i]/sigmax);
-	  MinvDt[3][2*i]*=(rnew[i]/sigmax);
+	  MinvDt[0][2*i]*=(rnew[i]/sigmax2sdisk);
+	  MinvDt[1][2*i]*=(rnew[i]/sigmax2sdisk);
+	  MinvDt[2][2*i]*=(rnew[i]/sigmax2sdisk);
+	  MinvDt[3][2*i]*=(rnew[i]/sigmax2sdisk);
 	}      
 
 	assert(MinvDt[0][2*i]==MinvDt[0][2*i]);
@@ -1228,16 +1243,16 @@ public:
 	iMinvDt[2][2*i]=(1<<fittbitshift)*MinvDt[2][2*i]*kphiproj123/ktpars;
 	iMinvDt[3][2*i]=(1<<fitz0bitshift)*MinvDt[3][2*i]*kphiproj123/kz;
 
-	if (fabs(alpha[i])<1e-10) {
-	  MinvDt[0][2*i+1]/=sigmaz;
-	  MinvDt[1][2*i+1]/=sigmaz;
-	  MinvDt[2][2*i+1]/=sigmaz;
-	  MinvDt[3][2*i+1]/=sigmaz;
+	if (fabs(alpha[i-nlayers])<1e-10) {
+	  MinvDt[0][2*i+1]/=sigmazpsdisk;
+	  MinvDt[1][2*i+1]/=sigmazpsdisk;
+	  MinvDt[2][2*i+1]/=sigmazpsdisk;
+	  MinvDt[3][2*i+1]/=sigmazpsdisk;
 	} else {
-	  MinvDt[0][2*i+1]/=sigmaz2;
-	  MinvDt[1][2*i+1]/=sigmaz2;
-	  MinvDt[2][2*i+1]/=sigmaz2;
-	  MinvDt[3][2*i+1]/=sigmaz2;
+	  MinvDt[0][2*i+1]/=sigmaz2sdisk;
+	  MinvDt[1][2*i+1]/=sigmaz2sdisk;
+	  MinvDt[2][2*i+1]/=sigmaz2sdisk;
+	  MinvDt[3][2*i+1]/=sigmaz2sdisk;
 	}
 
 	iMinvDt[0][2*i+1]=(1<<fitrinvbitshift)*MinvDt[0][2*i+1]*krprojshiftdisk/krinvpars;
@@ -1519,7 +1534,7 @@ public:
       //Secondly the disks
       else {
 
-	if (fabs(alpha[i])<1e-10) {
+	if (fabs(alpha[i-nlayers])<1e-10) {
 	  MinvDt[0][2*i]*=(rnew[i]);
 	  MinvDt[1][2*i]*=(rnew[i]);
 	  MinvDt[2][2*i]*=(rnew[i]);
@@ -1610,7 +1625,7 @@ public:
     
     //cout << "diskmask tmin tmax : "<<diskmask<<" "<<tmin<<" "<<tmax<<endl;
     
-    return 0.5*(tmax+tmin);
+    return 0.5*(tmax+tmin)*1.07;
 
   }
 

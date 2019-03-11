@@ -24,20 +24,20 @@ public:
   }
 
   void init(int layer1,
-      int layer2,
-      int zbits,
-      int rbits
-      ) {
+	    int layer2,
+	    int zbits,
+	    int rbits
+	    ) {
     init(layer1, layer2, -1, zbits, rbits);
   }
 
   void init(int layer1,
-      int layer2,
-      int layer3,
-      int zbits,
-      int rbits,
+	    int layer2,
+	    int layer3,
+	    int zbits,
+	    int rbits,
             bool thirdLayerIsDisk = false
-      ) {
+	    ) {
 
     thirdLayerIsDisk_ = thirdLayerIsDisk;
 
@@ -82,10 +82,10 @@ public:
 
     for (int izbin=0;izbin<zbins_;izbin++) {
       for (int irbin=0;irbin<rbins_;irbin++) {
-  //int ibin=irbin+izbin*rbins_;
-  int value=getLookupValue(izbin,irbin,extra);
-  //cout << "table "<<table_.size()<<" "<<value<<" "<<rmeanl2_<<endl;
-  table_.push_back(value);
+	//int ibin=irbin+izbin*rbins_;
+	int value=getLookupValue(izbin,irbin,extra);
+	//cout << "table "<<table_.size()<<" "<<value<<" "<<rmeanl2_<<endl;
+	table_.push_back(value);
       }
     }
 

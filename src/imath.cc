@@ -5,7 +5,7 @@
 // Date:   March 2018
 //
 
-#include "L1Trigger/TrackFindingTracklet/interface/imath.h"
+#include "imath.h"
 
 std::string var_base::itos(int i)
 {

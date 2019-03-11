@@ -249,6 +249,8 @@ class var_base {
   void pipe_increment() {pipe_counter_++;}
   void add_delay(int i) {pipe_delays_.push_back(i);}
   bool has_delay(int i); //returns true if already have this variable delayed.
+  static void Verilog_print(std::vector<var_base*> v, std::ofstream& fs) { Design_print(v, fs, verilog); }
+  static void HLS_print(std::vector<var_base*> v, std::ofstream& fs) { Design_print(v, fs, hls); }
   static void Design_print(std::vector<var_base*> v, std::ofstream& fs, Verilog);
   static void Design_print(std::vector<var_base*> v, std::ofstream& fs, HLS);
   static std::string pipe_delay(var_base *v, int nbits, int delay);
@@ -407,7 +409,10 @@ class var_param : public var_base {
   
   void    set_fval(double fval){
     fval_ = fval;
-    ival_ = fval / K_+0.5;
+    if(fval>0)
+      ival_ = fval / K_+0.5;
+    else
+      ival_ = fval / K_-0.5;
     val_  = ival_ * K_;
   }
   void    set_ival(int ival){
@@ -450,11 +455,16 @@ class var_def : public var_base {
   }
   void    set_fval(double fval){
     fval_ = fval;
-    ival_ = fval / K_ + 0.5;
+    if(fval>0)
+      ival_ = fval / K_;
+    else
+      ival_ = fval / K_-1;
+    val_  = ival_ * K_;
   }
   void    set_ival(int ival){
     ival_ = ival;
     fval_ = ival * K_;
+    val_  = ival_ * K_;
   }
   void print(std::ofstream& fs, Verilog, int l1=0, int l2 = 0, int l3 = 0);
   void print(std::ofstream& fs, HLS, int l1=0, int l2 = 0, int l3 = 0);
@@ -967,6 +977,7 @@ class var_inv : public var_base {
   void local_calculate();
   void print(std::ofstream& fs, Verilog, int l1=0, int l2 = 0, int l3 = 0);
   void print(std::ofstream& fs, HLS, int l1=0, int l2 = 0, int l3 = 0);
+  void writeLUT(std::ofstream& fs) const { writeLUT(fs, verilog); }
   void writeLUT(std::ofstream& fs, Verilog) const;
   void writeLUT(std::ofstream& fs, HLS) const;
 
@@ -990,10 +1001,11 @@ class var_inv : public var_base {
       int lut2 = (round_int((1<<n_)/(i1))<<ms)>>ms;
       lut = 0.5*(lut1+lut2);
     }
-    else if(i<0){
-      int i1 = i-1 +(1<<shift_)-1;
+    else if(i<-1){
+      int i1 = i +(1<<shift_)-1;
+      int i2 = i;
       int lut1 = (round_int((1<<n_)/i1)<<ms)>>ms;
-      int lut2 = (round_int((1<<n_)/(i-1))<<ms)>>ms;
+      int lut2 = (round_int((1<<n_)/i2)<<ms)>>ms;
       lut = 0.5*(lut1+lut2);
     }
     return lut;

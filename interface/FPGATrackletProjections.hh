@@ -60,6 +60,7 @@ public:
     
     if (layer_==0&&disk_==0) {
       cout << name<<" subname = "<<subname<<" "<<layer_<<" "<<disk_<<endl;
+      cout << "Please check that right *.dat files are included in TrackFindingTracklet/python/Tracklet_cfi.py"<<endl;
     }
     assert((layer_!=0)||(disk_!=0));
   }

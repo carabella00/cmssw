@@ -92,9 +92,10 @@ public:
       string stub= (layer_>0)? stubs_[j].first->str()
       : stubs_[j].first->strdisk();
 
+      out_ << "0x";
       if (j<16) out_ <<"0";
       out_ << hex << j << dec ;
-      out_ <<" "<<stub << endl;
+      out_ <<" "<<stub << " " <<hexFormat(stub)<<endl;
     }
     out_.close();
 

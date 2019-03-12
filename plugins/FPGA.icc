@@ -106,9 +106,14 @@
       int module=stub.module();
 	
       //HACK for mistake in ASCII files
-      if (layer==3&&module==40) module=39;
-      if (layer==1&&module>31) module=31;
-	
+      if (layer==3&&module==40) {
+	assert(0);
+	module=39;
+      }
+      if (layer==1&&module>31) {
+	assert(0);
+	module=31;
+      }	
 	//cout << "Done add stub"<<endl;	
 
       string dtc=cabling.dtc(layer,ladder,module);
@@ -118,11 +123,8 @@
       }     
 
       //cout << "Found dtc for : "<<layer<<" "<<ladder<<" "<<module<<" "<<dtc<<endl;
-
       
       cabling.addphi(dtc,stub.phi(),layer, module);
-
-
 
       for (unsigned int k=0;k<NSector;k++) {
         int diff=k-isector;
@@ -139,14 +141,103 @@
 	  //cout << "stub.phi phiminsect : "<<stub.phi()<<" "<<phiminsect<<" "<<dphi<<endl;
 	}
 	//cout << "Will try to add stub to sector : "<<k<<endl;
-        sectors[k]->addStub(stub,dtcbase);	  
+        bool add=sectors[k]->addStub(stub,dtcbase);
+
+	static std::map<string,ofstream*> dtcstubs;
+	static std::map<string,vector<int> > dtclayerdisk;
+
+	if (dtclayerdisk.size()==0) {
+	  ifstream in("dtclinklayerdisk.dat");
+	  string dtc;
+	  in >> dtc;
+	  while (in.good()){
+	    vector<int> tmp;
+	    dtclayerdisk[dtc]=tmp;
+	    int layerdisk;
+	    in >> layerdisk;
+	    while (layerdisk>0) {
+	      dtclayerdisk[dtc].push_back(layerdisk);
+	      in >> layerdisk;
+            }
+	    in >> dtc;
+          }
+        }
+
+	if (writememLinks) {
+	   vector<string>  dtcs=cabling.DTCs();
+	   for(auto it=dtcs.begin();it!=dtcs.end();++it){
+	     string dtc=*it;
+	     string dtcbase=dtc.substr(2,dtc.size()-2);
+      	     if (dtc[0]=='n') {
+               dtcbase=dtc.substr(0,4)+dtc.substr(6,dtc.size()-6);
+	     }     
+
+	     string fname="MemPrints/InputStubs/Link_";
+	     fname+=dtcbase;
+	     if (dtcstubs.find(dtcbase+"A")!=dtcstubs.end()) continue;
+	     fname+="_A.dat";
+	     ofstream* out=new ofstream;
+	     out->open(fname.c_str());
+	     dtcstubs[dtcbase+"A"]=out;
+
+	     fname="MemPrints/InputStubs/Link_";
+	     fname+=dtcbase;
+	     if (dtcstubs.find(dtcbase+"B")!=dtcstubs.end()) continue;
+	     fname+="_B.dat";
+	     out=new ofstream;
+	     out->open(fname.c_str());
+	     dtcstubs[dtcbase+"B"]=out;
+	   }
+        }  
+
+	if (writememLinks) {
+	  static int oldevent=-1;
+	  if (i!=oldevent) {
+	    oldevent=i;
+	    for(auto it=dtcstubs.begin();it!=dtcstubs.end();++it) {
+	      FPGAWord tmp;
+	      tmp.set(i%8,3);
+	      (*(it->second)) << "BX "<<tmp.str()<<" Event : "<<i+1<<endl;
+	    }	       		
+	  }
+	}	
+
+	if(add&&writememLinks&&k==writememsect) {
+	  FPGAStub fpgastub(stub,sectors[k]->phimin(),sectors[k]->phimax());
+	  FPGAWord phi=fpgastub.phi();
+	  int topbit=phi.value()>>(phi.nbits()-1);
+	  //cout << "dtcbase:"<<dtcbase<<endl;
+	  std::vector<int> tmp=dtclayerdisk[dtcbase];
+	  int layerdisk=stub.layer()+1;
+	  if (layerdisk>999){
+	    layerdisk=10+abs(stub.disk());
+	  }
+	  int layerdiskcode=-1;
+	  for(unsigned int i=0;i<tmp.size();i++){
+	    if (tmp[i]==layerdisk) layerdiskcode=i;
+          }
+	  if (layerdiskcode==-1) {
+	    cout << "dtcbase layerdisk layer disk : "<<dtcbase<<" "<<layerdisk<<" "<<stub.layer()+1<<" "<<stub.disk()<<endl;
+          }
+	  assert(layerdiskcode>=0);
+	  assert(layerdiskcode<4);
+	  FPGAWord ldcode;
+	  ldcode.set(layerdiskcode,2);
+	  string dataword=ldcode.str()+"|"+fpgastub.str();
+	  //cout << "fpgastub phi:"<<phi.str()<<" "<<topbit<<endl;
+	  if (topbit==0) {
+	    (*dtcstubs[dtcbase+"A"]) << dataword<<" "<<FPGAMemoryBase::hexFormat(dataword)<<endl;
+	  } else {
+	    (*dtcstubs[dtcbase+"B"]) << dataword<<" "<<FPGAMemoryBase::hexFormat(dataword)<<endl;
+          }
+        }
+
       }
 
 
 
 
       
-
     }
 
     for(int ii=0;ii<6;ii++){
@@ -236,6 +327,7 @@ if (writeHitEff) {
     for (unsigned int k=0;k<NSector;k++) {
       sectors[k]->executeVMR();	 
       if(writemem&&k==writememsect) {
+        sectors[k]->writeInputStubs(first);	 
         sectors[k]->writeVMSTE(first);	 
         sectors[k]->writeVMSME(first);	 
         sectors[k]->writeAS(first);	 
@@ -276,10 +368,39 @@ if (writeHitEff) {
       sectors[k]->executeTC();	 
       if(writemem&&k==writememsect){
         sectors[k]->writeTPAR(first);
-        sectors[k]->writeTPROJ(first);
+        //sectors[k]->writeTPROJ(first);
       } 
     }
     TCTimer.stop();
+
+    int nTP=FPGAGlobal::event()->nsimtracks();
+    for (int iTP=0;iTP<nTP;iTP++){
+      L1SimTrack simtrk=FPGAGlobal::event()->simtrack(iTP-1);
+      if (simtrk.pt()<2.0) continue;
+      if (fabs(simtrk.vz())>15.0) continue;
+      if (hypot(simtrk.vx(),simtrk.vy())>0.1) continue;
+      bool electron=(abs(simtrk.type())==11);
+      bool muon=(abs(simtrk.type())==13);
+      bool pion=(abs(simtrk.type())==211);
+      bool kaon=(abs(simtrk.type())==321);
+      bool proton=(abs(simtrk.type())==2212);
+      if (!(electron||muon||pion||kaon||proton)) continue;
+      int nlayers=0;
+      int ndisks=0;
+      int simtrackid=simtrk.trackid();
+      ev.layersHit(simtrackid,nlayers,ndisks);
+      if (nlayers+ndisks<4) continue;
+
+      std::set<int> matchseed;
+      for (unsigned int k=0;k<NSector;k++) {
+	std::set<int> matchseedtmp=sectors[k]->seedMatch(iTP);
+	matchseed.insert(matchseedtmp.begin(),matchseedtmp.end());
+      }
+      for(int iseed=0;iseed<8;iseed++){
+	bool eff=matchseed.find(iseed)!=matchseed.end();
+	FPGAGlobal::histograms()->fillSeedEff(iseed,simtrk.eta(),eff);
+      }
+    } 
 
     TCDTimer.start();
     for (unsigned int k=0;k<NSector;k++) {
@@ -301,11 +422,12 @@ if (writeHitEff) {
       if (plus>=NSector) plus=0;
       int minus=k-1;
       if (minus<0) minus=NSector-1;
-      sectors[k]->executePT(sectors[plus],sectors[minus]);	 
+      sectors[k]->executePT(sectors[plus],sectors[minus]);
+	  if(writemem&&k==writememsect){
+        sectors[k]->writeTPROJ(first);
+      } 
     }
     PTTimer.stop();
-
-
 
     PRTimer.start();
     for (unsigned int k=0;k<NSector;k++) {
@@ -316,7 +438,6 @@ if (writeHitEff) {
       }
     }
     PRTimer.stop();
-
     
     METimer.start();
     for (unsigned int k=0;k<NSector;k++) {
@@ -326,7 +447,6 @@ if (writeHitEff) {
       } 
     }
     METimer.stop();
-
 
     MCTimer.start();
     for (unsigned int k=0;k<NSector;k++) {
@@ -369,7 +489,6 @@ if (writeHitEff) {
       }
     }
     FTTimer.stop();
-
 
     PDTimer.start();
     for (unsigned int k=0;k<NSector;k++) {

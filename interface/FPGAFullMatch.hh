@@ -51,7 +51,6 @@ public:
   }
 
   void addMatch(FPGATracklet* tracklet,std::pair<FPGAStub*,L1TStub*> stub) {
-
     if (!doKF) { //When using KF we allow multiple matches
       for(unsigned int i=0;i<matches_.size();i++){
 	if (matches_[i].first==tracklet){ //Better match, replace
@@ -119,9 +118,10 @@ public:
     for (unsigned int j=0;j<matches_.size();j++){
       string match= (layer_>0)? matches_[j].first->fullmatchstr(layer_)
 	: matches_[j].first->fullmatchdiskstr(disk_);
-	if (j<16) out_ <<"0";
-	out_ << hex << j << dec ;
-	out_ << " "<< match <<endl;
+      out_ << "0x";
+      if (j<16) out_ <<"0";
+      out_ << hex << j << dec ;
+      out_ << " "<< match <<" "<<hexFormat(match)<<endl;
     }
     out_.close();
 

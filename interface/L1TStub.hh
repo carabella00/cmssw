@@ -13,10 +13,10 @@ public:
  
   }
 
-  L1TStub(int eventid, int simtrackid, int iphi, int iz, int layer, int ladder, int module, int strip,
+  L1TStub(int eventid, vector<int> tps, int iphi, int iz, int layer, int ladder, int module, int strip,
 	  double x, double y, double z, double sigmax, double sigmaz, double pt, double bend, int isPSmodule, int isFlipped){
     eventid_=eventid;
-    simtrackid_=simtrackid;
+    tps_=tps;
     iphi_=iphi;
     iz_=iz;
     layer_=layer;
@@ -71,14 +71,19 @@ public:
 	<< module_ << "\t"
 	<< strip_<< "\t"
 	<< eventid_ << "\t"
-	<< simtrackid_ << "\t"
+      //<< simtrackid_ << "\t"
 	<< pt_ << "\t" 
 	<< x_ << "\t" 
 	<< y_ << "\t" 
 	<< z_ << "\t" 
 	<< bend_ << "\t" 
 	<< isPSmodule_ << "\t" 
-	<< isFlipped_ << "\t" << endl; 
+	<< isFlipped_ << "\t" 
+	<< tps_.size() << " \t" ;
+    for(unsigned itps=0;itps<tps_.size();itps++){
+      out << tps_[itps] << " \t";
+    }
+    out << endl; 
 
   }
   void write(ostream& out){
@@ -89,14 +94,19 @@ public:
 	<< module_ << "\t"
 	<< strip_<< "\t"
 	<< eventid_ << "\t"
-	<< simtrackid_ << "\t"
 	<< pt_ << "\t" 
 	<< x_ << "\t" 
 	<< y_ << "\t" 
 	<< z_ << "\t" 
 	<< bend_ << "\t" 
 	<< isPSmodule_ << "\t" 
-	<< isFlipped_ << "\t" << endl; 	
+	<< isFlipped_ << "\t"
+	<< tps_.size() << " \t" ;
+    for(unsigned itps=0;itps<tps_.size();itps++){
+      out << tps_[itps] << " \t";
+    }
+    out << endl; 
+
   }
 
   int ptsign() {
@@ -192,7 +202,7 @@ public:
   }
 
   int eventid() const { return eventid_;}
-  int simtrackid() const { return simtrackid_;}
+  vector<int> tps() const { return tps_;}
 
   void setAllStubIndex(unsigned int index) { allstubindex_=index; }
 
@@ -241,10 +251,20 @@ public:
   unsigned int isPSmodule() const { return isPSmodule_; }
   unsigned int isFlipped() const { return isFlipped_; }
 
+  bool tpmatch(int tp) const {
+
+    for(unsigned int i=0;i<tps_.size();i++){
+      if (tp==tps_[i]) return true;
+    }
+
+    return false;
+
+  }
+
 private:
 
   int eventid_;
-  int simtrackid_;
+  vector<int> tps_;
   unsigned int iphi_;
   unsigned int iz_;
   unsigned int layer_;

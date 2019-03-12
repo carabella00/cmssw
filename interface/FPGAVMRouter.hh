@@ -51,6 +51,22 @@ public:
 	finebintable_[index]=zfine;
 	
       }
+
+
+      if (iSector_==0&&writeVMRTables) {
+
+	ofstream outfinebin;
+	outfinebin.open(getName()+"_finebin.txt");
+	outfinebin << "{"<<endl;
+	for(unsigned int i=0;i<nbins;i++) {
+	  if (i!=0) outfinebin<<","<<endl;
+	  outfinebin << finebintable_[i];
+	}
+	outfinebin <<endl<<"};"<<endl;
+	outfinebin.close();
+	
+      }
+
     }
 
     if (disk_!=0) {
@@ -142,12 +158,10 @@ public:
 	    output=="vmstuboutPHIs"+s+"n"+ns||
 	    output=="vmstuboutPHIt"+s+"n"+ns
 	  ){
-
-   //    if(name_=="VMR_L2PHIC")
-	  // cout << "memory name : "<<memory->getName()<<" "
-	  //      <<memory->getName().substr(3,2)<<" "
-	  //      <<memory->getName().substr(11,1)
-	  //      <<endl;
+	  //cout << "memory name : "<<memory->getName()<<" "
+	  //     <<memory->getName().substr(3,2)<<" "
+	  //     <<memory->getName().substr(11,1)
+	  //     <<endl;
 
 	  if (memory->getName().substr(3,2)=="TE") {
 	    FPGAVMStubsTE* tmp=dynamic_cast<FPGAVMStubsTE*>(memory);
@@ -161,7 +175,6 @@ public:
 	    } else if (memory->getName().substr(11,1)[0]<'o' && memory->getName().substr(11,1)[0]>='a') {
 	      vmstubsTEExtendedPHI_[i].push_back(tmp);
 	    } else if (memory->getName().substr(11,1)[0]>'o' && memory->getName().substr(11,1)[0]<='z'){
-	      // if(name_=="VMR_L2PHIC") cout<<" added to extended overlap\n";
 	      vmstubsTEOverlapExtendedPHI_[i].push_back(tmp);
 	    } else {
 	      assert(0);
@@ -204,11 +217,14 @@ public:
 
     assert(allstubs_.size()!=0);
 
+    
     unsigned int count=0;
     for(unsigned int j=0;j<stubinputs_.size();j++){
       for(unsigned int i=0;i<stubinputs_[j]->nStubs();i++){
 	if (count>MAXVMROUTER) continue;
 	std::pair<FPGAStub*,L1TStub*> stub=stubinputs_[j]->getStub(i);
+	
+
 	
 	stub.first->setAllStubIndex(count);
 	stub.second->setAllStubIndex(count);
@@ -267,7 +283,6 @@ public:
 	  count++;
 	  if (count>MAXVMROUTER) continue;
 	  std::pair<FPGAStub*,L1TStub*> stub=stubinputs_[j]->getStub(i);
-
 
 	  int iphiRaw=stub.first->iphivmRaw();
 
@@ -441,6 +456,9 @@ public:
       
       for (int i=0;i<24;i++) {
 	if (vmstubsTEPHI_[i].size()!=0) {
+	  //for(int j=0;j<vmstubsTEPHI_[i].size();j++){
+	  //  out<<vmstubsTEPHI_[i][j]->getName()<<" "<<vmstubsTEPHI_[i][j]->nStubs()<<endl;
+	  //}
 	  out<<vmstubsTEPHI_[i][0]->getName()<<" "<<vmstubsTEPHI_[i][0]->nStubs()<<endl;
 	}
       }
@@ -514,12 +532,7 @@ public:
 	  //cout<<"inserted\n";
 	  
 	  if (!insert) {
-	    // cout << getName()<<" did not insert stub"<<endl;
-	    // cout << "Overlap="<<overlap<<"\n";
-	    // cout << "From "<<stubinputs_[j]->getName()<<"\n";
-	    // cout << "iphiRaw="<<iphiRaw<<"\n";
-	    // cout << nallstubsoverlaplayers[layer]<<" "<<nvmteoverlaplayers[layer]<<"\n";
-     //    cout << layer<< " "<< (overlap? vmstubsTEOverlapExtendedPHI_[iphiRaw].size() : vmstubsTEExtendedPHI_[iphiRaw].size())<<"\n";
+	    cout << getName()<<" did not insert stub"<<endl;
 	  }
 	  assert(insert);
 	}
@@ -671,6 +684,8 @@ public:
 
 	  if (layer_!=0) {
 
+	    //Take the top nbitsfinebintable_ bits of the z coordinate. The & is to handle the negative
+	    //z values.
 	    int index=(stub.first->z().value()>>(stub.first->z().nbits()-nbitsfinebintable_))&((1<<nbitsfinebintable_)-1);
 	    
 	    int zfine=finebintable_[index];

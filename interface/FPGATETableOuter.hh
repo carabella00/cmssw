@@ -55,7 +55,7 @@ public:
 
 
     if (writeVMTables) {
-      writeVMTable("VMTableOuterL"+std::to_string(layer_)+".txt");
+      writeVMTable("VMTableOuterL"+std::to_string(layer_)+".tab");
     }
 
     

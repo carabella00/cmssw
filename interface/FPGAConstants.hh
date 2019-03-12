@@ -76,11 +76,12 @@ static bool writeFitTrack=false;
 static bool writeChiSq=false;
 
 static bool writeNMatches=false;
-static bool writeDiskMatch1=false;
 static bool writeHitEff=false;
 
 static bool writeTETables=false;
 static bool writeVMTables=false;
+static bool writeMETables=false;
+static bool writeMCcuts=false;
 
 static bool writeCabling=false;
 
@@ -104,19 +105,23 @@ static bool writeifit=false;
 static bool padding=true;
 
 static bool useMSFit=false;
+static bool tcorrection=true;
 static bool exactderivatives=false;  //for both the integer and float
 static bool exactderivativesforfloating=true; //only for the floating point
 static bool useapprox=true; //use approximate postion based on integer representation for floating point
-static int nbitsalpha=4;
+static int alphashift=12;  
+static int nbitsalpha=4;  //bits used to store alpha
 static int alphaBitsTable=2; //For number of bits in track derivative table
 static int nrinvBitsTable=3; //number of bits for tabulating rinv dependence
 static bool writetrace=false; //Print out details about startup
 static bool debug1=false; //Print detailed debug information about tracking
 static bool writeoutReal = false; 
+static bool writememLinks = false; //Write files for dtc links
 static bool writemem=false; //Note that for 'full' detector this will open
                             //a LOT of files, and the program will run excruciatingly slow
 static unsigned int writememsect=3;  //writemem only for this sector
 
+static bool writeVMRTables = false; //write tables used by VMRouter
 static bool writeTripletTables=false; //Train and write the TED and TRE tables. N.B.: the tables
                                       //cannot be applied while they are being trained, i.e.,
                                       //this flag effectively turns off the cuts in
@@ -185,6 +190,7 @@ static double rmaxdiskl1overlapvm=45.0;
 static double rmindiskl2overlapvm=40.0;
 static double rmindiskl3overlapvm=50.0;
 
+static double half2SmoduleWidth=4.57;
 
 // need separate lookup values for inner two vs outer three disks for 2S modules
 // these assume D11 geometry!
@@ -258,7 +264,6 @@ static double rinvcutte=0.01*0.3*3.8/ptcutte; //0.01 to convert to cm-1 in TE
 static double bendcut=1.5;
 static double bendcutdisk=2.0;
 static double z0cut=15.0;
-static bool finephiME=true;  //If set false accept all stubs in phi VM for ME
 
 
 static unsigned int NSector=hourglass?9:27; 
@@ -292,7 +297,6 @@ static const unsigned int NLONGVMRBINS=(1<<NLONGVMRBITS);
 static const unsigned int NLONGVMODDLAYERBITS=6;
 static const unsigned int NLONGVMODDDISKBITS=6;
 static const double rinnerdisk=22.0;
-static const double routerPSdisk=65.0;
 
 
 
@@ -383,7 +387,7 @@ static double kr=rmaxdisk/(1<<nrbitsdisk);
 static double kd0 = 2*maxd0/(1<<nbitsd0);
 
 //track and tracklet parameters
-const int rinv_shift = -6;  // Krinv = 2^shift * Kphi/Kr
+const int rinv_shift = hourglass?-8:-6;  // Krinv = 2^shift * Kphi/Kr
 const int phi0_shift = 1;   // Kphi0 = 2^shift * Kphi
 const int t_shift    = -10; // Kt    = 2^shift * Kz/Kr
 const int z0_shift   = 0;   // Kz0   = 2^shift * kz
@@ -396,8 +400,8 @@ const int SS_phiL_shift = 0;
 const int PS_zL_shift   = 0;   // z projections have global precision in ITC
 const int SS_zL_shift   = 0;
 
-const int PS_phiderL_shift = -3;   // Kderphi = 2^shift * Kphi/Kr
-const int SS_phiderL_shift = -3; 
+const int PS_phiderL_shift = hourglass?-5:-3;   // Kderphi = 2^shift * Kphi/Kr
+const int SS_phiderL_shift = hourglass?-5:-3; 
 const int PS_zderL_shift   = -7;  // Kderz = 2^shift * Kz/Kr
 const int SS_zderL_shift   = -7;  
   

@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <math.h>
 #include <vector>
+#include <set>
 #include "L1TStub.hh"
 #include "FPGAStub.hh"
 #include "FPGAWord.hh"
@@ -524,6 +525,93 @@ public:
 
 
 
+  //Find tp corresponding to seed.
+  //Will require 'tight match' such that tp is part of
+  //each of the four clustes
+  //returns 0 if no tp matches
+  int tpseed() {
+
+    set<int> tpset;
+
+    set<int> tpsetstubinner;
+    set<int> tpsetstubouter;
+
+    vector<int> tps=innerStub_->tps();
+    for(unsigned int i=0;i<tps.size();i++){
+      if (tps[i]!=0) {
+	tpsetstubinner.insert(tps[i]);
+	tpset.insert(abs(tps[i]));
+      }
+    }
+    
+    tps=outerStub_->tps();
+    for(unsigned int i=0;i<tps.size();i++){
+      if (tps[i]!=0) {
+	tpsetstubouter.insert(tps[i]);
+	tpset.insert(abs(tps[i]));
+      }
+    }
+
+    for(auto seti=tpset.begin();seti!=tpset.end();seti++){
+      int tp=*seti;
+      if (tpsetstubinner.find(tp)!=tpsetstubinner.end()&&
+	  tpsetstubinner.find(-tp)!=tpsetstubinner.end()&&
+	  tpsetstubouter.find(tp)!=tpsetstubouter.end()&&
+	  tpsetstubouter.find(-tp)!=tpsetstubouter.end()) {
+	return tp;
+      }
+    }
+    return 0;
+  }
+  
+
+  bool stubtruthmatch(L1TStub* stub){
+
+    set<int> tpset;
+
+    set<int> tpsetstub;
+    set<int> tpsetstubinner;
+    set<int> tpsetstubouter;
+
+    vector<int> tps=stub->tps();
+    for(unsigned int i=0;i<tps.size();i++){
+      if (tps[i]!=0) {
+	tpsetstub.insert(tps[i]);
+	tpset.insert(abs(tps[i]));
+      }
+    }
+    tps=innerStub_->tps();
+    for(unsigned int i=0;i<tps.size();i++){
+      if (tps[i]!=0) {
+	tpsetstubinner.insert(tps[i]);
+	tpset.insert(abs(tps[i]));
+      }
+    }
+    tps=outerStub_->tps();
+    for(unsigned int i=0;i<tps.size();i++){
+      if (tps[i]!=0) {
+	tpsetstubouter.insert(tps[i]);
+	tpset.insert(abs(tps[i]));
+      }
+    }
+
+    for(auto seti=tpset.begin();seti!=tpset.end();seti++){
+      int tp=*seti;
+      if (tpsetstub.find(tp)!=tpsetstub.end()&&
+	  tpsetstub.find(-tp)!=tpsetstub.end()&&
+	  tpsetstubinner.find(tp)!=tpsetstubinner.end()&&
+	  tpsetstubinner.find(-tp)!=tpsetstubinner.end()&&
+	  tpsetstubouter.find(tp)!=tpsetstubouter.end()&&
+	  tpsetstubouter.find(-tp)!=tpsetstubouter.end()) {
+	return true;
+      }
+      
+    }
+
+    return false;
+    
+  }
+
   L1TStub* innerStub() {return innerStub_;}
 
   L1TStub* middleStub() {return middleStub_;}
@@ -570,31 +658,52 @@ public:
     std::ostringstream oss;
     FPGAWord index;
     if (allstubindex>=(1<<7)) {
-      cout << "Warning projection number too large!"<<endl; 
+      cout << "Warning projection number too large!"<<endl;	
       index.set((1<<7)-1,7,true,__LINE__,__FILE__);
     } else {
       index.set(allstubindex,7,true,__LINE__,__FILE__);
     }
-    oss << index.str()<<"|"<<layerproj_[layer-1].fpgaphiprojvm().str()
-	<<"|"<< layerproj_[layer-1].fpgazbin1projvm().str() 
-        <<"|"<< layerproj_[layer-1].fpgazbin2projvm().str();
-    return oss.str();
+
+    // This is a shortcut.
+    //int irinvvm=16+(fpgarinv().value()>>(fpgarinv().nbits()-5));
+    // rinv is not directly available in the TrackletProjection.
+    // can be inferred from phi derivative: rinv = - phider * 2
+    int tmp_irinv = layerproj_[layer-1].fpgaphiprojder().value()*(-2);
+    int nbits_irinv = layerproj_[layer-1].fpgaphiprojder().nbits()+1;
     
+    // irinv in VMProjection: 
+    // top 5 bits of rinv and shifted to be positive
+    int irinvvm = 16+(tmp_irinv>>(nbits_irinv-5));
+
+    assert(irinvvm>=0);
+    assert(irinvvm<32);
+    FPGAWord tmp;
+    tmp.set(irinvvm,5,true,__LINE__,__FILE__);
+    oss << index.str()
+	<<"|"<< layerproj_[layer-1].fpgazbin1projvm().str() 
+        <<"|"<< layerproj_[layer-1].fpgazbin2projvm().str()
+	<<"|"<<layerproj_[layer-1].fpgafinezvm().str()
+	<<"|"<< tmp.str()<<"|"<<PSseed();
+    return oss.str();
+
   }
   
   std::string vmstrdisk(int disk, unsigned int allstubindex) {
     std::ostringstream oss;
     FPGAWord index;
     if (allstubindex>=(1<<7)) {
-      cout << "Warning projection number too large!"<<endl; 
+      cout << "Warning projection number too large!"<<endl;	
       index.set((1<<7)-1,7,true,__LINE__,__FILE__);
     } else {
       index.set(allstubindex,7,true,__LINE__,__FILE__);
     } 
-    oss << index.str()<<"|"<<diskproj_[disk-1].fpgaphiprojvm().str()
-	<<"|"<< diskproj_[disk-1].fpgarprojvm().str();
+    oss << index.str()
+	<<"|"<<diskproj_[disk-1].fpgarbin1projvm().str()
+	<<"|"<<diskproj_[disk-1].fpgarbin2projvm().str()
+	<<"|"<<diskproj_[disk-1].fpgafinervm().str()
+	<<"|"<< diskproj_[disk-1].getBendIndex().str();
     return oss.str();
-    
+
   }
 
   
@@ -602,22 +711,25 @@ public:
     assert(layer>=1&&layer<=6);
     std::ostringstream oss;
     FPGAWord tmp;
-    if (trackletIndex_<0||trackletIndex_>63) {
+    if (trackletIndex_<0||trackletIndex_>127) {
       cout << "trackletIndex_ = "<<trackletIndex_<<endl;
       assert(0);
     }
-    tmp.set(trackletIndex_,6,true,__LINE__,__FILE__);
+    tmp.set(trackletIndex_,7,true,__LINE__,__FILE__);
     FPGAWord tcid;
     tcid.set(TCIndex_,7,true,__LINE__,__FILE__);
-    oss << layerproj_[layer-1].plusNeighbor()<<"|"
-        << layerproj_[layer-1].minusNeighbor()<<"|"
-        << tcid.str()<<"|"
+    if (!hourglass) {
+      oss << layerproj_[layer-1].plusNeighbor()<<"|"
+	  << layerproj_[layer-1].minusNeighbor()<<"|";
+    }
+
+    oss << tcid.str()<<"|"
 	<< tmp.str()<<"|"
         << layerproj_[layer-1].fpgaphiproj().str()<<"|"
 	<< layerproj_[layer-1].fpgazproj().str()<<"|"
 	<< layerproj_[layer-1].fpgaphiprojder().str()<<"|"
 	<< layerproj_[layer-1].fpgazprojder().str();
-    
+
     return oss.str();
     
   }
@@ -625,25 +737,26 @@ public:
     assert(abs(disk)>=1&&abs(disk)<=5);
     std::ostringstream oss;
     FPGAWord tmp;
-    if (trackletIndex_<0||trackletIndex_>63) {
+    if (trackletIndex_<0||trackletIndex_>127) {
       cout << "trackletIndex_ = "<<trackletIndex_<<endl;
       assert(0);
     }
-    tmp.set(trackletIndex_,6,true,__LINE__,__FILE__);
+    tmp.set(trackletIndex_,7,true,__LINE__,__FILE__);
     FPGAWord tcid;
     tcid.set(TCIndex_,7,true,__LINE__,__FILE__);
-
-    oss << diskproj_[abs(disk)-1].plusNeighbor()<<"|"
-        << diskproj_[abs(disk)-1].minusNeighbor()<<"|" 
-        << tcid.str()<<"|" 
+    if (!hourglass) {
+      oss << diskproj_[abs(disk)-1].plusNeighbor()<<"|"
+	  << diskproj_[abs(disk)-1].minusNeighbor()<<"|";
+    }
+    oss << tcid.str()<<"|" 
         << tmp.str()<<"|"
 	<< diskproj_[abs(disk)-1].fpgaphiproj().str()<<"|"
 	<< diskproj_[abs(disk)-1].fpgarproj().str()<<"|"
 	<< diskproj_[abs(disk)-1].fpgaphiprojder().str()<<"|"
 	<< diskproj_[abs(disk)-1].fpgarprojder().str();
-    
+
     return oss.str();
-    
+
   }
 
   std::string trackletprojstrlayer(int layer) const {
@@ -978,7 +1091,7 @@ public:
     
     assert(abs(disk)>=1&&abs(disk)<=5);
     
-    diskresid_[abs(disk)-1].init(disk,ideltaphi,ideltar,stubid,dphi,dr,dphiapprox,drapprox,zstub,alpha,stubptrs.first->alphanew(),stubptrs); 
+    diskresid_[abs(disk)-1].init(disk,ideltaphi,ideltar,stubid,dphi,dr,dphiapprox,drapprox,zstub,alpha,stubptrs.first->alphanew(),stubptrs);
     
   }
 
@@ -986,11 +1099,11 @@ public:
     assert(layer>=1&&layer<=6);
     std::ostringstream oss;
     FPGAWord tmp;
-    if (trackletIndex_<0||trackletIndex_>63) {
+    if (trackletIndex_<0||trackletIndex_>127) {
       cout << "trackletIndex_ = "<<trackletIndex_<<endl;
       assert(0);
     }
-    tmp.set(trackletIndex_,6);
+    tmp.set(trackletIndex_,7);
     oss << tmp.str()<<"|";
     
     return oss.str();
@@ -1077,11 +1190,11 @@ public:
     std::ostringstream oss;
 
     FPGAWord tmp;
-    if (trackletIndex_<0||trackletIndex_>63) {
+    if (trackletIndex_<0||trackletIndex_>127) {
       cout << "trackletIndex_ = "<<trackletIndex_<<endl;
       assert(0);
     }
-    tmp.set(trackletIndex_,6,true,__LINE__,__FILE__);
+    tmp.set(trackletIndex_,7,true,__LINE__,__FILE__);
     FPGAWord tcid;
     tcid.set(TCIndex_,7,true,__LINE__,__FILE__);
     oss << tcid.str()<<"|"
@@ -1099,11 +1212,11 @@ public:
     std::ostringstream oss;
 
     FPGAWord tmp;
-    if (trackletIndex_<0||trackletIndex_>63) {
+    if (trackletIndex_<0||trackletIndex_>127) {
       cout << "trackletIndex_ = "<<trackletIndex_<<endl;
       assert(0);
     }
-    tmp.set(trackletIndex_,6,true,__LINE__,__FILE__);
+    tmp.set(trackletIndex_,7,true,__LINE__,__FILE__);
     FPGAWord tcid;
     tcid.set(TCIndex_,7,true,__LINE__,__FILE__);
     oss << tcid.str()<<"|"
@@ -1844,6 +1957,32 @@ public:
   
   unsigned int homeSector() const {return homeSector_;}
   
+  unsigned int PSseed() {
+    return ((layer()==1)||(disk()!=0))?1:0;
+  }
+  
+  unsigned int seedIndex() const {
+  
+    int seedindex=-1;
+    int seedlayer=layer();
+    int seeddisk=disk();
+    
+    if (seedlayer==1&&seeddisk==0) seedindex=0;  //L1L2
+    if (seedlayer==3&&seeddisk==0) seedindex=1;  //L3L4
+    if (seedlayer==5&&seeddisk==0) seedindex=2;  //L5L6
+    if (seedlayer==0&&abs(seeddisk)==1) seedindex=3;  //D1D2
+    if (seedlayer==0&&abs(seeddisk)==3) seedindex=4;  //D3D4
+    if (seedlayer==1&&abs(seeddisk)==1) seedindex=5;  //L1D1
+    if (seedlayer==2&&abs(seeddisk)==1) seedindex=6;  //L2D1
+
+    if (seedindex<0) {
+      cout << "seedlayer abs(seeddisk) : "<<seedlayer<<" "<<abs(seeddisk)<<endl;
+      assert(0);
+    }
+
+    return seedindex;
+  }
+
 private:
 
   //Three types of tracklets... Overly complicated

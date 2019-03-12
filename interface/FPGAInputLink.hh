@@ -55,7 +55,7 @@ public:
     
   }
 
-  void addStub(L1TStub& al1stub, FPGAStub& stub, string dtc="") {
+  bool addStub(L1TStub& al1stub, FPGAStub& stub, string dtc="") {
 
     static bool first=true;
     static FPGAVMRouterPhiCorrTable phiCorrLayers[6];
@@ -94,12 +94,12 @@ public:
 
       //cout << getName()<<" layer = "<<stub.layer().value()+1<<endl;
       
-      if (stub.layer().value()==-1 && isLayer() ) return; 
-      if (stub.layer().value()!=-1 && isDisk() ) return;
+      if (stub.layer().value()==-1 && isLayer() ) return false; 
+      if (stub.layer().value()!=-1 && isDisk() ) return false;
       if (stub.layer().value()!=-1){
-	if (stub.layer().value()+1!=layerdisk()) return;
+	if (stub.layer().value()+1!=layerdisk()) return false;
       } else {
-	if (abs(stub.disk().value())!=layerdisk()) return;
+	if (abs(stub.disk().value())!=layerdisk()) return false;
       }
 
       int phibin=-1;
@@ -115,14 +115,14 @@ public:
 
       //cout << getName()<<" "<<iSector_<<" phibin phiregion : "<<phibin<<" "<<phiregion()<<endl;
       
-      if (phibin!=phiregion() && phibin!=phiregionoverlap()) return;
+      if (phibin!=phiregion() && phibin!=phiregionoverlap()) return false;
 
 
       
  
       //cout << getName()<<" "<<getName().substr(10,dtc.size())<<" "<<dtc<<endl;
       
-      if (getName().substr(10,dtc.size())!=dtc) return;
+      if (getName().substr(10,dtc.size())!=dtc) return false;
 
       string half=getName().substr(getName().size()-3,3);
       if (half[1]!='n') {
@@ -140,8 +140,8 @@ public:
       }
       
       
-      if (half[0]=='B' && iphivmRaw<=15) return;
-      if (half[0]=='A' && iphivmRaw>15) return;
+      if (half[0]=='B' && iphivmRaw<=15) return false;
+      if (half[0]=='A' && iphivmRaw>15) return false;
       
 
       
@@ -162,7 +162,7 @@ public:
 	      (layer==4&&subnamelayer=="L4")||
 	      (layer==5&&subnamelayer=="L5")||
 	      (layer==6&&subnamelayer=="L6"))){
-	  return;
+	  return false;
 	}
 	
 	if ((subname.substr(5,2)=="ZP"&&stub.z().value()>0)||
@@ -213,7 +213,7 @@ public:
 	      (layer==4&&subnamelayer=="L4")||
 	      (layer==5&&subnamelayer=="L5")||
 	      (layer==6&&subnamelayer=="L6"))){
-	  return;
+	  return false;
 	}
       
 	//cout << "Stub candidate in "<<getName()<<" "<<subnamelayer<<" "<<subname<<" "<<iphivmRaw<<" "
@@ -339,7 +339,7 @@ public:
 	    (disk==-3&&subnamelayer=="B3")||
 	    (disk==-4&&subnamelayer=="B4")||
 	    (disk==-5&&subnamelayer=="B5"))){
-	return;
+	return false;
       }    
 
       if (stub.phiregion().value()==0) asindex = indexphi_[0]++;
@@ -424,7 +424,7 @@ public:
       
     if (!add) {
       //cout << "Will not add stub" << endl;
-      return;
+      return false;
     }
     if (debug1) {
       cout << "Will add stub in "<<getName()<<" phimin_ phimax_ "<<phimin_<<" "<<phimax_<<" "<<"iphiwmRaw = "<<iphivmRaw<<" phi="<<al1stub.phi()<<" z="<<al1stub.z()<<" r="<<al1stub.r()<<endl;
@@ -443,6 +443,7 @@ public:
       std::pair<FPGAStub*,L1TStub*> tmp(stubptr,l1stub);
       stubs_.push_back(tmp);
     }
+    return true;
   }
 
   unsigned int nStubs() const {return stubs_.size();}
@@ -479,7 +480,7 @@ public:
         : stubs_[j].first->strdisk();
       if (j<16) out_ <<"0";
       out_ << hex << j << dec;
-      out_ << " " << stub << endl;
+      out_ << " " << stub <<" "<<hexFormat(stub)<< endl;
     }
     out_.close();
 

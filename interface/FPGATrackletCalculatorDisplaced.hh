@@ -1986,7 +1986,8 @@ void exactproj(double rproj,double rinv, double phi0, double d0,
   if(debug1) cout <<"exact proj layer at "<<rproj<<" : "<< phiproj <<" "<<zproj<<"\n";
 }
 
-void exactprojdisk(double zproj, double rinv, double phi0, double d0,
+  
+  void exactprojdisk(double zproj, double rinv, double, double,  //phi0 and d0 are not used.
 		   double t, double z0,
 		   double x0, double y0,
 		   double &phiproj, double &rproj,

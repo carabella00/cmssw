@@ -49,6 +49,24 @@ public:
 	  table_.push_back(pass);
 	}
       }
+
+      if (writeMETables){
+	ofstream out;
+	char layer='0'+layer_;
+	string fname="METable_L";
+	fname+=layer;
+	fname+=".dat";
+	out.open(fname.c_str());
+	out << "{" <<endl;
+	for(unsigned int i=0;i<table_.size();i++){
+	  if (i!=0) {
+	    out <<","<<endl;
+	  }
+	  out << table_[i] ;
+	}
+	out << "};"<<endl;
+	out.close();
+      }
       
     }
 
@@ -111,232 +129,206 @@ public:
 
   void execute() {
 
+    bool barrel=layer_>0;
+
     unsigned int countall=0;
     unsigned int countpass=0;
-
-    for(unsigned int j=0;j<vmprojs_->nTracklets();j++){
-      FPGATracklet* proj=vmprojs_->getFPGATracklet(j);
-
-      int nmatches=0;
-      
-      if (debug1) {
-	cout << "Found projection in "<<getName()<<endl;
-      }
-     	
-      if (layer_>0){
-
-	unsigned int zbin1 =proj->zbin1projvm(layer_);
-	unsigned int zbin2 = zbin1; 
-
-	unsigned int finez =proj->finezvm(layer_);
-
-	if (proj->zbin2projvm(layer_)==1) zbin2 += 1;
-	
-	for (unsigned int ibin=zbin1;ibin<=zbin2;ibin++) {
-
-	  unsigned int nstub=vmstubs_->nStubsBin(ibin);
-	  
-	  for(unsigned int i=0;i<nstub;i++){
-	    if (debug1) {
-	      cout << "Found stub in "<<getName()<<endl;
-	    }
-	    std::pair<FPGAStub*,L1TStub*> stub=vmstubs_->getStubBin(ibin,i);
-	    countall++;
-
-	    if (finephiME) {
-	      FPGAWord projphi=proj->fpgaphiproj(layer_);
-	      FPGAWord stubphicorr=stub.first->phicorr();
-
-	      int ifinephiproj=(projphi.value()>>(projphi.nbits()-8));
-	      int ifinephistubcorr=(stubphicorr.value()>>(stubphicorr.nbits()-8));
-	      
-	      if (!hourglassExtended && abs(ifinephiproj-ifinephistubcorr)>1) {
-		continue;
-	      }
-	    }
-							   
-	    int z=stub.first->finez().value();
-
-	    if (ibin!=zbin1) z+=8;
-	    
-	    int idz=z-finez;
-	    	    
-	    double dz=proj->zproj(layer_)-stub.second->z();
-	    
-	    if (proj->layer()==1) {
-	      //cout << getName()<<" dz idz : "<<dz<<" "<<idz
-	      //   <<" proj: "<<proj->zproj(layer_)<<" "<<proj->fpgazproj(layer_).value()*16*kz<<" "
-	      //   <<proj->fpgazproj(layer_).value()<<" "
-	      //   <<((proj->fpgazproj(layer_).value()>>(proj->fpgazproj(layer_).nbits()-6))&7)
-	      //   <<" "<<finez
-	      //   <<" stub: "<<stub.second->z()<<" "<<stub.first->z().value()*16*kz<<" "
-	      //   <<stub.first->z().value()<<" "
-	      //   <<((stub.first->z().value()>>(stub.first->z().nbits()-6))&7)
-	      //   <<" "<<z<<endl;
-	      if (!hourglassExtended && abs(idz)>2) {
-		if (debug1) {
-		  cout << getName()<<" Match rejected for L1L2 seed with dz = "
-		       <<dz<<" idz = "<<idz<<endl;
-		}
-		continue;
-	      }
-	    } else {
-	      if (!hourglassExtended && abs(idz)>5) continue; //needed for L5L6 seeds...
-	    }
-
-	    int irinvvm=16+(proj->fpgarinv().value()>>(proj->fpgarinv().nbits()-5));
-
-	    int nbits=3;
-	    if (layer_>=4) nbits=4;
-	    assert(nbits==stub.first->bend().nbits());
-	    
-	    unsigned int index=(irinvvm<<nbits)+stub.first->bend().value();
-
-	    assert(index<table_.size());
-	    bool pass=table_[index];
-
-	    if (!hourglassExtended && !pass) {
-	      if (debug1) {
-		cout << "Match rejected with bend lookup index = "
-		     <<index<<endl; 
-	      }
-	      continue;
-	    }
-	    if (debug1) {
-	      cout << "Adding match in "<<getName()<<endl;
-	    }
-	    
-	    countpass++;
-	    if (nmatches<1000) {
-              if (writeSeeds) {
-                ofstream fout("seeds.txt", ofstream::app);
-                fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << proj->getISeed() << endl;
-                fout.close();
-              }
-	      candmatches_->addMatch(proj,stub);
-	    }
-	    nmatches++;
-	    if (countall>=MAXME) break;
-	  }
-	}
-      } // if (layer_>0)      
-      else if (disk_!=0) {
-
-	unsigned int rbin1 =proj->rbin1projvm(disk_);
-	unsigned int rbin2 = rbin1; 
-
-	unsigned int finer =proj->finervm(disk_);
-
-	if (proj->rbin2projvm(disk_)==1) rbin2 += 1;
-	
-	for (unsigned int ibin=rbin1;ibin<=rbin2;ibin++) {
-
-	  unsigned int nstub=vmstubs_->nStubsBin(ibin);
-
-	  for(unsigned int i=0;i<nstub;i++){
-	    if (debug1) {
-	      cout << "Found stub in "<<getName()<<endl;
-	    }
-	    std::pair<FPGAStub*,L1TStub*> stub=vmstubs_->getStubBin(ibin,i);
-	    countall++;
-
-	    if (finephiME) {
-	      FPGAWord projphi=proj->fpgaphiprojdisk(disk_);
-	      FPGAWord stubphicorr=stub.first->phicorr();
-	      
-	      int ifinephiproj=(projphi.value()>>(projphi.nbits()-8));
-	      int ifinephistubcorr=(stubphicorr.value()>>(stubphicorr.nbits()-8));
-	    
-	      if (!hourglassExtended && abs(ifinephiproj-ifinephistubcorr)>1) {
-		continue;
-	      }
-	    }
-	    
-	    
-	    int r=stub.first->finer().value();
-	    
-	    if (ibin!=rbin1) r+=8;
-	    
-	    int idr=r-finer;
-
-	    if (stub.first->isPSmodule()){
-	      if (!hourglassExtended && abs(idr)>1) {
-		if (debug1) {
-		  cout << getName() << "PS stub rejected with idr = "<<idr<<endl;
-		}
-		continue;
-	      }
-	    } else {
-	      if (!hourglassExtended && abs(idr)>5) {
-		if (debug1) {
-		  cout << getName() << "2S stub rejected with idr = "<<idr<<endl;
-		}
-		continue;
-	      }
-	    }
-
-	    int ibendproj=proj->getBendIndex(disk_).value();
-
-	    int nbits=3;
-	    if (!stub.first->isPSmodule()) nbits=4;
-
-	    assert(nbits==stub.first->bend().nbits());
-	    
-	    unsigned int index=(ibendproj<<nbits)+stub.first->bend().value();
-
-	    bool pass=false;
-
-	    if (stub.first->isPSmodule()) {
-	      assert(index<tablePS_.size());
-	      pass=tablePS_[index];
-	    } else {
-	      assert(index<table2S_.size());
-	      pass=table2S_[index];
-	    }
-	    
-	    if (!hourglassExtended && !pass) {
-	      if (debug1) {
-		cout << getName() << "stub rejected with index = "<<index<<endl;
-	      }
-	      continue;
-	    }
-	    
-	    
-	    
-	    countpass++;
-	    if (nmatches<1000) {
-	      if (debug1) {
-		cout << getName() << " adding match " << stub.first->disk().value()<<" "<< proj->disk()<<endl;
-	      }
-              if (writeSeeds) {
-                ofstream fout("seeds.txt", ofstream::app);
-                fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << proj->getISeed() << endl;
-                fout.close();
-              }
-	      candmatches_->addMatch(proj,stub);
-	    }
-	    nmatches++;
-	    if (countall>=MAXME) break;
-	    
-	  }
-	}
-	
-      } else {
-	//neither disk nor layer?
-	assert(0);
-      } 
-      
-	
-    } // outer for loop
-     
     
+    //bool print=getName()=="ME_L4PHIB12"&&iSector_==3;
+    //print=false;
+
+    constexpr unsigned int kNBitsBuffer=3;  
+
+    int writeindex=0;
+    int readindex=0;
+    std::pair<int,int> projbuffer[1<<kNBitsBuffer]; //iproj zbin
+
+    //The next projection to read, the number of projections and flag if we have
+    //more projections to read
+    int iproj=0;
+    int nproj=vmprojs_->nTracklets();
+    bool moreproj=iproj<nproj;
+
+    //Projection that is read from the buffer and compared to stubs  
+    int rzbin=0;
+    int projfinerz=0;
+    int projfinerzadj=0;
+
+    
+    int projindex;
+    int projrinv=0;
+    bool isPSseed=false;
+    
+    //Number of stubs for current zbin and the stub being processed on this clock
+    int nstubs=0;
+    int istub=0;
+
+    //Main processing loops starts here  
+    for (unsigned int istep=0;istep<MAXME;istep++) {
+
+      countall++;
+      
+      int writeindexplus=(writeindex+1)%(1<<kNBitsBuffer);
+      int writeindexplusplus=(writeindex+2)%(1<<kNBitsBuffer);
+
+      //Determine if buffere is full - or near full as a projection
+      //can point to two z bins we might fill two slots in the buffer
+      bool bufferfull=(writeindexplus==readindex)||(writeindexplusplus==readindex);
+
+      //Determin if buffere is empty
+      bool buffernotempty=(writeindex!=readindex);
+
+      //If we have more projections and the buffer is not full we read
+      //next projection and put in buffer if there are stubs in the 
+      //memory the projection points to
+
+      if ((!moreproj)&&(!buffernotempty)) break;
+		
+      if (moreproj&&(!bufferfull)){
+	FPGATracklet* proj=vmprojs_->getFPGATracklet(iproj);
+
+	int iprojtmp=iproj;
+	
+	iproj++;
+	moreproj=iproj<nproj;
+
+	unsigned int rzfirst = barrel?proj->zbin1projvm(layer_):proj->rbin1projvm(disk_);
+	unsigned int rzlast = rzfirst;
+	bool second=(barrel?proj->zbin2projvm(layer_):proj->rbin2projvm(disk_))==1;
+	if (second) rzlast += 1;
+
+	//Check if there are stubs in the memory
+	int nstubfirst=vmstubs_->nStubsBin(rzfirst);
+	int nstublast=vmstubs_->nStubsBin(rzlast);
+	bool savefirst=nstubfirst!=0;
+	bool savelast=second&&(nstublast!=0);
+
+	int writeindextmp=writeindex;
+	int writeindextmpplus=(writeindex+1)%(1<<kNBitsBuffer);
+	
+	if (savefirst&&savelast) {
+	  writeindex=writeindexplusplus;
+	} else if (savefirst||savelast) {
+	  writeindex=writeindexplus;
+	}
+
+	if (savefirst) { //FIXME code needs to be cleaner
+	  std::pair<int,int> tmp(iprojtmp,rzfirst);
+	  projbuffer[writeindextmp]=tmp;
+	}
+	if (savelast) {
+	  std::pair<int,int> tmp(iprojtmp,rzlast+100); //hack to flag that this is second bin
+	  if (savefirst) {
+	    projbuffer[writeindextmpplus]=tmp;
+	  } else {
+	    projbuffer[writeindextmp]=tmp;
+	  }
+	}
+      }
+      
+
+      //If the buffer is not empty we have a projection that we need to 
+      //process.
+
+      if (buffernotempty) {
+
+	int istubtmp=istub;
+
+	//New projection
+	if (istub==0) {
+
+	  projindex=projbuffer[readindex].first;
+	  rzbin=projbuffer[readindex].second;
+	  bool second=false;
+	  if (rzbin>=100) {
+	    rzbin-=100;
+	    second=true;
+	  }
+
+	  FPGATracklet* proj=vmprojs_->getFPGATracklet(projindex);
+
+	  nstubs=vmstubs_->nStubsBin(rzbin);
+	  projfinerz = barrel?proj->finezvm(layer_):proj->finervm(disk_);
+
+	  projrinv=barrel?(16+(proj->fpgarinv().value()>>(proj->fpgarinv().nbits()-5))):proj->getBendIndex(disk_).value();
+	  assert(projrinv>=0);
+	  assert(projrinv<32);
+	  
+	  isPSseed=proj->PSseed()==1;
+	  
+	  //Calculate fine z position
+	  if (second) {
+	    projfinerzadj=projfinerz-8;
+	  } else {
+	    projfinerzadj=projfinerz;
+	  }
+	  if (nstubs==1) {
+	    istub=0;
+	    readindex=(readindex+1)%(1<<kNBitsBuffer);
+	  } else {
+	    istub++;
+	  }
+	} else {
+	  //Check if last stub, if so, go to next buffer entry 
+	  if (istub+1>=nstubs){
+	    istub=0;
+	    readindex=(readindex+1)%(1<<kNBitsBuffer);
+	  } else {
+	    istub++;
+	  }
+	}
+
+	//Read stub memory and extract data fields
+	std::pair<FPGAStub*,L1TStub*> stub=vmstubs_->getStubBin(rzbin,istubtmp);
+
+	bool isPSmodule=stub.first->isPSmodule();
+	
+	int stubfinerz=barrel?stub.first->finez().value():stub.first->finer().value();
+	
+	int nbits=isPSmodule?3:4;
+
+	unsigned int index=(projrinv<<nbits)+stub.first->bend().value();
+
+	//Check if stub z position consistent
+	int idrz=stubfinerz-projfinerzadj;
+	bool pass;
+	
+	if (barrel) {
+	  if (isPSseed) {
+	    pass=idrz>=-2&&idrz<=2;
+	  } else {
+	    pass=idrz>=-5&&idrz<=5;
+	  }
+	} else {
+	  if (isPSmodule) {
+	    pass=idrz>=-1&&idrz<=1;
+	  } else {
+	    pass=idrz>=-5&&idrz<=5;
+	  }
+	}
+
+	//Check if stub bend and proj rinv consistent
+	if (pass){
+	  if (barrel?table_[index]:(isPSmodule?tablePS_[index]:table2S_[index])) {
+	    FPGATracklet* proj=vmprojs_->getFPGATracklet(projindex);
+	    std::pair<FPGATracklet*,int> tmp(proj,vmprojs_->getAllProjIndex(projindex));
+	    candmatches_->addMatch(tmp,stub);
+	    countpass++;
+	  }
+	}
+      }
+      
+    }
+
     if (writeME) {
       static ofstream out("matchengine.txt");
       out << getName()<<" "<<countall<<" "<<countpass<<endl;
     }
 
-  } // execute()
+    
+  }
 
+ 
   double bend(double r, double rinv) {
 
     double dr=0.18;

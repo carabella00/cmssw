@@ -8,6 +8,8 @@
 
 #include "FPGAProcessBase.hh"
 #include "FPGATrackletProjections.hh"
+#include "FPGAGlobal.hh"
+
 
 using namespace std;
 
@@ -142,58 +144,55 @@ public:
 
 
    // set TC index
-   int iTC = -1;
-   int iSeed = -1;
-   
-   if      (name_[7]=='A') iTC =0;
-   else if (name_[7]=='B') iTC =1;
-   else if (name_[7]=='C') iTC =2;
-   else if (name_[7]=='D') iTC =3;
-   else if (name_[7]=='E') iTC =4;
-   else if (name_[7]=='F') iTC =5;
-   else if (name_[7]=='G') iTC =6;
-   else if (name_[7]=='H') iTC =7;
-   else if (name_[7]=='I') iTC =8;
-   else if (name_[7]=='J') iTC =9;
-   else if (name_[7]=='K') iTC =10;
-   else if (name_[7]=='L') iTC =11;
-   else if (name_[7]=='M') iTC =12;
-   else if (name_[7]=='N') iTC =13;
-   else if (name_[7]=='O') iTC =14;
+   if      (name_[7]=='A') iTC_ =0;
+   else if (name_[7]=='B') iTC_ =1;
+   else if (name_[7]=='C') iTC_ =2;
+   else if (name_[7]=='D') iTC_ =3;
+   else if (name_[7]=='E') iTC_ =4;
+   else if (name_[7]=='F') iTC_ =5;
+   else if (name_[7]=='G') iTC_ =6;
+   else if (name_[7]=='H') iTC_ =7;
+   else if (name_[7]=='I') iTC_ =8;
+   else if (name_[7]=='J') iTC_ =9;
+   else if (name_[7]=='K') iTC_ =10;
+   else if (name_[7]=='L') iTC_ =11;
+   else if (name_[7]=='M') iTC_ =12;
+   else if (name_[7]=='N') iTC_ =13;
+   else if (name_[7]=='O') iTC_ =14;
 
-   assert(iTC!=-1);
+   assert(iTC_!=-1);
    
-   if (name_.substr(3,4)=="L1L2") iSeed = 0;
-   else if (name_.substr(3,4)=="L3L4") iSeed = 2;
-   else if (name_.substr(3,4)=="L5L6") iSeed = 3;
-   else if (name_.substr(3,4)=="D1D2") iSeed = 4;
-   else if (name_.substr(3,4)=="D3D4") iSeed = 5;
-   else if (name_.substr(3,4)=="D1L1") iSeed = 6;
-   else if (name_.substr(3,4)=="D1L2") iSeed = 7;
-   else if (name_.substr(3,4)=="L1D1") iSeed = 6;
-   else if (name_.substr(3,4)=="L2D1") iSeed = 7;
-   else if (name_.substr(3,4)=="L2L3") iSeed = 1;
+   if (name_.substr(3,4)=="L1L2") iSeed_ = 0;
+   else if (name_.substr(3,4)=="L3L4") iSeed_ = 2;
+   else if (name_.substr(3,4)=="L5L6") iSeed_ = 3;
+   else if (name_.substr(3,4)=="D1D2") iSeed_ = 4;
+   else if (name_.substr(3,4)=="D3D4") iSeed_ = 5;
+   else if (name_.substr(3,4)=="D1L1") iSeed_ = 6;
+   else if (name_.substr(3,4)=="D1L2") iSeed_ = 7;
+   else if (name_.substr(3,4)=="L1D1") iSeed_ = 6;
+   else if (name_.substr(3,4)=="L2D1") iSeed_ = 7;
+   else if (name_.substr(3,4)=="L2L3") iSeed_ = 1;
 
-   assert(iSeed!=-1);
+   assert(iSeed_!=-1);
 
    if (hourglass) {
-     TCIndex_ = (iSeed<<4) + iTC;
+     TCIndex_ = (iSeed_<<4) + iTC_;
      assert(TCIndex_>=0 && TCIndex_<128);
    } else {
-     TCIndex_ = (iSeed<<3) + iTC;
+     TCIndex_ = (iSeed_<<3) + iTC_;
      assert(TCIndex_>=0 && TCIndex_<64);
    }
      
    //if (hourglass) {
-   //if (iSeed!=0)  TCIndex_+=8;
-     //cout << "iTC iSeed TCIndex_ "<<iTC<<" "<<iSeed<<" "<<TCIndex_<<endl;
+   //if (iSeed_!=0)  TCIndex_+=8;
+     //cout << "iTC_ iSeed_ TCIndex_ "<<iTC_<<" "<<iSeed_<<" "<<TCIndex_<<endl;
    //}
    
    
    assert((layer_!=0)||(disk_!=0));
 
    
-   if (iSeed==0||iSeed==1||iSeed==2||iSeed==3) {
+   if (iSeed_==0||iSeed_==1||iSeed_==2||iSeed_==3) {
      if (layer_==1) {
        rproj_[0]=rmeanL3;
        rproj_[1]=rmeanL4;
@@ -239,7 +238,7 @@ public:
      }
    }
 
-   if (iSeed==4||iSeed==5) {
+   if (iSeed_==4||iSeed_==5) {
      if (disk_==1) {
        zproj_[0]=zmeanD3;
        zproj_[1]=zmeanD4;
@@ -260,7 +259,7 @@ public:
    }
 
 
-   if (iSeed==6||iSeed==7) {
+   if (iSeed_==6||iSeed_==7) {
      zprojoverlap_[0]=zmeanD2;
      zprojoverlap_[1]=zmeanD3;
      zprojoverlap_[2]=zmeanD4;
@@ -785,6 +784,10 @@ public:
 
     double phi1tmp=phi1-phimin_+(phimax_-phimin_)/6.0;    
 
+    if (hourglass) {
+      phi1tmp=phi1-phimin_;    
+    }
+    
     phi0=phi1tmp+asin(0.5*r1*rinv);
     
     if (phi0>0.5*two_pi) phi0-=two_pi;
@@ -841,6 +844,11 @@ public:
 
     double phi1tmp=phi1-phimin_+(phimax_-phimin_)/6.0;    
 
+    if (hourglass) {
+      phi1tmp=phi1-phimin_;    
+    }
+
+    
     //cout << "phi1 phi2 phi1tmp : "<<phi1<<" "<<phi2<<" "<<phi1tmp<<endl;
 
     phi0=phi1tmp+asin(0.5*r1*rinv);
@@ -919,6 +927,11 @@ public:
 
     double phi1tmp=phi1-phimin_+(phimax_-phimin_)/6.0;    
 
+    if (hourglass) {
+      phi1tmp=phi1-phimin_;    
+    }
+
+    
     //cout << "phi1 phi2 phi1tmp : "<<phi1<<" "<<phi2<<" "<<phi1tmp<<endl;
 
     phi0=phi1tmp+asin(0.5*r1*rinv);
@@ -1491,6 +1504,7 @@ public:
     double sphi1 = phi1 - phioffset_;
     if(sphi1<0) sphi1 += 8*atan(1.);
     if(sphi1>8*atan(1.)) sphi1 -= 8*atan(1.);
+    //cout << "sphi1: "<<phi2<<endl;
     double sphi2 = phi2 - phioffset_;
     if(sphi2<0) sphi2 += 8*atan(1.);
     if(sphi2>8*atan(1.)) sphi2 -= 8*atan(1.);
@@ -1685,7 +1699,7 @@ public:
       validproj[i] = true;
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
-      
+
       minusNeighbor[i]=false;
       plusNeighbor[i]=false;
       if (!hourglass) {
@@ -1786,6 +1800,7 @@ public:
       }
     }
 
+    
     bool success = true;
     if(!ITC->rinv_final.local_passes()){
       if (debug1) 
@@ -1882,6 +1897,16 @@ public:
       fout.close();
     }
     trackletpars_->addTracklet(tracklet);
+
+    FPGAHistBase* hists=FPGAGlobal::histograms();
+    int tp=tracklet->tpseed();
+    hists->fillTrackletParams(iSeed_,iSector_,
+			      rinvapprox,irinv*ITC->rinv_final.get_K(),
+			      phi0approx,iphi0*ITC->phi0_final.get_K(),
+			      asinh(tapprox),asinh(it*ITC->t_final.get_K()),
+			      z0approx,iz0*ITC->z0_final.get_K(),
+			      tp);
+
     
     bool addL3=false;
     bool addL4=false;
@@ -2157,7 +2182,7 @@ public:
       validproj[i] = true;
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
-      
+
       minusNeighbor[i]=false;
       plusNeighbor[i]=false;
       if (!hourglass) {
@@ -2585,7 +2610,7 @@ public:
       validproj[i] = true;
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
-      
+
       minusNeighbor[i]=false;
       plusNeighbor[i]=false;
       if (!hourglass) {
@@ -2812,7 +2837,9 @@ public:
  
     
 private:
-
+  
+  int iTC_;
+  int iSeed_;
   int TCIndex_;
   int layer_;
   int disk_;

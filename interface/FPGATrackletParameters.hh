@@ -76,9 +76,10 @@ public:
 
     for (unsigned int j=0;j<tracklets_.size();j++){
       string tpar=tracklets_[j]->trackletparstr();
+      out_ << "0x";
       if (j<16) out_ <<"0";
       out_ << hex << j << dec ;
-      out_ <<" "<<tpar<< endl;
+      out_ <<" "<<tpar<<" "<<hexFormat(tpar)<<endl;
     }
     out_.close();
 

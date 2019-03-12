@@ -57,6 +57,15 @@ void matchengine(){
   c2->SetFillColor(0);
   c2->SetGrid();
   
+  TCanvas* c3 = new TCanvas("c3","Track performance",200,10,700,800);
+  c3->Divide(2,3);
+  c3->SetFillColor(0);
+  c3->SetGrid();
+  
+  TCanvas* c4 = new TCanvas("c4","Track performance",200,10,700,800);
+  c4->Divide(2,3);
+  c4->SetFillColor(0);
+  c4->SetGrid();
   
   
   double max=128.0;
@@ -74,6 +83,33 @@ void matchengine(){
   TH1 *hist_D4 = new TH1F("D4","Matches per VM",max+1,-0.5,max+0.5);
   TH1 *hist_D5 = new TH1F("D5","Matches per VM",max+1,-0.5,max+0.5);
 
+  TH1 *hist_L1region = new TH1F("L1 Region","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_L2region = new TH1F("L2 Region","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L3region = new TH1F("L3 Region","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L4region = new TH1F("L4 Region","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L5region = new TH1F("L5 Region","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L6region = new TH1F("L6 Region","Matches per region",max+1,-0.5,8*max+0.5);
+
+  TH1 *hist_D1region = new TH1F("D1 Region","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_D2region = new TH1F("D2 Region","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_D3region = new TH1F("D3 Region","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_D4region = new TH1F("D4 Region","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_D5region = new TH1F("D5 Region","Matches per region",max+1,-0.5,4*max+0.5); 
+
+  TH1 *hist_L1regionpass = new TH1F("L1 Region Max","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_L2regionpass = new TH1F("L2 Region Max","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L3regionpass = new TH1F("L3 Region Max","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L4regionpass = new TH1F("L4 Region Max","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L5regionpass = new TH1F("L5 Region Max","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_L6regionpass = new TH1F("L6 Region Max","Matches per region",max+1,-0.5,8*max+0.5);
+
+  TH1 *hist_D1regionpass = new TH1F("D1 Region Max","Matches per region",max+1,-0.5,8*max+0.5);
+  TH1 *hist_D2regionpass = new TH1F("D2 Region Max","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_D3regionpass = new TH1F("D3 Region Max","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_D4regionpass = new TH1F("D4 Region Max","Matches per region",max+1,-0.5,4*max+0.5);
+  TH1 *hist_D5regionpass = new TH1F("D5 Region Max","Matches per region",max+1,-0.5,4*max+0.5);
+
+  
   TH1 *hist_L1pass = new TH1F("L1","Matches per VM pass",max+1,-0.5,max+0.5);
   TH1 *hist_L2pass = new TH1F("L2","Matches per VM pass",max+1,-0.5,max+0.5);
   TH1 *hist_L3pass = new TH1F("L3","Matches per VM pass",max+1,-0.5,max+0.5);
@@ -93,6 +129,10 @@ void matchengine(){
 
   std::map<TString, TH1*> hists;
 
+  TString nameold="";
+  int regioncount=0;
+  int regioncountpass=0;
+  
   while (in.good()){
 
     TString name;
@@ -101,6 +141,92 @@ void matchengine(){
     
     in >>name>>matchesall>>matchespass;
 
+    TSubString sub=name(0,9);
+    TString subname(sub);
+    cout << "subname "<<subname<<endl;
+
+    if (nameold=="") {
+      nameold=subname;
+    }
+
+    if (nameold==subname) {
+      regioncount+=matchesall;      
+      regioncountpass+=matchespass;      
+    } else {
+      if (name.Contains("L1PHI")) {
+	if (regioncount>4*max) regioncount=4*max;
+	if (regioncountpass>4*max) regioncountpass=4*max;
+	hist_L1region->Fill(regioncount);
+	hist_L1regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("L2PHI")) {
+	if (regioncount>8*max) regioncount=8*max;
+	if (regioncountpass>8*max) regioncountpass=8*max;
+	hist_L2region->Fill(regioncount);
+	hist_L2regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("L3PHI")) {
+	if (regioncount>8*max) regioncount=8*max;
+	if (regioncountpass>8*max) regioncountpass=8*max;
+	hist_L3region->Fill(regioncount);
+	hist_L3regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("L4PHI")) {
+	if (regioncount>8*max) regioncount=8*max;
+	if (regioncountpass>8*max) regioncountpass=8*max;
+	hist_L4region->Fill(regioncount);
+	hist_L4regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("L5PHI")) {
+	if (regioncount>8*max) regioncount=8*max;
+	if (regioncountpass>8*max) regioncountpass=8*max;
+	hist_L5region->Fill(regioncount);
+	hist_L5regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("L6PHI")) {
+	if (regioncount>8*max) regioncount=8*max;
+	if (regioncountpass>8*max) regioncountpass=8*max;
+	hist_L6region->Fill(regioncount);
+	hist_L6regionpass->Fill(regioncountpass);
+      }
+
+      if (name.Contains("D1PHI")) {
+	if (regioncount>8*max) regioncount=8*max;
+	if (regioncountpass>8*max) regioncountpass=8*max;
+	hist_D1region->Fill(regioncount);
+	hist_D1regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("D2PHI")) {
+	if (regioncount>4*max) regioncount=4*max;
+	if (regioncountpass>4*max) regioncountpass=4*max;
+	hist_D2region->Fill(regioncount);
+	hist_D2regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("D3PHI")) {
+	if (regioncount>4*max) regioncount=4*max;
+	if (regioncountpass>4*max) regioncountpass=4*max;
+	hist_D3region->Fill(regioncount);
+	hist_D3regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("D4PHI")) {
+	if (regioncount>4*max) regioncount=4*max;
+	if (regioncountpass>4*max) regioncountpass=4*max;
+	hist_D4region->Fill(regioncount);
+	hist_D4regionpass->Fill(regioncountpass);
+      }
+      if (name.Contains("D5PHI")) {
+	if (regioncount>4*max) regioncount=4*max;
+	if (regioncountpass>4*max) regioncountpass=4*max;
+	hist_D5region->Fill(regioncount);
+	hist_D5regionpass->Fill(regioncountpass);
+      }
+      
+      nameold=subname;
+      regioncount=matchesall;      
+      regioncountpass=matchespass;      
+    }
+    
+    
     if (!in.good()) continue;
     
     if (matchesall>max) matchesall=max;
@@ -173,9 +299,6 @@ void matchengine(){
 
   c1->cd(1);
   gPad->SetLogy();
-  //TF1* f1 = new TF1("f1","[0]*TMath::Power([1],x)*(TMath::Exp(-[1]))/TMath::Gamma(x+1)", 0, 30);
-  //f1->SetParameters(1.0, 1.0); 
- //hist_L1L2_L3->Fit("f1", "R"); 
   plotHist(hist_L1,0.05,ncut1,ncut2);
   hist_L1pass->SetLineColor(kBlue);
   hist_L1pass->Draw("same");
@@ -251,7 +374,78 @@ void matchengine(){
 
   
   c2->Print("matchengine.pdf","pdf");
+  
+  c3->cd(1);
+  gPad->SetLogy();
+  plotHist(hist_L1region,0.05,ncut1,ncut2);
+  hist_L1regionpass->SetLineColor(kBlue);
+  hist_L1regionpass->Draw("same");
 
+  c3->cd(2);
+  gPad->SetLogy();
+  plotHist(hist_L2region,0.05,ncut1,ncut2);
+  hist_L2regionpass->SetLineColor(kBlue);
+  hist_L2regionpass->Draw("same");
+
+  c3->cd(3);
+  gPad->SetLogy();
+  plotHist(hist_L3region,0.05,ncut1,ncut2);
+  hist_L3regionpass->SetLineColor(kBlue);
+  hist_L3regionpass->Draw("same");
+
+  c3->cd(4);
+  gPad->SetLogy();
+  plotHist(hist_L4region,0.05,ncut1,ncut2);
+  hist_L4regionpass->SetLineColor(kBlue);
+  hist_L4regionpass->Draw("same");
+
+  c3->cd(5);
+  gPad->SetLogy();
+  plotHist(hist_L5region,0.05,ncut1,ncut2);
+  hist_L5regionpass->SetLineColor(kBlue);
+  hist_L5regionpass->Draw("same");
+
+  c3->cd(6);
+  gPad->SetLogy();
+  plotHist(hist_L6region,0.05,ncut1,ncut2);
+  hist_L6regionpass->SetLineColor(kBlue);
+  hist_L6regionpass->Draw("same");
+
+  
+  c3->Print("matchengine.pdf","pdf");
+  
+  c4->cd(1);
+  gPad->SetLogy();
+  plotHist(hist_D1region,0.05,ncut1,ncut2);
+  hist_D1regionpass->SetLineColor(kBlue);
+  hist_D1regionpass->Draw("same");
+
+  c4->cd(2);
+  gPad->SetLogy();
+  plotHist(hist_D2region,0.05,ncut1,ncut2);
+  hist_D2regionpass->SetLineColor(kBlue);
+  hist_D2regionpass->Draw("same");
+
+  c4->cd(3);
+  gPad->SetLogy();
+  plotHist(hist_D3region,0.05,ncut1,ncut2);
+  hist_D3regionpass->SetLineColor(kBlue);
+  hist_D3regionpass->Draw("same");
+
+  c4->cd(4);
+  gPad->SetLogy();
+  plotHist(hist_D4region,0.05,ncut1,ncut2);
+  hist_D4regionpass->SetLineColor(kBlue);
+  hist_D4regionpass->Draw("same");
+
+  c4->cd(5);
+  gPad->SetLogy();
+  plotHist(hist_D5region,0.05,ncut1,ncut2);
+  hist_D5regionpass->SetLineColor(kBlue);
+  hist_D5regionpass->Draw("same");
+
+   
+  c4->Print("matchengine.pdf","pdf");
 
   int pages=0;
 

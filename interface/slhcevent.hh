@@ -49,7 +49,7 @@ public:
 
   void write(ofstream& out){
     
-    if (pt_ > 2) {
+    if (pt_ > -2.0) {
     out << "SimTrack: " 
 	<< eventid_ << "\t" 
 	<< trackid_ << "\t" 
@@ -65,7 +65,7 @@ public:
   }
   void write(ostream& out){
     
-    if (pt_ > 2) {
+    if (pt_ > -2) {
     out << "SimTrack: " 
 	<< eventid_ << "\t" 
 	<< trackid_ << "\t" 
@@ -84,17 +84,22 @@ public:
   int trackid() const { return trackid_; }
   int type() const { return type_; }
   double pt() const { return pt_; }
+  double rinv() const { return charge()*0.01*0.3*3.8/pt_; }
   double eta() const { return eta_; }
   double phi() const { return phi_; }
   double vx() const { return vx_; }
   double vy() const { return vy_; }
   double vz() const { return vz_; }
-
-  double px() const { return pt_ * cos(phi_); }
-  double py() const { return pt_ * sin(phi_); }
-  double dxy() const { return (-vx() * py() + vy() * px()) / pt(); }
-  double d0() const { return -dxy(); }
-
+  double d0() const { return hypot(vx_,vy_); }
+  int charge() const {
+     if (type_==11) return -1;
+     if (type_==13) return -1;
+     if (type_==-211) return -1;
+     if (type_==-321) return -1;
+     if (type_==-2212) return -1;
+     return 1;
+  }
+  
 private:
 
   int eventid_;
@@ -278,7 +283,7 @@ public:
   }
   */
 
-  bool addStub(int layer,int ladder,int module, int strip, int eventid, int trackid, 
+  bool addStub(int layer,int ladder,int module, int strip, int eventid, vector<int> tps, 
               double pt,double bend,
               double x,double y,double z,
               vector<bool> innerStack,
@@ -300,7 +305,7 @@ public:
     y-=y_offset;
 
     
-    L1TStub stub(eventid,trackid,-1,-1,layer, ladder, module, strip, 
+    L1TStub stub(eventid,tps,-1,-1,layer, ladder, module, strip, 
 		 x, y, z, -1.0, -1.0, pt, bend, isPSmodule, isFlipped);
 
     for(unsigned int i=0;i<innerStack.size();i++){
@@ -376,13 +381,25 @@ public:
       int eventid;
       int trackid;
       int type;
+      string pt_str;
+      string eta_str;
+      string phi_str;
+      string vx_str;
+      string vy_str;
+      string vz_str;
       double pt;
       double eta;
       double phi;
       double vx;
       double vy;
       double vz;
-      in >> eventid >> trackid >> type >> pt >> eta >> phi >> vx >> vy >> vz;
+      in >> eventid >> trackid >> type >> pt_str >> eta_str >> phi_str >> vx_str >> vy_str >> vz_str;
+      pt = strtod(pt_str.c_str(), NULL);
+      eta = strtod(eta_str.c_str(), NULL);
+      phi = strtod(phi_str.c_str(), NULL);
+      vx = strtod(vx_str.c_str(), NULL);
+      vy = strtod(vy_str.c_str(), NULL);
+      vz = strtod(vz_str.c_str(), NULL);
       vx-=x_offset;
       vy-=y_offset;
       L1SimTrack simtrack(eventid,trackid,type,pt,eta,phi,vx,vy,vz);
@@ -467,7 +484,7 @@ public:
       int ladder;
       int module;
       int eventid;
-      int simtrk;
+      vector<int> tps;
       int strip;
       double pt;
       double x;
@@ -477,7 +494,15 @@ public:
       int isPSmodule;
       int isFlipped;
 
-      in >> layer >> ladder >> module >> strip >> eventid >> simtrk >> pt >> x >> y >> z >> bend >> isPSmodule >> isFlipped;
+      unsigned int ntps;
+
+      in >> layer >> ladder >> module >> strip >> eventid >> pt >> x >> y >> z >> bend >> isPSmodule >> isFlipped >> ntps;
+
+      for(unsigned int itps=0;itps<ntps;itps++){
+	int tp;
+	in >> tp;
+	tps.push_back(tp);
+      }
 
       if (layer>999&&layer<1999&& z<0.0) {
 	//cout << "Will change layer by addding 1000, before layer = " << layer <<endl;
@@ -514,7 +539,7 @@ public:
       }
       */
       
-      L1TStub stub(eventid,simtrk,-1,-1,layer, ladder, module, strip, x, y, z, -1.0, -1.0, pt, bend, isPSmodule, isFlipped);
+      L1TStub stub(eventid,tps,-1,-1,layer, ladder, module, strip, x, y, z, -1.0, -1.0, pt, bend, isPSmodule, isFlipped);
 
       in >> tmp;
 
@@ -730,7 +755,7 @@ public:
   Digi digi(int i) { return digis_[i]; }
   */
 
-  void layersHit(int simeventid, int simtrackid, int &nlayers, int &ndisks){
+  void layersHit(int tpid, int &nlayers, int &ndisks){
 
     int l1=0;
     int l2=0;
@@ -746,7 +771,7 @@ public:
     int d5=0;
 
     for (unsigned int istub=0; istub<stubs_.size(); istub++){
-      if (stubs_[istub].simtrackid()==simtrackid&&stubs_[istub].eventid()==simeventid){
+      if (stubs_[istub].tpmatch(tpid)){
 	if (stubs_[istub].layer()==0) l1=1;
         if (stubs_[istub].layer()==1) l2=1;
         if (stubs_[istub].layer()==2) l3=1;

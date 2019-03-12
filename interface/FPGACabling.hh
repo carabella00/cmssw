@@ -150,6 +150,20 @@ public:
 
   }
 
+  std::vector<string> DTCs() const {
+
+    std::vector<string> tmp;
+
+    for(auto it=dtcs.begin();it!=dtcs.end();++it){
+
+      tmp.push_back(it->first);
+      
+    }
+
+    return tmp;
+    
+  }
+  
 private:
 
   std::vector<FPGADTCLink > links_;

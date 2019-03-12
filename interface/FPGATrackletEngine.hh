@@ -136,6 +136,9 @@ public:
 	  (doL2D1&&(disk2_==1)&&(layer1_==2)))) return;
 
 
+    bool print=getName()=="TE_L1PHIE18_L2PHIC17" && iSector_==3;
+    print=false;
+    
     unsigned int countall=0;
     unsigned int countpass=0;
 
@@ -281,7 +284,7 @@ public:
     } else {
 
       //cout << getName() <<" "<<innervmstubs_->nStubs()<<" "<<innervmstubs_->getName()<<" "<<innervmstubs_<<endl;
-      
+
       for(unsigned int i=0;i<innervmstubs_->nStubs();i++){
 	std::pair<FPGAStub*,L1TStub*> innerstub=innervmstubs_->getStub(i);
 	if (debug1) {
@@ -301,11 +304,16 @@ public:
 	  int zdiffmax=(lookupbits>>7);	
 	  int newbin=(lookupbits&127);
 	  int bin=newbin/8;
-	  
+
 	  int zbinfirst=newbin&7;
 	
 	  int start=(bin>>1);
 	  int last=start+(bin&1);
+
+	  if (print) {
+	    cout << "start last : "<<start<<" "<<last<<endl;
+	  }
+	  
 	  if (debug1) {
 	    cout << "Will look in zbins "<<start<<" to "<<last<<endl;
 	  }
@@ -314,16 +322,18 @@ public:
 	      if (debug1) {
 		cout << "In "<<getName()<<" have outer stub"<<endl;
 	      }
-
+	      
 	      if (countall>=MAXTE) break;
 	      countall++;
 	      std::pair<FPGAStub*,L1TStub*> outerstub=outervmstubs_->getStubBinned(ibin,j);
-              
+
+	      
 	      int zbin=(outerstub.first->getVMBits().value()&7);
 	      if (extra_) {
 		zbin=(outerstub.first->getVMBitsExtra().value()&7);
 	      }
 	      if (start!=ibin) zbin+=8;
+
 	      if (zbin<zbinfirst||zbin-zbinfirst>zdiffmax) {
 		if (debug1) {
 		  cout << "Stubpair rejected because of wrong fine z"<<endl;
@@ -331,6 +341,10 @@ public:
 		continue;
 	      }
 
+	      if (print) {
+		cout << "ibin j "<<ibin<<" "<<j<<endl;
+	      }
+	      
 	      //For debugging
 	      //double trinv=rinv(innerstub.second->phi(), outerstub.second->phi(),
 	      //		       innerstub.second->r(), outerstub.second->r());
@@ -357,6 +371,7 @@ public:
 	      
 	      int index = (iphiinnerbin<<outerphibits_)+iphiouterbin;
 
+
 	      assert(index<(int)phitable_.size());		
 
 	      //cout << "Stubpair layer rinv/rinvmax : "<<layer1_<<" "<<trinv/0.0057<<" "<<phitable_[index]<<endl;
@@ -379,7 +394,6 @@ public:
 	      //   <<"     bendouter "<<bend(rmean[layer1_],trinv)<<" "<<0.5*(outerbend.value()-15.0)
 	      //   <<" "<<pttableouter_[ptouterindex]<<endl;
 
-	      
 	      if (!(pttableinner_[ptinnerindex]&&pttableouter_[ptouterindex])) {
 		if (debug1) {
 		  cout << "Stub pair rejected because of stub pt cut bends : "
@@ -390,7 +404,7 @@ public:
 		}		
 		continue;
 	      }
-	      		
+	      
 	      if (debug1) cout << "Adding layer-layer pair in " <<getName()<<endl;
               if (writeSeeds) {
                 ofstream fout("seeds.txt", ofstream::app);
@@ -862,26 +876,32 @@ public:
 
     ofstream outptcut;
     outptcut.open(getName()+"_ptcut.txt");
+    outptcut << "{"<<endl;
     for(unsigned int i=0;i<phitable_.size();i++){
-      //outptcut << i << " "  << phitable_[i]<<endl;
-      outptcut << phitable_[i]<<endl;
+      if (i!=0) outptcut<<","<<endl;
+      outptcut << phitable_[i];
     }
+    outptcut <<endl<<"};"<<endl;
     outptcut.close();
 
     ofstream outstubptinnercut;
     outstubptinnercut.open(getName()+"_stubptinnercut.txt");
+    outstubptinnercut << "{"<<endl;
     for(unsigned int i=0;i<pttableinner_.size();i++){
-      //outstubptinnercut << i << " "  << pttableinner_[i]<<endl;
-      outstubptinnercut << pttableinner_[i]<<endl;
+      if (i!=0) outstubptinnercut<<","<<endl;
+      outstubptinnercut << pttableinner_[i];
     }
+    outstubptinnercut <<endl<<"};"<<endl;
     outstubptinnercut.close();
     
     ofstream outstubptoutercut;
     outstubptoutercut.open(getName()+"_stubptoutercut.txt");
+    outstubptoutercut << "{"<<endl;
     for(unsigned int i=0;i<pttableouter_.size();i++){
-      //outstubptoutercut << i << " "  << pttableouter_[i]<<endl;
-      outstubptoutercut << pttableouter_[i]<<endl;
+      if (i!=0) outstubptoutercut<<","<<endl;
+      outstubptoutercut << pttableouter_[i];
     }
+    outstubptoutercut <<endl<<"};"<<endl;
     outstubptoutercut.close();
 
     

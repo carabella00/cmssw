@@ -49,15 +49,15 @@ public:
     assert((layer_!=0)||(disk_!=0)); 
   }
 
-  void addMatch(FPGATracklet* tracklet,std::pair<FPGAStub*,L1TStub*> stub) {
-    std::pair<FPGATracklet*,std::pair<FPGAStub*,L1TStub*> > tmp(tracklet,stub);
+  void addMatch(std::pair<FPGATracklet*,int> tracklet,std::pair<FPGAStub*,L1TStub*> stub) {
+    std::pair<std::pair<FPGATracklet*,int>,std::pair<FPGAStub*,L1TStub*> > tmp(tracklet,stub);
 
     //Check for consistency
     for(unsigned int i=0;i<matches_.size();i++){
-      if (tracklet->homeSector()==matches_[i].first->homeSector()) {
-	if (tracklet->TCID()<matches_[i].first->TCID()) {
-	  cout << "In "<<getName()<<" adding tracklet "<<tracklet<<" with lower TCID : "
-	       <<tracklet->TCID()<<" than earlier TCID "<<matches_[i].first->TCID()<<endl;
+      if (tracklet.first->homeSector()==matches_[i].first.first->homeSector()) {
+	if (tracklet.first->TCID()<matches_[i].first.first->TCID()) {
+	  cout << "In "<<getName()<<" adding tracklet "<<tracklet.first<<" with lower TCID : "
+	       <<tracklet.first->TCID()<<" than earlier TCID "<<matches_[i].first.first->TCID()<<endl;
 	  assert(0);
 	}
       }
@@ -68,9 +68,9 @@ public:
 
   unsigned int nMatches() const {return matches_.size();}
 
-  FPGATracklet* getFPGATracklet(unsigned int i) const {return matches_[i].first;}
+  FPGATracklet* getFPGATracklet(unsigned int i) const {return matches_[i].first.first;}
   std::pair<FPGAStub*,L1TStub*> getStub(unsigned int i) const {return matches_[i].second;}
-	std::pair<FPGATracklet*,std::pair<FPGAStub*,L1TStub*> >
+  std::pair<std::pair<FPGATracklet*,int>,std::pair<FPGAStub*,L1TStub*> >
 	getMatch(unsigned int i) const {return matches_[i];}
 
   void clean() {
@@ -99,11 +99,17 @@ public:
 
     for (unsigned int j=0;j<matches_.size();j++){
       string stubid = matches_[j].second.first->stubindex().str(); // stub ID
-      string match= (layer_>0)? matches_[j].first->candmatchstr(layer_) 
-        : matches_[j].first->candmatchdiskstr(disk_); // tracklet ID
-        if (j<16) out_ <<"0";
-        out_ << hex << j << dec ;
-        out_ << " "<< match << stubid << endl;
+      int projindex= (layer_>0)? matches_[j].first.second
+        : matches_[j].first.second; // Allproj index
+      FPGAWord tmp;
+      if (projindex>=(1<<7)) {
+	projindex=(1<<7)-1;
+      }
+      tmp.set(projindex,7,true,__LINE__,__FILE__);
+      out_ << "0x";
+      if (j<16) out_ <<"0";
+      out_ << hex << j << dec ;
+      out_ << " "<< tmp.str() <<"|"<< stubid << " " << hexFormat(tmp.str()+stubid)<<endl;
     }   
     out_.close();
 
@@ -120,7 +126,7 @@ private:
 
   double phimin_;
   double phimax_;
-  std::vector<std::pair<FPGATracklet*,std::pair<FPGAStub*,L1TStub*> > > matches_;
+  std::vector<std::pair<std::pair<FPGATracklet*, int>,std::pair<FPGAStub*,L1TStub*> > > matches_;
 
   int layer_;
   int disk_;

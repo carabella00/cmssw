@@ -120,11 +120,12 @@ public:
         string stub = binnedstubs_[i][j].first->stubindex().str();
 	stub +=  "|" + binnedstubs_[i][j].first->bend().str();
 
-	int finpos=binnedstubs_[i][j].first->getVMBits().value();
-	FPGAWord tmp;
-	tmp.set(finpos&7,3,true,__LINE__,__FILE__);
-	stub +=  "|" + tmp.str();
-        out_ << hex << i << " " << j << dec << " " << stub << endl;
+	FPGAWord finepos=binnedstubs_[i][j].first->finez();
+	if (!binnedstubs_[i][j].first->isBarrel()) {
+	  finepos=binnedstubs_[i][j].first->finer();
+	}
+	stub +=  "|" + finepos.str();
+        out_ << hex << i << " " << j << dec << " " << stub << " " <<hexFormat(stub)<<endl;
       }
     }
     out_.close();

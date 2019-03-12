@@ -53,6 +53,7 @@ public:
   unsigned int nTracklets() const {return tracklets_.size();}
 
   FPGATracklet* getFPGATracklet(unsigned int i) const {return tracklets_[i].first;}
+  int getAllProjIndex(unsigned int i) const {return tracklets_[i].second;}
 
   void writeVMPROJ(bool first) {
 
@@ -83,9 +84,10 @@ public:
     for (unsigned int j=0;j<tracklets_.size();j++){
       string vmproj=(layer_>0)? tracklets_[j].first->vmstrlayer(layer_,tracklets_[j].second)
 	: tracklets_[j].first->vmstrdisk(disk_,tracklets_[j].second);
+      out_ << "0x";
       if (j<16) out_ <<"0";
       out_ << hex << j << dec ;
-      out_ <<" "<<vmproj<< endl;
+      out_ <<" "<<vmproj<<" "<<hexFormat(vmproj)<<endl;
     }
     out_.close();
 

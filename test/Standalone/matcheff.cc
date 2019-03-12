@@ -59,7 +59,7 @@ void matcheff(){
   //TString parttype="Pion";
   //TString parttype="Kaon";
   //TString parttype="Proton";
-  TString parttype="Pion";
+  TString parttype="Muon";
 
   int itype=-1;
 
@@ -163,6 +163,7 @@ void matcheff(){
     
     //if (eta>1.0) continue;
     if (pt<2.0) continue;
+    //if (pt>3.0) continue;
     //if (type>0.0) continue;
     //if (pt>3.0) continue;
     //if (pt>10) continue;

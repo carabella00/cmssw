@@ -241,39 +241,40 @@ public:
           }
         }
         if (binlookup==-1) continue;
-	    if (overlap_) {
-	      stub.first->setVMBitsOverlap(binlookup);
-	    } else {
-	      stub.first->setVMBits(binlookup);
-	    }
-	    if (stub.first->layer().value()%2==0) { //odd layers
-	      iphiRaw-=4;
-	      assert(iphiRaw>=0);
-	      assert(iphiRaw<24);
-	      if (overlap_) {
-            iphiRaw>>=2;
+	if (overlap_) {
+	  stub.first->setVMBitsOverlap(binlookup);
+	} else {
+	  stub.first->setVMBits(binlookup);
+	}
+	if (stub.first->layer().value()%2==0) { //odd layers
+	  iphiRaw-=4;
+	  assert(iphiRaw>=0);
+	  assert(iphiRaw<24);
+	  if (overlap_) {
+	    iphiRaw>>=2;
           }
-	      for (unsigned int l=0;l<vmstubsPHI_[iphiRaw].size();l++){
-		vmstubsPHI_[iphiRaw][l]->addStub(stub);
-		if (debug1) {
-		  cout << getName()<<" adding stub to "<<vmstubsPHI_[iphiRaw][l]->getName()<<endl;
-		}
-		insert=true;
-	      }
-	    } else {  //even layers
-	      iphiRaw/=2;
-	      assert(iphiRaw>=0);
-	      assert(iphiRaw<16);
-	      for (unsigned int l=0;l<vmstubsPHI_[iphiRaw].size();l++){
-		vmstubsPHI_[iphiRaw][l]->addStub(stub);
-		if (debug1) {
-		  cout << getName()<<" adding stub to "<<vmstubsPHI_[iphiRaw][l]->getName()<<endl;
-		}
-		insert=true;
-	      }
+	  for (unsigned int l=0;l<vmstubsPHI_[iphiRaw].size();l++){
+	    cout << "Add stub to vmstub memory: "<<vmstubsPHI_[iphiRaw][l]->getName()<<endl;
+	    vmstubsPHI_[iphiRaw][l]->addStub(stub);
+	    if (debug1) {
+	      cout << getName()<<" adding stub to "<<vmstubsPHI_[iphiRaw][l]->getName()<<endl;
 	    }
+	    insert=true;
 	  }
-
+	} else {  //even layers
+	  iphiRaw/=2;
+	  assert(iphiRaw>=0);
+	  assert(iphiRaw<16);
+	  for (unsigned int l=0;l<vmstubsPHI_[iphiRaw].size();l++){
+	    vmstubsPHI_[iphiRaw][l]->addStub(stub);
+	    if (debug1) {
+	      cout << getName()<<" adding stub to "<<vmstubsPHI_[iphiRaw][l]->getName()<<endl;
+	    }
+	    insert=true;
+	  }
+	}
+	  }
+	  
 	  assert(insert);
 	} // end of stubs loop in each InputLink
 

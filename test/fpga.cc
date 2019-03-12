@@ -25,6 +25,9 @@
 #include "../interface/FPGATimer.hh"
 #include "../interface/FPGAVariance.hh"
 
+#include "../interface/FPGAGlobal.hh"
+#include "../interface/FPGAHistImp.hh"
+
 #ifdef IMATH_ROOT
 TFile* var_base::h_file_=0;
 bool   var_base::use_root = false;
@@ -95,6 +98,15 @@ int main(const int argc, const char** argv)
   if (argc<4)
     cout << "Need to specify the input ascii file and the number of events to run on and if you want to filter on MC truth" << endl;
 
+  FPGAHistImp* histimp=new FPGAHistImp;
+  histimp->init();
+  histimp->bookLayerResidual();
+  histimp->bookDiskResidual();
+  histimp->bookTrackletParams();
+  histimp->bookSeedEff();
+  
+  FPGAGlobal::histograms()=histimp;
+  
   int nevents = atoi(argv[2]);
 
   int selectmu = atoi(argv[3]);
@@ -261,7 +273,9 @@ int main(const int argc, const char** argv)
     }
     readTimer.stop();
 
+    FPGAGlobal::event()=&ev;
 
+    
     L1SimTrack simtrk;
 
 
@@ -339,7 +353,7 @@ int main(const int argc, const char** argv)
         vector<string> hitPattern;
         for(int i=0; i<ev.nstubs(); i++) {
           const L1TStub stub = ev.stub(i);
-          if (stub.simtrackid() != simtrk.trackid())
+          if (!stub.tpmatch(simtrk.trackid()))
             continue;
           if (stub.layer() < 999) {
             switch (stub.layer()) {
@@ -437,7 +451,7 @@ int main(const int argc, const char** argv)
         int ndisks=0;
         int simeventid=simtrack.eventid();
         int simtrackid=simtrack.trackid();
-        ev.layersHit(simeventid,simtrackid,nlayers,ndisks);
+        ev.layersHit(simtrackid,nlayers,ndisks);
         //cout << "Simtrack id : "<<simtrackid<<" "<<nlayers<<" "<<ndisks<<endl;                                                
         if (nlayers+ndisks<4) continue;
 	nsim++;
@@ -453,9 +467,7 @@ int main(const int argc, const char** argv)
           unsigned int nmatch=0;
 	  //layerdisk=0;
           for(unsigned int istub=0;istub<stubs.size();istub++){
-            //cout <<" "<<stubs[istub]->simtrackid();
-
-            if (simtrackid==stubs[istub]->simtrackid()&&simeventid==stubs[istub]->eventid()) {
+            if (stubs[istub]->tpmatch(simtrackid)) {
               nmatch++;
             } else {
 	      if (stubs[istub]->layer()<999) {
@@ -474,9 +486,7 @@ int main(const int argc, const char** argv)
 	    effloose=true;
 	    if (!eff) itrackmatch=itrack;
 	  }
-	  //if (nmatch==stubs.size()-1) {
-	  //  cout << "layerdisk = "<<layerdisk<<" "<<tracks[itrack]->seed()<<endl;
-	  //}
+
         }
 	double dpt=-999;
 	double dphi=-999;
@@ -568,7 +578,7 @@ int main(const int argc, const char** argv)
   if (writeCabling) {
     cabling.writephirange();
   }
-
+  
   cout << "Process             Times called   Average time (ms)      Total time (s)"<<endl;
   cout << "Reading               "
        <<setw(10)<<readTimer.ntimes()
@@ -646,6 +656,8 @@ int main(const int argc, const char** argv)
 
   if (skimfile!="") skimout.close();
 
+  histimp->close();
+  
 // Write and Close ROOT-Tree  
 // -------------------------
 #ifdef USEROOT

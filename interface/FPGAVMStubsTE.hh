@@ -226,13 +226,7 @@ public:
 
     std::string fname="../data/MemPrints/VMStubsTE/VMStubs_";
     fname+=getName();
-    //get rid of duplicates
-    int len = fname.size();
-    if(fname[len-2]=='n'&& fname[len-1]>'1'&&fname[len-1]<='9') {
-      return;
-    }
-      
-    //
+
     fname+="_";
     ostringstream oss;
     oss << iSector_+1;
@@ -253,7 +247,7 @@ public:
     if (layer_!=0 or disk_!=0) { // same format for barrel and disk?
       if (isinner_) { // inner VM for TE purpose
         for (unsigned int j=0;j<stubs_.size();j++){
-          string stub=stubs_[j].first->stubaddressaste().str();
+          string stub=stubs_[j].first->stubindex().str();
           stub+="|";
           stub+=stubs_[j].first->bend().str();
           stub+="|";	  
@@ -270,6 +264,7 @@ public:
 	  } else {
 	    assert(0);
 	  }
+
           stub+=iphifinebins.str();
           stub+="|";
           FPGAWord tmp;
@@ -280,15 +275,16 @@ public:
 	    assert(stubs_[j].first->getVMBits().nbits()!=-1);
 	    stub+=stubs_[j].first->getVMBits().str();
 	  }
+	  out_<<"0x";
           if (j<16) out_ <<"0";
           out_ << hex << j << dec ;
-          out_ <<" "<<stub<< endl;
+          out_ <<" "<<stub<<" "<<hexFormat(stub)<<endl;
         }     
       }
       else { // outer VM for TE purpose
         for (unsigned int i=0;i<NLONGVMBINS;i++) {
       for (unsigned int j=0;j<stubsbinned_[i].size();j++){
-        string stub=stubsbinned_[i][j].first->stubaddressaste().str();
+        string stub=stubsbinned_[i][j].first->stubindex().str();
         stub+="|";
         stub+=stubsbinned_[i][j].first->bend().str();
         stub+="|";
@@ -298,7 +294,7 @@ public:
 	  iphifinebins.set(stubsbinned_[i][j].first->iphivmFineBins(4,nfinephioverlapouter),
 			   nfinephioverlapouter,true,__LINE__,__FILE__);
 	} else if (layer_>0) {
-	  iphifinebins.set(stubsbinned_[i][j].first->iphivmFineBins(4,nfinephibarrelouter),
+	  iphifinebins.set(stubsbinned_[i][j].first->iphivmFineBins(5,nfinephibarrelouter),
 			   nfinephibarrelouter,true,__LINE__,__FILE__);
 	} else if (disk_>0) {
 	  iphifinebins.set(stubsbinned_[i][j].first->iphivmFineBins(4,nfinephidiskouter),
@@ -318,7 +314,7 @@ public:
         FPGAWord finezbin;
 	finezbin.set(ifinezbin&7,3,true,__LINE__,__FILE__);
 	stub+=finezbin.str();
-        out_ << hex << i << " " << j << dec << " "<<stub<<endl;
+        out_ << hex << i << " " << j << dec << " "<<stub<<" "<<hexFormat(stub)<<endl;
       }
         }
       }
@@ -327,7 +323,7 @@ public:
     else if (disk_!=0) { // disk
       if (isinner_) { // inner disk VM for TE purpose
         for (unsigned int j=0;j<stubs_.size();j++){
-          string stub=stubs_[j].first->stubaddressaste().str();
+          string stub=stubs_[j].first->stubindex().str();
           stub+="|";
           FPGAWord tmp;
           tmp.set(stubs_[j].first->getVMBits().value(),10,true,__LINE__,__FILE__);
@@ -340,7 +336,7 @@ public:
       else { // outer disk VM for TE purpose
         for (unsigned int i=0;i<NLONGVMBINS;i++) {
       for (unsigned int j=0;j<stubsbinned_[i].size();j++){
-	    string stub=stubsbinned_[i][j].first->stubaddressaste().str();
+	    string stub=stubsbinned_[i][j].first->stubindex().str();
 	    out_ << hex << i << " " << j << dec << " "<<stub<<endl;
 	  }
         }

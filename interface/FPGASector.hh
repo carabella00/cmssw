@@ -65,7 +65,9 @@ public:
       delete TRE_[i];
   }
 
-  void addStub(L1TStub stub, string dtc) {
+  bool addStub(L1TStub stub, string dtc) {
+
+    bool add=false;
     
     if (hourglass) {
       double phi=stub.phi();
@@ -96,6 +98,7 @@ public:
 	for (unsigned int i=0;i<tmp.size();i++){
 	  //cout << "Add stub to link"<<IL_[tmp[i]]->getName()<<endl;
 	  IL_[tmp[i]]->addStub(stub,fpgastub,dtc);
+	  if (IL_[tmp[i]]->addStub(stub,fpgastub,dtc)) add=true;
 	}
       }
     }  else {
@@ -111,7 +114,7 @@ public:
 	  //cout << "Trying to add stub in sector : "<<isector_<<" layer = "<<layer<<endl;
 	  for (unsigned int i=0;i<IL_.size();i++){
 	    //cout << i<<" "<<IL_[i]->getName()<<" "<<isector_<<endl;
-	    IL_[i]->addStub(stub,fpgastub);
+	    if (IL_[i]->addStub(stub,fpgastub)) add=true;
 	  }
 	}
       } else {
@@ -121,11 +124,13 @@ public:
 	  //cout << "Trying to add stub in sector : "<<isector_<<" disk = "<<disk<<endl;
 	  for (unsigned int i=0;i<IL_.size();i++){
 	    FPGAStub fpgastub(stub,phimin_,phimax_);
-	    IL_[i]->addStub(stub,fpgastub);
+	    if (IL_[i]->addStub(stub,fpgastub)) add=true;
 	  }      
 	}
       }
     }
+
+    return add;
     
   }
     
@@ -230,7 +235,7 @@ public:
       ME_.push_back(new FPGAMatchEngine(procName,isector_));
       Processes_[procName]=ME_.back();
     } else if (procType=="MatchCalculator:"||
-	       procType=="DiskMatchCalculator:") {
+               procType=="DiskMatchCalculator:") {
       MC_.push_back(new FPGAMatchCalculator(procName,isector_));
       Processes_[procName]=MC_.back();
     } else if (procType=="MatchProcessor:") {
@@ -600,7 +605,19 @@ public:
     
     return tmp;
   }
-    
+
+  std::set<int> seedMatch(int itp) {
+    std::set<int> tmpSeeds;
+    for(unsigned int i=0;i<TPAR_.size();i++) {
+      unsigned int nTracklet=TPAR_[i]->nTracklets();
+      for(unsigned int j=0;j<nTracklet;j++){
+	if (TPAR_[i]->getFPGATracklet(j)->tpseed()==itp) {
+	  tmpSeeds.insert(TPAR_[i]->getFPGATracklet(j)->getISeed());
+	}
+      }
+    }
+    return tmpSeeds;
+  }
 
   double phimin() const {return phimin_;}
   double phimax() const {return phimax_;}

@@ -64,7 +64,7 @@ public:
 
 void writeAP(bool first) {
 
-  std::string fname="../data/MemPrints/TrackletProjections/AllProj_";
+  std::string fname="../MemPrints/TrackletProjections/AllProj_";
   fname+=getName();
   fname+="_";
   ostringstream oss;
@@ -85,9 +85,10 @@ void writeAP(bool first) {
   for (unsigned int j=0;j<tracklets_.size();j++){
     string proj= (layer_>0)? tracklets_[j]->trackletprojstrlayer(layer_)
       : tracklets_[j]->trackletprojstrdisk(disk_);
+	  out_ << "0x";
       if (j<16) out_ <<"0";
       out_ << hex << j << dec ;
-      out_ << " "<< proj <<endl;
+      out_ << " "<< proj << "  "<<hexFormat(proj)<<endl;
   }   
   out_.close();
 

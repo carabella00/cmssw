@@ -70,13 +70,14 @@ public:
     out_ << "BX = "<<(bitset<3>)bx_ << " Event : " << event_ << endl;
 
     for (unsigned int j=0;j<stubs1_.size();j++){
-      //string stub1index=stubs1_[j].first->stubindex().str();
-      //string stub2index=stubs2_[j].first->stubindex().str();
-      string stub1index=stubs1_[j].first->stubaddressaste().str();
-      string stub2index=stubs2_[j].first->stubaddressaste().str();
+      string stub1index=stubs1_[j].first->stubindex().str();
+      string stub2index=stubs2_[j].first->stubindex().str();
+      //string stub1index=stubs1_[j].first->stubaddressaste().str();
+      //string stub2index=stubs2_[j].first->stubaddressaste().str();
+      out_ << "0x";
       if (j<16) out_ <<"0";
       out_ << hex << j << dec ;
-      out_ <<" "<<stub1index <<"|"<<stub2index << endl;
+      out_ <<" "<<stub1index <<"|"<<stub2index << " " <<hexFormat(stub1index+stub2index)<<endl;
 	  /*
       if(writeoutReal){
 	out_ <<" "<<stubs1_[j].first->str_phys() <<" "<<stubs2_[j].first->str_phys()<< endl;

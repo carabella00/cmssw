@@ -4,6 +4,8 @@ CXXFLAGS      = -O -Wall  -fPIC -g -ansi -Wextra -Wno-deprecated -std=c++11
 LD            = g++ 
 LDFLAGS       = -O
 LIBDIR       = $(WORKDIR)
+AR            = ar
+ARFLAGS       = cr
 
 OS := $(shell uname -s)
 ifeq ($(OS),Darwin)

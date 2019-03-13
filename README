@@ -36,13 +36,6 @@ cmsRun L1TrackNtupleMaker_cfg.py
 
 git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/TrackFindingTracklet.git
 
-git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/imath.git 
-
-cd imath/ 
-make 
-
 cd ../TrackFindingTracklet/test
 make 
-
-(imath is being integrated to the standalone compilation) 
 

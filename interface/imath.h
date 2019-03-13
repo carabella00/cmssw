@@ -109,7 +109,7 @@
 #define IMATH_H
 
 //use root if uncommented
-#ifdef STANDALONE
+#ifndef CMSSW_GIT_HASH
 #define IMATH_ROOT
 #endif
 

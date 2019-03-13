@@ -1,15 +1,11 @@
 #ifndef FPGACONSTANTS_H
 #define FPGACONSTANTS_H
 
-//uncomment for standalone compilation
-#define STANDALONE
-
-
 //Uncomment if you want root output
 //#define USEROOT
 
 //Uncomment to run the hybrid algorithm
-#ifndef STANDALONE 
+#ifdef CMSSW_GIT_HASH
 #define USEHYBRID
 #endif
 

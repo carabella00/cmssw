@@ -190,7 +190,7 @@
 	   }
         }  
 
-	#ifdef STANDALONE
+	#ifndef CMSSW_GIT_HASH
 	// this only works in standalone currently as "i" is the event counter used in fpga.cc which is not present in L1FPGATrackProducer.cc for CMSSW version
 	if (writememLinks) {
 	  static int oldevent=-1;

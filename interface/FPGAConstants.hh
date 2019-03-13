@@ -19,7 +19,7 @@
 
 static unsigned int nHelixPar = 4; // 4 or 5 param helix fit.
 
-static bool doKF=true; //true if using KF (and USEHYBRID uncommented)
+static bool doKF=true; //true => use KF (assumes USEHYBRID is defined)
 static bool printDebugKF=false; // if true print lots of debugging statements related to the KF fit
 
 
@@ -463,8 +463,7 @@ static int minIndStubs=3;
 static bool AdjacentRemoval=true;
 static std::string RemovalType="ichi";
 //"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal)
-static bool fakefit=false; // This is a flag to turn on KF (fakefit true => no KF) ****************
-
+static bool fakefit_5par=false; //if true, this would use KF 5-parameter fit for displaced tracking, false means use tracklet parameters instead (i.e. no fit)
 
 #endif
 

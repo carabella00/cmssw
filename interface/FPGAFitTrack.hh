@@ -1368,7 +1368,7 @@ class FPGAFitTrack:public FPGAProcessBase{
 
     if ((hourglassExtended && nMatches>=1) || nMatches>=2) { // aedit , should've been >=2
      countFit++;
-     if (fakefit) trackFitFake(bestTracklet);
+     if (fakefit_5par) trackFitFake(bestTracklet);
      else trackFitNew(bestTracklet);
      if (bestTracklet->fit()){
       assert(trackfit_!=0);

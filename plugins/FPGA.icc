@@ -190,6 +190,8 @@
 	   }
         }  
 
+	#ifdef STANDALONE
+	// this only works in standalone currently as "i" is the event counter used in fpga.cc which is not present in L1FPGATrackProducer.cc for CMSSW version
 	if (writememLinks) {
 	  static int oldevent=-1;
 	  if (i!=oldevent) {
@@ -200,7 +202,8 @@
 	      (*(it->second)) << "BX "<<tmp.str()<<" Event : "<<i+1<<endl;
 	    }	       		
 	  }
-	}	
+	}
+	#endif	
 
 	if(add&&writememLinks&&k==writememsect) {
 	  FPGAStub fpgastub(stub,sectors[k]->phimin(),sectors[k]->phimax());

@@ -35,16 +35,16 @@ public:
     double rinv=-0.01*0.3*3.8/pt;
 
     double layerresidphi[6];
-    double layerresidz[6];
+    //double layerresidz[6];
     double diskresidphi[5];
-    double diskresidr[5];
+    //double diskresidr[5];
 
     for(unsigned int i=0;i<6;i++) {
       layerresidphi[i]=-9999.9;
-      layerresidz[i]=-9999.9;
+      //layerresidz[i]=-9999.9;
       if (i<5) {
 	diskresidphi[i]=-9999.9;
-	diskresidr[i]=-9999.9;
+	//diskresidr[i]=-9999.9;
       }
     }
 

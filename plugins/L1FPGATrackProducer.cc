@@ -91,9 +91,13 @@
 #include "L1Trigger/TrackFindingTracklet/interface/FPGASector.hh"
 #include "L1Trigger/TrackFindingTracklet/interface/FPGAWord.hh"
 #include "L1Trigger/TrackFindingTracklet/interface/FPGATimer.hh"
+#include "L1Trigger/TrackFindingTracklet/interface/FPGAVariance.hh"
 #include "L1Trigger/TrackFindingTracklet/interface/FPGATrackletCalculator.hh"
 #include "L1Trigger/TrackFindingTracklet/interface/IMATH_TrackletCalculator.hh"
 #include "L1Trigger/TrackFindingTracklet/interface/FPGACabling.hh"
+
+#include "L1Trigger/TrackFindingTracklet/interface/FPGAGlobal.hh"
+#include "L1Trigger/TrackFindingTracklet/interface/FPGAHistImp.hh"
 
 ////////////////
 // PHYSICS TOOLS
@@ -186,6 +190,8 @@ private:
 
   string asciiEventOutName_;
   std::ofstream asciiEventOut_;
+
+  FPGAHistImp* histimp;
 
   string geometryType_;
 
@@ -294,6 +300,17 @@ L1FPGATrackProducer::L1FPGATrackProducer(edm::ParameterSet const& iConfig) :
     asciiEventOut_.open(asciiEventOutName_.c_str());
   }
 
+  // adding capability of booking histograms internal to tracklet steps
+  histimp=new FPGAHistImp;
+  histimp->init();
+  histimp->bookLayerResidual();
+  histimp->bookDiskResidual();
+  histimp->bookTrackletParams();
+  histimp->bookSeedEff();
+  
+  FPGAGlobal::histograms()=histimp;
+
+
   sectors=new FPGASector*[NSector];
 
   cout << "cabling DTC links :     "<<DTCLinkFile.fullPath()<<endl;
@@ -390,6 +407,9 @@ L1FPGATrackProducer::~L1FPGATrackProducer()
   if (asciiEventOutName_!="") {
     asciiEventOut_.close();
   }
+
+  histimp->close();
+  
 }  
 
 //////////
@@ -485,6 +505,7 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   ev.setIPx(bsPosition.x());
   ev.setIPy(bsPosition.y());
 
+  FPGAGlobal::event()=&ev;
 
   ///////////////////
   // GET SIMTRACKS //
@@ -843,6 +864,11 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   FPGATimer FTTimer;
   FPGATimer PDTimer;
 
+  if (writeSeeds) {
+    ofstream fout("seeds.txt", ofstream::out);
+    fout.close();
+  }
+
   bool first=true;
 
   std::vector<FPGATrack*> tracks;
@@ -964,7 +990,6 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     L1TkTracksForOutput->push_back(aTrack);
 
   }
-
 
   iEvent.put( std::move(L1TkTracksForOutput), "Level1TTTracks");
 

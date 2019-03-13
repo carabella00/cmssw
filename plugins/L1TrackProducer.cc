@@ -490,7 +490,6 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       edm::Ptr< TrackingParticle > my_tp = MCTruthTTStubHandle->findTrackingParticlePtr(tempStubPtr);
 
       int eventID=-1;
-      int simtrackID=-1;
       
       if (my_tp.isNull()) {
 	if (doMyDebug) cout << "TP is null pointer" << endl;
@@ -503,7 +502,6 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	else {
 	  for (int it=0; it<(int)my_tp->g4Tracks().size(); it++) {
 	    eventID = my_tp->g4Tracks().at(it).eventId().event();
-	    simtrackID = my_tp->g4Tracks().at(it).trackId();
 	  }//end sim loop 
 	}
       }
@@ -669,7 +667,9 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       else {
 	if (doMyDebug) std::cout << "... add this stub to the event!" << std::endl;
-	if (ev.addStub(layer,ladder,module,strip,eventID,simtrackID,stub_pt,stub_bend,
+	//FIXME
+	vector<int> tps;
+	if (ev.addStub(layer,ladder,module,strip,eventID,tps,stub_pt,stub_bend,
 		       posStub.x(),posStub.y(),posStub.z(),
 		       innerStack,irphi,iz,iladder,imodule,isPSmodule,isFlipped)) {
 	  

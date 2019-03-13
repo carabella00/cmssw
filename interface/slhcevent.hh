@@ -755,7 +755,7 @@ public:
   Digi digi(int i) { return digis_[i]; }
   */
 
-  void layersHit(int tpid, int &nlayers, int &ndisks){
+  void layersHit(int simeventid, int tpid, int &nlayers, int &ndisks){
 
     int l1=0;
     int l2=0;
@@ -771,7 +771,7 @@ public:
     int d5=0;
 
     for (unsigned int istub=0; istub<stubs_.size(); istub++){
-      if (stubs_[istub].tpmatch(tpid)){
+      if (stubs_[istub].tpmatch(tpid)&&stubs_[istub].eventid()==simeventid){
 	if (stubs_[istub].layer()==0) l1=1;
         if (stubs_[istub].layer()==1) l2=1;
         if (stubs_[istub].layer()==2) l3=1;

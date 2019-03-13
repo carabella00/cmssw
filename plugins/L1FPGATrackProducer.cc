@@ -447,6 +447,7 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
   typedef std::map< L1TStub, edm::Ref< edmNew::DetSetVector< TTStub< Ref_Phase2TrackerDigi_ > >, TTStub< Ref_Phase2TrackerDigi_ >  >, L1TStubCompare > stubMapType;
 
+  typedef edm::Ref< edmNew::DetSetVector< TTCluster< Ref_Phase2TrackerDigi_ > >, TTCluster< Ref_Phase2TrackerDigi_ > > TTClusterRef;
 
   /// Prepare output
   std::unique_ptr< std::vector< TTTrack< Ref_Phase2TrackerDigi_ > > > L1TkTracksForOutput( new std::vector< TTTrack< Ref_Phase2TrackerDigi_ > > );
@@ -523,6 +524,11 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
   int this_tp = 0;
   std::vector< TrackingParticle >::const_iterator iterTP;
+
+  int ntps=1; //count from 1 ; 0 will mean invalid
+
+  map<edm::Ptr< TrackingParticle >, int > translateTP;
+
   for (iterTP = TrackingParticleHandle->begin(); iterTP != TrackingParticleHandle->end(); ++iterTP) {
  
     edm::Ptr< TrackingParticle > tp_ptr(TrackingParticleHandle, this_tp);
@@ -533,33 +539,37 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     if (iterTP->g4Tracks().size()==0) {
       if (doMyDebug) cout << "TP has no g4Track" << endl;
+      continue;
     } 
-    else {
-      for (int it=0; it<(int)iterTP->g4Tracks().size(); it++) {
-	int sim_trackid = iterTP->g4Tracks().at(it).trackId();
-	int sim_eventid = iterTP->g4Tracks().at(it).eventId().event();
-	int sim_type = iterTP->g4Tracks().at(it).type();
-	float sim_pt = iterTP->g4Tracks().at(it).momentum().pt();
-	float sim_eta = iterTP->g4Tracks().at(it).momentum().eta();
-	float sim_phi = iterTP->g4Tracks().at(it).momentum().phi();
 
-	/// Get the corresponding vertex
-	unsigned int vertexIndex = iterTP->g4Tracks().at(it).vertIndex();
-	if (vertexIndex >= simVtxHandle->size() ) continue;
-	const SimVertex& theSimVertex = (*simVtxHandle)[vertexIndex];
-	math::XYZTLorentzVectorD trkVtxPos = theSimVertex.position();
-	GlobalPoint trkVtxCorr = GlobalPoint( trkVtxPos.x() - bsPosition.x(), 
-					      trkVtxPos.y() - bsPosition.y(), 
-					      trkVtxPos.z() - bsPosition.z() );
+    int sim_trackid = ntps;
+    int sim_eventid = iterTP->g4Tracks().at(0).eventId().event();
+    int sim_type = iterTP->pdgId();
+    float sim_pt = iterTP->pt();
+    float sim_eta = iterTP->eta();
+    float sim_phi = iterTP->phi();
 
-	if (doMyDebug) std::cout << "adding sim track with eventID trackID type pt eta phi = " << sim_eventid << " " << sim_trackid << " " 
-				 << sim_type << " " << sim_pt << " " << sim_eta << " " << sim_phi << std::endl;
+    float vx=iterTP->vertex().x();
+    float vy=iterTP->vertex().y();
+    float vz=iterTP->vertex().z();
 
-    	ev.addL1SimTrack(sim_eventid, sim_trackid, sim_type, sim_pt, sim_eta, sim_phi, 
-			 trkVtxCorr.x(), trkVtxCorr.y(), trkVtxCorr.z());
+    if (sim_pt<1.0) continue;
+    if (fabs(vz)>100.0) continue;
+    if (hypot(vx,vy)>50.0) continue;
 
-      }//end loop over associated sim tracks
-    }//end has simtracks
+    if (doMyDebug) std::cout << "adding sim track with eventID trackID type pt eta phi = " << sim_eventid << " " << sim_trackid << " " 
+			     << sim_type << " " << sim_pt << " " << sim_eta << " " << sim_phi << std::endl;
+
+    ev.addL1SimTrack(sim_eventid, ntps, sim_type, sim_pt, sim_eta, sim_phi, 
+		     vx, vy, vz);
+
+    translateTP[tp_ptr]=ntps;
+
+    //cout << "translateTP : "<<ntps<<endl;
+
+    ntps++;
+
+
   }//end loop over TPs
 
 
@@ -594,7 +604,31 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     for ( auto stubIter = stubs.begin();stubIter != stubs.end();++stubIter ) {
       edm::Ref< edmNew::DetSetVector< TTStub< Ref_Phase2TrackerDigi_  > >, TTStub< Ref_Phase2TrackerDigi_  > >
 	tempStubPtr = edmNew::makeRefTo( Phase2TrackerDigiTTStubHandle, stubIter );
+
+      vector<int> assocTPs;
       
+      for (unsigned int iClus = 0; iClus <= 1; iClus++) { // Loop over both clusters that make up stub. 
+
+	const TTClusterRef& ttClusterRef = tempStubPtr->getClusterRef(iClus);
+
+	// Now identify all TP's contributing to either cluster in stub.               
+	vector< edm::Ptr< TrackingParticle > > vecTpPtr = MCTruthTTClusterHandle->findTrackingParticlePtrs(ttClusterRef);
+
+	for (edm::Ptr< TrackingParticle> tpPtr : vecTpPtr) {
+	  if (translateTP.find(tpPtr) != translateTP.end()) {
+	    //cout << "Lookup translateTP : "<<translateTP.at(tpPtr)<<endl;
+	    if (iClus==0) {
+	      assocTPs.push_back( translateTP.at(tpPtr) );
+	    } else {
+	      assocTPs.push_back( -translateTP.at(tpPtr) );
+	    }
+	    // N.B. Since not all tracking particles are stored in InputData::vTPs_, sometimes no match will be found.
+	  } else {
+	    assocTPs.push_back(0);
+	  }
+	}
+      }
+
       MeasurementPoint coords = tempStubPtr->getClusterRef(0)->findAverageLocalCoordinatesCentered();      
       LocalPoint clustlp = topol->localPosition(coords);
       GlobalPoint posStub  =  theGeomDet->surface().toGlobal(clustlp);
@@ -602,22 +636,11 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       edm::Ptr< TrackingParticle > my_tp = MCTruthTTStubHandle->findTrackingParticlePtr(tempStubPtr);
 
       int eventID=-1;
-      int simtrackID=-1;
-      
       if (my_tp.isNull()) {
 	if (doMyDebug) cout << "TP is null pointer" << endl;
       } 
       else {
 	if (doMyDebug) cout << "TP is NOT null pointer" << endl;
-	if (my_tp->g4Tracks().size()==0){
-	  if (doMyDebug) cout << "TP has no g4Track" << endl;
-	} 
-	else {
-	  for (int it=0; it<(int)my_tp->g4Tracks().size(); it++) {
-	    eventID = my_tp->g4Tracks().at(it).eventId().event();
-	    simtrackID = my_tp->g4Tracks().at(it).trackId();
-	  }//end sim loop 
-	}
       }
 
       int layer=-999999;
@@ -780,7 +803,7 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       }
       else {
 	if (doMyDebug) std::cout << "... add this stub to the event!" << std::endl;
-	if (ev.addStub(layer,ladder,module,strip,eventID,simtrackID,stub_pt,stub_bend,
+	if (ev.addStub(layer,ladder,module,strip,eventID,assocTPs,stub_pt,stub_bend,
 		       posStub.x(),posStub.y(),posStub.z(),
 		       innerStack,irphi,iz,iladder,imodule,isPSmodule,isFlipped)) {
 	  
@@ -885,7 +908,7 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     aTrack.setMomentum(p35par,5);
     aTrack.setRInv(track->rinv(),5);
-    double tmpchi25 = track->chisq()*(2*track->stubs().size()-5); // <= 5-parameter fit not yet implemented for emulation, so 4 is correct here
+    double tmpchi25 = track->chisq()*(2*track->stubs().size()-5);
     aTrack.setChi2(tmpchi25,5);
     
     
@@ -894,10 +917,10 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     vector<L1TStub> stubs;
 
     if (doMyDebug) {
-      cout << "FPGA Track pt, eta, phi, d0, z0, chi2, nstub, rinv = " 
-	   << track->pt() << " " << track->eta() << " " << track->phi0() << " " << track->d0()<<" "<<track->z0() << " " << track->chisq() << " " << stubptrs.size() << " " << track->rinv() << endl;
-      cout << "INT FPGA Track irinv, iphi0, id0, iz0, it, ichisq = " 
-	   << track->irinv() << " " << track->iphi0() << " " << track->id0()<<" "<<track->iz0() << " " << track->it() << " " << track->ichisq() << endl;
+      cout << "FPGA Track pt, eta, phi, z0, chi2, nstub, rinv = " 
+	   << track->pt() << " " << track->eta() << " " << track->phi0() << " " << track->z0() << " " << track->chisq() << " " << stubptrs.size() << " " << track->rinv() << endl;
+      cout << "INT FPGA Track irinv, iphi0, iz0, it, ichisq = " 
+	   << track->irinv() << " " << track->iphi0() << " " << track->iz0() << " " << track->it() << " " << track->ichisq() << endl;
     }
 
     for (unsigned int i=0;i<stubptrs.size();i++){ 

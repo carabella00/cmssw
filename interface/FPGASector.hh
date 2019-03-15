@@ -28,11 +28,9 @@
 #include "FPGATrackletCalculator.hh"
 #include "FPGATrackletCalculatorDisplaced.hh"
 #include "FPGAProjectionRouter.hh"
-#include "FPGAProjectionTransceiver.hh"
 #include "FPGAMatchEngine.hh"
 #include "FPGAMatchCalculator.hh"
 #include "FPGAMatchProcessor.hh"
-#include "FPGAMatchTransceiver.hh"
 #include "FPGAFitTrack.hh"
 #include "FPGAPurgeDuplicate.hh"
 
@@ -227,9 +225,6 @@ public:
     } else if (procType=="ProjectionRouter:") {
       PR_.push_back(new FPGAProjectionRouter(procName,isector_));
       Processes_[procName]=PR_.back();
-    } else if (procType=="ProjectionTransceiver:") {
-      PT_.push_back(new FPGAProjectionTransceiver(procName,isector_));
-      Processes_[procName]=PT_.back();
     } else if (procType=="MatchEngine:") {
       ME_.push_back(new FPGAMatchEngine(procName,isector_));
       Processes_[procName]=ME_.back();
@@ -240,9 +235,6 @@ public:
     } else if (procType=="MatchProcessor:") {
       MP_.push_back(new FPGAMatchProcessor(procName,isector_));
       Processes_[procName]=MP_.back();
-    } else if (procType=="MatchTransceiver:") {
-      MT_.push_back(new FPGAMatchTransceiver(procName,isector_));
-      Processes_[procName]=MT_.back();
     } else if (procType=="FitTrack:") {
       FT_.push_back(new FPGAFitTrack(procName,isector_));
       Processes_[procName]=FT_.back();
@@ -508,72 +500,6 @@ public:
     }
   }
 
-  void executePT(FPGASector* sectorPlus,FPGASector* sectorMinus){
-    //For now the order is assumed
-    for (unsigned int i=0;i<PT_.size();i++){
-      string name=PT_[i]->getName();
-      //cout << "FPGASector:executePT "<<name<<endl;
-      //cout << "name.find(\"Minus\") : "<<name.find("Minus")<<endl;
-      if (name.find("Minus")!=std::string::npos) {
-	name.replace(name.find("Minus"),5,"Plus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorMinus->PT_.size();j++){
-	  if (sectorMinus->PT_[j]->getName()==name) {
-	    PT_[i]->execute(sectorMinus->PT_[j]);
-	  }
-	}
-      } else if (name.find("Plus")!=std::string::npos) {
-	name.replace(name.find("Plus"),4,"Minus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorPlus->PT_.size();j++){
-	  if (sectorPlus->PT_[j]->getName()==name) {
-	    PT_[i]->execute(sectorPlus->PT_[j]);
-	  }
-	}
-      } else {
-	assert(0);
-      }
-      
-    }
-
-    if (writeTrackProjOcc) {
-      static ofstream out("trackprojocc.txt");
-      for (unsigned int i=0; i<TPROJ_.size();i++){
-	out << TPROJ_[i]->getName()<<" "<<TPROJ_[i]->nTracklets()<<endl;
-      }
-    }
-    
-
-  }
-
-
-  void executeMT(FPGASector* sectorPlus,FPGASector* sectorMinus){
-    //For now the order is assumed
-    for (unsigned int i=0;i<MT_.size();i++){
-      string name=MT_[i]->getName();
-      //cout << "FPGASector:executePT "<<name<<endl;
-      if (name.find("Minus")!=std::string::npos) {
-	name.replace(6,5,"Plus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorMinus->MT_.size();j++){
-	  if (sectorMinus->MT_[j]->getName()==name) {
-	    MT_[i]->execute(sectorMinus->MT_[j]);
-	  }
-	}
-      } else if (name.find("Plus")!=std::string::npos) {
-	name.replace(6,4,"Minus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorPlus->MT_.size();j++){
-	  if (sectorPlus->MT_[j]->getName()==name) {
-	    MT_[i]->execute(sectorPlus->MT_[j]);
-	  }
-	}
-      } else {
-	assert(0);
-      }
-    }
-  }
-
 
   bool foundTrack(ofstream& outres, L1SimTrack simtrk){
     bool match=false;
@@ -657,11 +583,9 @@ private:
   std::vector<FPGATrackletCalculator*> TC_;
   std::vector<FPGATrackletCalculatorDisplaced*> TCD_;
   std::vector<FPGAProjectionRouter*> PR_;
-  std::vector<FPGAProjectionTransceiver*> PT_;
   std::vector<FPGAMatchEngine*> ME_;
   std::vector<FPGAMatchCalculator*> MC_;
   std::vector<FPGAMatchProcessor*> MP_;
-  std::vector<FPGAMatchTransceiver*> MT_;
   std::vector<FPGAFitTrack*> FT_;
   std::vector<FPGAPurgeDuplicate*> PD_;
 

@@ -416,22 +416,6 @@ if (writeHitEff) {
     TCDTimer.stop();
 
 
-
-
-    PTTimer.start();
-    //Here we do the projections to the nearest neigbors  
-    for (unsigned int k=0;k<NSector;k++) {
-      unsigned int  plus=k+1;
-      if (plus>=NSector) plus=0;
-      int minus=k-1;
-      if (minus<0) minus=NSector-1;
-      sectors[k]->executePT(sectors[plus],sectors[minus]);
-	  if(writemem&&k==writememsect){
-        sectors[k]->writeTPROJ(first);
-      } 
-    }
-    PTTimer.stop();
-
     PRTimer.start();
     for (unsigned int k=0;k<NSector;k++) {
       sectors[k]->executePR();	
@@ -471,17 +455,6 @@ if (writeHitEff) {
     MPTimer.stop();
 
 
-
-    MTTimer.start();
-    //Here we return the matches
-    for (unsigned int k=0;k<NSector;k++) {
-      unsigned int  plus=k+1;
-      if (plus>=NSector) plus=0;
-      int minus=k-1;
-      if (minus<0) minus=NSector-1;
-      sectors[k]->executeMT(sectors[plus],sectors[minus]);	 
-    }
-    MTTimer.stop();
 
 
     FTTimer.start();

@@ -20,8 +20,6 @@
 #include "FPGACleanTrack.hh"
 
 #include "FPGAVMRouter.hh"
-#include "FPGAVMRouterME.hh"
-#include "FPGAVMRouterTE.hh"
 #include "FPGATrackletEngine.hh"
 #include "FPGATrackletEngineDisplaced.hh"
 #include "FPGATripletEngine.hh"
@@ -200,12 +198,6 @@ public:
     if (procType=="VMRouter:") {
       VMR_.push_back(new FPGAVMRouter(procName,isector_));
       Processes_[procName]=VMR_.back();
-    } else if (procType=="VMRouterTE:") {
-      VMRTE_.push_back(new FPGAVMRouterTE(procName,isector_));
-      Processes_[procName]=VMRTE_.back();
-    } else if (procType=="VMRouterME:") {
-      VMRME_.push_back(new FPGAVMRouterME(procName,isector_));
-      Processes_[procName]=VMRME_.back();
     } else if (procType=="TrackletEngine:") {
       TE_.push_back(new FPGATrackletEngine(procName,isector_));
       Processes_[procName]=TE_.back();
@@ -425,12 +417,6 @@ public:
     for (unsigned int i=0;i<VMR_.size();i++){
       VMR_[i]->execute();
     }
-    for (unsigned int i=0;i<VMRTE_.size();i++){
-      VMRTE_[i]->execute();
-    }
-    for (unsigned int i=0;i<VMRME_.size();i++){
-      VMRME_[i]->execute();
-    }
   }
 
   void executeTE(){
@@ -575,8 +561,6 @@ private:
   
   std::map<string, FPGAProcessBase*> Processes_;
   std::vector<FPGAVMRouter*> VMR_;
-  std::vector<FPGAVMRouterTE*> VMRTE_;
-  std::vector<FPGAVMRouterME*> VMRME_;
   std::vector<FPGATrackletEngine*> TE_;
   std::vector<FPGATrackletEngineDisplaced*> TED_;
   std::vector<FPGATripletEngine*> TRE_;

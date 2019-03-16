@@ -15,30 +15,18 @@ public:
     FPGAProcessBase(name,iSector){
     
     double dphi=two_pi/NSector;
-    double dphiHG=0.0;
-    if (hourglass) {
-      dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-    }
+    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    if (hourglass) {
-      phimin_-=0.5*two_pi/NSector;
-      phimax_-=0.5*two_pi/NSector;
-    }
+    phimin_-=0.5*two_pi/NSector;
+    phimax_-=0.5*two_pi/NSector;
     if (phimin_>0.5*two_pi) {
       phimin_-=two_pi;
       phimax_-=two_pi;
     }
-    if (hourglass) {
-      phioffset_=phimin_;
-    } else {
-      phioffset_=phimin_-dphi/6.0;
-    }
+    phioffset_=phimin_;
     
     string subname=name.substr(3,2);
-    if (!hourglass) {
-      subname=name.substr(8,2);
-    }
     layer_=0;
     disk_=0;
     if (subname=="L1") layer_=1;
@@ -58,8 +46,6 @@ public:
     }
     //FIXME should sort out constants here
     icorrshift_=7+idrinvbits+phi0bitshift-rinvbitshift-phiderbitshift;
-    if (!hourglass) icorrshift_-=2;
-    //icorzshift_=idrinvbits-zderbitshift-tbitshift;
     if (layer_<=3) {
       icorzshift_=-1-PS_zderL_shift;
     } else {
@@ -666,70 +652,56 @@ public:
 		   <<tracklet->layer()<<" "<<tracklet->disk()<<" "<<fullmatches_[l]->getName().substr(3,4)
 		   <<endl;
 	    }
-	    if (hourglass) {
-	      int layer=tracklet->layer();
-	      int disk=abs(tracklet->disk());
-	      if (!hourglassExtended) {
-		if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
-		    (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")||
-		    (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
-		    (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
-		    (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
-		    (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
-		    (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
-		    (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")){
-		  assert(tracklet->homeSector()==iSector_);
-		  if (debug1) {
-		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-		  }
-		  if (writeSeeds) {
-		    ofstream fout("seeds.txt", ofstream::app);
-		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		    fout.close();
-		  }
-		  fullmatches_[l]->addMatch(tracklet,tmp);
-		} 
-	      }
-	      else {
-		int iSeed = tracklet->getISeed ();
-		if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
-		    (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
-		    (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
-		    (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
-		    (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
-		    (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
-		    (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
-		    (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
-		    (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
-		    (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
-		    (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
-		    (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
-		  assert(tracklet->homeSector()==iSector_);
-		  if (debug1) {
-		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-		  }
-		  if (writeSeeds) {
-		    ofstream fout("seeds.txt", ofstream::app);
-		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		    fout.close();
-		  }
-		  fullmatches_[l]->addMatch(tracklet,tmp);
-		} 
-	      }
-	    } else {
-		if ((tracklet->layer()==1&&fullmatches_[l]->getName().substr(3,2)=="L1")||
-		    (tracklet->layer()==3&&fullmatches_[l]->getName().substr(3,2)=="L3")||
-		    (tracklet->layer()==5&&fullmatches_[l]->getName().substr(3,2)=="L5")){
-		  assert(tracklet->homeSector()==iSector_);
-                  if (writeSeeds) {
-		    ofstream fout("seeds.txt", ofstream::app);
-		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		    fout.close();
-		  }
-		  fullmatches_[l]->addMatch(tracklet,tmp);
+	    int layer=tracklet->layer();
+	    int disk=abs(tracklet->disk());
+	    if (!hourglassExtended) {
+	      if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
+		  (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")||
+		  (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
+		  (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
+		  (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
+		  (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
+		  (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
+		  (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")){
+		assert(tracklet->homeSector()==iSector_);
+		if (debug1) {
+		  cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
 		}
+		if (writeSeeds) {
+		  ofstream fout("seeds.txt", ofstream::app);
+		  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		  fout.close();
+		}
+		fullmatches_[l]->addMatch(tracklet,tmp);
+	      } 
 	    }
-	  }
+	    else {
+	      int iSeed = tracklet->getISeed ();
+	      if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
+		  (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
+		  (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
+		  (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
+		  (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
+		  (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
+		  (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
+		  (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
+		  (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
+		  (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
+		  (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
+		  (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
+		assert(tracklet->homeSector()==iSector_);
+		if (debug1) {
+		  cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
+		}
+		if (writeSeeds) {
+		  ofstream fout("seeds.txt", ofstream::app);
+		  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		  fout.close();
+		  }
+		fullmatches_[l]->addMatch(tracklet,tmp);
+	      } 
+	    }
+	  }	  
 	}
       } else {  //disk matches
 	
@@ -833,22 +805,12 @@ public:
 	if (dphi>0.5*two_pi) dphi-=two_pi;
 	if (dphi<-0.5*two_pi) dphi+=two_pi;
 
-	if (!hourglass) {
-	  if (dphi>0.5*two_pi/NSector) dphi-=two_pi/NSector;
-	  if (dphi<-0.5*two_pi/NSector) dphi+=two_pi/NSector;
-	}
-	
 	double dphiapprox=phi-(tracklet->phiprojapproxdisk(disk)+
 			       dz*tracklet->phiprojderapproxdisk(disk));
 
 	
 	if (dphiapprox>0.5*two_pi) dphiapprox-=two_pi;
 	if (dphiapprox<-0.5*two_pi) dphiapprox+=two_pi;
-
-	if (!hourglass) {
-	  if (dphiapprox>0.5*two_pi/NSector) dphiapprox-=two_pi/NSector;
-	  if (dphiapprox<-0.5*two_pi/NSector) dphiapprox+=two_pi/NSector;
-	}
 
 	double drapprox=stub->r()-(tracklet->rprojapproxdisk(disk)+
 				   dz*tracklet->rprojderapproxdisk(disk));
@@ -937,72 +899,53 @@ public:
 	  }
 	  
 	  for (unsigned int l=0;l<fullmatches_.size();l++){
-	    if (hourglass) {
-	      int layer=tracklet->layer();
-	      int disk=abs(tracklet->disk());
-	      if (!hourglassExtended) {
-		if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
-		    (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
-		    (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
-		    (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
-		    (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
-		    (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
-		    (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")||
-		    (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")){
-		  assert(tracklet->homeSector()==iSector_);
-		  if (debug1) {
-		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-		  }
-		  if (writeSeeds) {
-		    ofstream fout("seeds.txt", ofstream::app);
-		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		    fout.close();
-		  }
-		  fullmatches_[l]->addMatch(tracklet,tmp);
+	    int layer=tracklet->layer();
+	    int disk=abs(tracklet->disk());
+	    if (!hourglassExtended) {
+	      if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
+		  (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
+		  (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
+		  (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
+		  (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
+		  (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
+		  (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")||
+		  (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")){
+		assert(tracklet->homeSector()==iSector_);
+		if (debug1) {
+		  cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
 		}
-	      }
-	      else {
-		int iSeed = tracklet->getISeed ();
-		if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
-		    (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
-		    (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
-		    (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
-		    (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
-		    (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
-		    (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
-		    (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
-		    (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
-		    (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
-		    (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
-		    (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
-		  assert(tracklet->homeSector()==iSector_);
-		  if (debug1) {
-		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-		  }
-		  if (writeSeeds) {
-		    ofstream fout("seeds.txt", ofstream::app);
-		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		    fout.close();
-		  }
-		  fullmatches_[l]->addMatch(tracklet,tmp);
-		}
-	      }
-	    } else {
-	      if (((abs(tracklet->disk())==1&&tracklet->layer()==1)&&(fullmatches_[l]->getName().substr(3,4)=="D1L1"||fullmatches_[l]->getName().substr(3,4)=="L1D1"))||
-		  (tracklet->layer()==2&&(fullmatches_[l]->getName().substr(3,4)=="D1L2"||fullmatches_[l]->getName().substr(3,4)=="L2D1"))||    //dangerous to check only layer!!!
-		  ((abs(tracklet->disk())==1&&tracklet->layer()==0)&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
-		  ((tracklet->disk()==0&&tracklet->layer()==1)&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
-		  ((tracklet->disk()==0&&tracklet->layer()==3)&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
-		  ((abs(tracklet->disk())==3&&tracklet->layer()==0)&&fullmatches_[l]->getName().substr(3,4)=="D3D4")){
 		if (writeSeeds) {
 		  ofstream fout("seeds.txt", ofstream::app);
 		  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
 		  fout.close();
 		}
 		fullmatches_[l]->addMatch(tracklet,tmp);
+	      }
+	    }
+	    else {
+	      int iSeed = tracklet->getISeed ();
+	      if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
+		  (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
+		  (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
+		  (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
+		  (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
+		  (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
+		  (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
+		  (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
+		  (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
+		  (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
+		  (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
+		  (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
+		assert(tracklet->homeSector()==iSector_);
 		if (debug1) {
-		  cout << "In "<<getName()<<" added match to "<<fullmatches_[l]->getName()<<endl;
+		  cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
 		}
+		if (writeSeeds) {
+		  ofstream fout("seeds.txt", ofstream::app);
+		  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		  fout.close();
+		}
+		fullmatches_[l]->addMatch(tracklet,tmp);
 	      }
 	    }
 	  }

@@ -35,8 +35,7 @@ public:
 
   bool foundTrack(ofstream& outres, L1SimTrack simtrk){
     bool match=false;
-    double phioffset=phimin_-(phimax_-phimin_)/6.0;
-    if (hourglass) phioffset=phimin_;
+    double phioffset=phimin_;
     for(unsigned int i=0;i<tracks_.size();i++){
       if (tracks_[i]->getTrack()->duplicate()) continue;
       if (tracks_[i]->foundTrack(simtrk)) match=true;

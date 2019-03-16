@@ -20,27 +20,17 @@ public:
   FPGATrackletCalculatorDisplaced(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
     double dphi=two_pi/NSector;
-    double dphiHG=0.0;
-    if (hourglass) {
-      dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-    }
+    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    if (hourglass) {
-      phimin_-=0.5*two_pi/NSector;
-      phimax_-=0.5*two_pi/NSector;
-    }
+    phimin_-=0.5*two_pi/NSector;
+    phimax_-=0.5*two_pi/NSector;
     if (phimin_>0.5*two_pi) phimin_-=two_pi;
     if (phimax_>0.5*two_pi) phimax_-=two_pi;
     if (phimin_>phimax_)  phimin_-=two_pi;
-    if (hourglass) {
-      phioffset_=phimin_;
-    } else {
-      phioffset_=phimin_-dphi/6.0;
-    }
+    phioffset_=phimin_;
 
-    maxtracklet_=63;
-    if (hourglass) maxtracklet_=127;
+    maxtracklet_=127;
     
    trackletproj_L1PHI1_=0;
    trackletproj_L1PHI2_=0;
@@ -173,19 +163,8 @@ public:
 
    assert(iSeed!=-1);
 
-   if (hourglass) {
-     TCIndex_ = (iSeed<<4) + iTC;
-     assert(TCIndex_>=128 && TCIndex_<191);
-   } else {
-     TCIndex_ = (iSeed<<3) + iTC;
-     assert(TCIndex_>=0 && TCIndex_<64);
-   }
-     
-   //if (hourglass) {
-   //if (iSeed!=0)  TCIndex_+=8;
-     //cout << "iTC iSeed TCIndex_ "<<iTC<<" "<<iSeed<<" "<<TCIndex_<<endl;
-   //}
-   
+   TCIndex_ = (iSeed<<4) + iTC;
+   assert(TCIndex_>=128 && TCIndex_<191);
    
    assert((layer_!=0)||(disk_!=0));
 
@@ -814,24 +793,8 @@ public:
     
     int iphivmRaw=fpgaphi.value()>>(fpgaphi.nbits()-5);
 
-    int iphi=-1;
-
-
-    if (hourglass) {
-
-      iphi=iphivmRaw/(32/nallstubsdisks[abs(disk)-1]);
+    int iphi=iphivmRaw/(32/nallstubsdisks[abs(disk)-1]);
       
-    } else {
-    
-      assert(iphivmRaw>=4);
-      assert(iphivmRaw<=27);
-
-      iphi=(iphivmRaw-4)>>3;
-
-      assert(iphi>=0);
-      assert(iphi<=2);
-
-    }
     
     if (abs(disk)==1) {
       if (iphi==0) addProjectionDisk(disk,iphi,trackletproj_D1PHI1_,tracklet);
@@ -891,29 +854,8 @@ public:
     
     int iphivmRaw=fpgaphi.value()>>(fpgaphi.nbits()-5);
 
-    int iphi=-1;
-    
-    if (hourglass) {
+    int iphi=iphivmRaw/(32/nallstubslayers[layer-1]);
       
-      iphi=iphivmRaw/(32/nallstubslayers[layer-1]);
-      
-    } else {
-
-      assert(iphivmRaw>=4);
-      assert(iphivmRaw<=27);
-
-      iphi=(iphivmRaw-4)>>3;
-
-      if (layer==2||layer==4||layer==6) {
-	iphi=(iphivmRaw>>3);
-      }
-      assert(iphi>=0);
-      assert(iphi<=7);
-      
-
-    }
-      
- 
     //cout << "layer fpgaphi iphivmRaw iphi : "<<layer<<" "<<fpgaphi.value()<<" "<<iphivmRaw<<" "<<iphi<<endl;
 
     
@@ -1160,16 +1102,6 @@ public:
       
 	minusNeighborDisk[i]=false;
 	plusNeighborDisk[i]=false;
-	if (!hourglass) {
-	  if (iphiprojdisk[i]<(1<<nbitsphistubL123)/8) {
-	    minusNeighborDisk[i]=true;
-	    iphiprojdisk[i]+=3*(1<<nbitsphistubL123)/4;
-	  }
-	  if (iphiprojdisk[i]>=7*(1<<nbitsphistubL123)/8) {
-	    plusNeighborDisk[i]=true;
-	    iphiprojdisk[i]-=3*(1<<nbitsphistubL123)/4;
-	  }
-	}
      
 	if (iphiprojdisk[i]<0) {
 	  iphiprojdisk[i]=0;
@@ -1218,11 +1150,9 @@ public:
     
     if (!success) return false;
 
-    if (hourglass) {
-      double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-      bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-      if (!keep) return false;
-    }
+    double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    if (!keep) return false;
     
     for(unsigned int j=0;j<toZ_.size();j++){
       if (minusNeighborDisk[j]) {
@@ -1534,13 +1464,11 @@ public:
     
     if (!success) return false;
 
-    if (hourglass) {
-      double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-      bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-      if(debug1)
-	cout<<phicrit<< "\t"<<phicritminmc<<"\t"<<phicritmaxmc<<"\n";
-      if (!keep) return false;
-    }
+    double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    if(debug1)
+      cout<<phicrit<< "\t"<<phicritminmc<<"\t"<<phicritmaxmc<<"\n";
+    if (!keep) return false;
     
     for(unsigned int j=0;j<toZ_.size();j++){
       if (minusNeighborDisk[j]) {
@@ -1846,11 +1774,9 @@ public:
     
     if (!success) return false;
 
-    if (hourglass) {
-      double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-      bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-      if (!keep) return false;
-    }
+    double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    if (!keep) return false;
     
     for(unsigned int j=0;j<toZ_.size();j++){
       if (minusNeighborDisk[j]) {

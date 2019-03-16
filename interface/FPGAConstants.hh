@@ -19,7 +19,6 @@ static bool doKF=true; //true => use KF (assumes USEHYBRID is defined)
 static bool printDebugKF=false; // if true print lots of debugging statements related to the KF fit
 
 
-static bool hourglass=true;
 static bool hourglassExtended=false; // This is turn on Displaced Tracking. Also change the file in Tracklet_cfi from hourglass to hourglassExtended ****************
 
 //Gemetry extensions

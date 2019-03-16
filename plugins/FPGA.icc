@@ -62,10 +62,8 @@
 
 
       double phi=stub.phi();
-      if (hourglass) {
-        //phi-=0.5*two_pi/NSector;
-        phi+=0.5*dphisectorHG;
-      }     	 
+      phi+=0.5*dphisectorHG;
+
       if (phi<0.0) phi+=two_pi;
       unsigned int isector=NSector*phi/two_pi;
       assert(isector<NSector);
@@ -132,14 +130,11 @@
         if (diff>nSector/2) diff-=NSector;
         if (diff<-nSector/2) diff+=NSector;
 	if (abs(diff)>1) continue;
-	if (hourglass){
-	  double phiminsect=k*two_pi/NSector-0.5*(dphisectorHG-two_pi/NSector)-0.5*two_pi/NSector;
-	  double dphi=stub.phi()-phiminsect;
-	  if (dphi>0.5*two_pi) dphi-=two_pi;
-	  while (dphi<0.0) dphi+=two_pi;
-	  if (dphi>dphisectorHG) continue;
-	  //cout << "stub.phi phiminsect : "<<stub.phi()<<" "<<phiminsect<<" "<<dphi<<endl;
-	}
+	double phiminsect=k*two_pi/NSector-0.5*(dphisectorHG-two_pi/NSector)-0.5*two_pi/NSector;
+	double dphi=stub.phi()-phiminsect;
+	if (dphi>0.5*two_pi) dphi-=two_pi;
+	while (dphi<0.0) dphi+=two_pi;
+	if (dphi>dphisectorHG) continue;
 	//cout << "Will try to add stub to sector : "<<k<<endl;
         bool add=sectors[k]->addStub(stub,dtcbase);
 

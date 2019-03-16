@@ -174,18 +174,12 @@ public:
 	      assert(firstphibits_!=-1);
 	      assert(secondphibits_!=-1);
 	      
-	      int iphifirstbin=firststub.first->iphivmFineBins(5,firstphibits_);
-	      int iphisecondbin=secondstub.first->iphivmFineBins(4,secondphibits_);
-
-	      if (hourglass) {
-		unsigned int nvmfirst=nallstubslayers[layer1_-1]*nvmtelayers[layer1_-1];
-		unsigned int nvmsecond=nallstubslayers[layer1_]*nvmtelayers[layer1_];
-		unsigned int nvmbitsfirst=nbits(nvmfirst);
-		unsigned int nvmbitssecond=nbits(nvmsecond);
-	      	iphifirstbin=firststub.first->iphivmFineBins(nvmbitsfirst,firstphibits_);
-	      	iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
-	      }
-	      
+	      unsigned int nvmfirst=nallstubslayers[layer1_-1]*nvmtelayers[layer1_-1];
+	      unsigned int nvmsecond=nallstubslayers[layer1_]*nvmtelayers[layer1_];
+	      unsigned int nvmbitsfirst=nbits(nvmfirst);
+	      unsigned int nvmbitssecond=nbits(nvmsecond);
+	      int iphifirstbin=firststub.first->iphivmFineBins(nvmbitsfirst,firstphibits_);
+	      int iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
 	      
 	      unsigned int index = (iphifirstbin<<secondphibits_)+iphisecondbin;
 
@@ -283,18 +277,12 @@ public:
 	      assert(firstphibits_!=-1);
 	      assert(secondphibits_!=-1);
 	      
-	      int iphifirstbin=firststub.first->iphivmFineBins(5,firstphibits_);
-	      int iphisecondbin=secondstub.first->iphivmFineBins(4,secondphibits_);
-
-	      if (hourglass) {
-		unsigned int nvmfirst=nallstubslayers[layer1_-1]*nvmtelayers[layer1_-1];
-		unsigned int nvmsecond=nallstubslayers[layer1_]*nvmtelayers[layer1_];
-		unsigned int nvmbitsfirst=nbits(nvmfirst);
-		unsigned int nvmbitssecond=nbits(nvmsecond);
-	      	iphifirstbin=firststub.first->iphivmFineBins(nvmbitsfirst,firstphibits_);
-	      	iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
-	      }
-	      
+	      unsigned int nvmfirst=nallstubslayers[layer1_-1]*nvmtelayers[layer1_-1];
+	      unsigned int nvmsecond=nallstubslayers[layer1_]*nvmtelayers[layer1_];
+	      unsigned int nvmbitsfirst=nbits(nvmfirst);
+	      unsigned int nvmbitssecond=nbits(nvmsecond);
+	      int iphifirstbin=firststub.first->iphivmFineBins(nvmbitsfirst,firstphibits_);
+	      int iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
 	      
 	      unsigned int index = (iphifirstbin<<secondphibits_)+iphisecondbin;
 
@@ -379,25 +367,15 @@ public:
 	      if (rbin-rbinfirst>rdiffmax) continue;
 
 	      
-	      unsigned int iphifirstbin=firststub.first->iphivmFineBins(4,firstphibits_);
-	      unsigned int iphisecondbin=secondstub.first->iphivmFineBins(4,secondphibits_);
-
-	      if (disk1_==3&&disk2_==4) {
-		iphifirstbin=firststub.first->iphivmFineBins(3,firstphibits_);
-		iphisecondbin=secondstub.first->iphivmFineBins(3,secondphibits_);
-	      }
 	      
 	      unsigned int irsecondbin=secondstub.first->getVMBits().value()>>2;
 
-	      if (hourglass) {
-		unsigned int nvmfirst=nallstubsdisks[disk1_-1]*nvmtedisks[disk1_-1];
-		unsigned int nvmsecond=nallstubsdisks[disk1_]*nvmtedisks[disk1_];
-		unsigned int nvmbitsfirst=nbits(nvmfirst);
-		unsigned int nvmbitssecond=nbits(nvmsecond);
-	      	iphifirstbin=firststub.first->iphivmFineBins(nvmbitsfirst,firstphibits_);
-	      	iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
-	      }
-	      
+	      unsigned int nvmfirst=nallstubsdisks[disk1_-1]*nvmtedisks[disk1_-1];
+	      unsigned int nvmsecond=nallstubsdisks[disk1_]*nvmtedisks[disk1_];
+	      unsigned int nvmbitsfirst=nbits(nvmfirst);
+	      unsigned int nvmbitssecond=nbits(nvmsecond);
+	      int iphifirstbin=firststub.first->iphivmFineBins(nvmbitsfirst,firstphibits_);
+	      int iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
 
 	      
 	      unsigned int index = (irsecondbin<<(secondphibits_+firstphibits_))+(iphifirstbin<<secondphibits_)+iphisecondbin;

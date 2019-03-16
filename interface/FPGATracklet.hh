@@ -1299,15 +1299,9 @@ public:
       
       //get stubs making up tracklet
       //printf(" inner %i  outer %i layers \n",innerFPGAStub_.layer().value(),outerFPGAStub_.layer().value());
-      if (hourglass) {
-	if (innerFPGAStub_) stubIDs[innerFPGAStub_->layer().value()+1] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
-	if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
-	if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
-      } else {
-	if (innerFPGAStub_) stubIDs[innerFPGAStub_->layer().value()+1] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<9);
-	if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<9);
-	if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<9);
-      }
+      if (innerFPGAStub_) stubIDs[innerFPGAStub_->layer().value()+1] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
+      if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
+      if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
       
     } else if (disk_) {
       for(int i=0; i<5; i++) {
@@ -1339,25 +1333,13 @@ public:
       //get stubs making up tracklet
       //printf(" inner %i  outer %i disks \n",innerFPGAStub_.disk().value(),outerFPGAStub_.disk().value());
       if(innerFPGAStub_->disk().value() < 0) { //negative side runs 6-10
-	if (hourglass) {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()-10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->disk().value()-10] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->disk().value()-10] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
-	} else {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()-10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<9);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->disk().value()-10] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<9);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->disk().value()-10] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<9);
-	}
+	if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()-10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
+	if (middleFPGAStub_) stubIDs[middleFPGAStub_->disk().value()-10] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
+	if (outerFPGAStub_) stubIDs[outerFPGAStub_->disk().value()-10] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
       } else { // positive side runs 11-15]
-	if (hourglass) {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()+10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->disk().value()+10] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->disk().value()+10] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
-	} else {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()+10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<9);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->disk().value()+10] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<9);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->disk().value()+10] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<9);
-	}
+	if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()+10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
+	if (middleFPGAStub_) stubIDs[middleFPGAStub_->disk().value()+10] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
+	if (outerFPGAStub_) stubIDs[outerFPGAStub_->disk().value()+10] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
       }     
       
     } else if (overlap_) {
@@ -1395,35 +1377,17 @@ public:
       //printf(" inner %i  outer %i layers \n",innerFPGAStub_.layer().value(),outerFPGAStub_.layer().value());
       //printf(" inner %i  outer %i disks \n",innerFPGAStub_.disk().value(),outerFPGAStub_.disk().value());
       if(innerFPGAStub_->layer().value()==2) { // L3L2 track
-	if (hourglass) {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->layer().value()+1] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
-	} else {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->layer().value()+1] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<9);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<9);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<9);
-	}
+	if (innerFPGAStub_) stubIDs[innerFPGAStub_->layer().value()+1] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
+	if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
+	if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
       } else if(innerFPGAStub_->disk().value() < 0) { //negative side runs -11 - -15
-	if (hourglass) {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()-10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
-	} else {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()-10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<9);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<9);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<9);
-	}
+	if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()-10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
+	if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
+	if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
       } else { // positive side runs 11-15]
-	if (hourglass) {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()+10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
-	} else {
-	  if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()+10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<9);
-	  if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<9);
-	  if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<9);
-	}
+	if (innerFPGAStub_) stubIDs[innerFPGAStub_->disk().value()+10] = ((innerFPGAStub_->phiregion().value())<<7)+innerFPGAStub_->stubindex().value()+(1<<10);
+	if (middleFPGAStub_) stubIDs[middleFPGAStub_->layer().value()+1] = ((middleFPGAStub_->phiregion().value())<<7)+middleFPGAStub_->stubindex().value()+(1<<10);
+	if (outerFPGAStub_) stubIDs[outerFPGAStub_->layer().value()+1] = ((outerFPGAStub_->phiregion().value())<<7)+outerFPGAStub_->stubindex().value()+(1<<10);
       }     
       
     }
@@ -1859,11 +1823,7 @@ public:
 
   void setTrackletIndex(int index) {
     trackletIndex_=index;
-    if (hourglass) {
-      assert(index<128);
-    } else {
-      assert(index<64);
-    }
+    assert(index<128);
   }
 
   int trackletIndex() const {return trackletIndex_;}
@@ -1873,11 +1833,7 @@ public:
   int TCIndex() const {return TCIndex_;}
   
   int TCID() const {
-    if (hourglass) {
-      return TCIndex_*(1<<7)+trackletIndex_;
-    } else {
-      return TCIndex_*(1<<6)+trackletIndex_;
-    }
+    return TCIndex_*(1<<7)+trackletIndex_;
   }
 
   int getISeed() const {

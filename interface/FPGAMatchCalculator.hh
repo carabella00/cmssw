@@ -14,8 +14,6 @@ public:
   FPGAMatchCalculator(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
     
-    fullmatchesToPlus_=0;
-    fullmatchesToMinus_=0;
     double dphi=two_pi/NSector;
     double dphiHG=0.0;
     if (hourglass) {
@@ -41,8 +39,6 @@ public:
     if (!hourglass) {
       subname=name.substr(8,2);
     }
-    fullmatchesToPlus_=0;
-    fullmatchesToMinus_=0;
     layer_=0;
     disk_=0;
     if (subname=="L1") layer_=1;
@@ -475,20 +471,6 @@ public:
       fullmatches_.push_back(tmp);
       return;
     }
-    if (output=="matchoutplus"){
-      FPGAFullMatch* tmp=dynamic_cast<FPGAFullMatch*>(memory);
-      assert(tmp!=0);
-      assert(fullmatchesToPlus_==0);
-      fullmatchesToPlus_=tmp;
-      return;
-    }
-    if (output=="matchoutminus"){
-      FPGAFullMatch* tmp=dynamic_cast<FPGAFullMatch*>(memory);
-      assert(tmp!=0);
-      assert(fullmatchesToMinus_==0);
-      fullmatchesToMinus_=tmp;
-      return;
-    }
     cout << "Count not fined output = "<<output<<endl;
     assert(0);
   }
@@ -527,10 +509,6 @@ public:
   }
 
   void execute() {
-
-    
-    //Check that order is OK
-    checkOrder();
     
     assert(fullmatches_.size()!=0);
 
@@ -682,88 +660,63 @@ public:
 		 << " "<<iSector_<<endl;	   
 	  }
 	      
-	  if (tracklet->plusNeighbor(layer_)){
-	    
-	    assert(fullmatchesToMinus_!=0);
-	    
-	    int nmatch=fullmatchesToMinus_->nMatches();
-	    if (nmatch>1) {
-	      assert(fullmatchesToMinus_->getFPGATracklet(nmatch-2)->TCID()<
-		     fullmatchesToMinus_->getFPGATracklet(nmatch-1)->TCID());
+	  for (unsigned int l=0;l<fullmatches_.size();l++){
+	    if (debug1) {
+	      cout << getName()<< " Trying to add match to: "<<fullmatches_[l]->getName()<<" "
+		   <<tracklet->layer()<<" "<<tracklet->disk()<<" "<<fullmatches_[l]->getName().substr(3,4)
+		   <<endl;
 	    }
-	    
-            if (writeSeeds) {
-	      ofstream fout("seeds.txt", ofstream::app);
-	      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-	      fout.close();
-	    }
-	    fullmatchesToMinus_->addMatch(tracklet,tmp);
-	  } else if (tracklet->minusNeighbor(layer_)) {
-	    assert(fullmatchesToPlus_!=0);
-            if (writeSeeds) {
-	      ofstream fout("seeds.txt", ofstream::app);
-	      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-	      fout.close();
-	    }
-	    fullmatchesToPlus_->addMatch(tracklet,tmp);
-	  } else {
-	    for (unsigned int l=0;l<fullmatches_.size();l++){
-	      if (debug1) {
-		cout << getName()<< " Trying to add match to: "<<fullmatches_[l]->getName()<<" "
-		     <<tracklet->layer()<<" "<<tracklet->disk()<<" "<<fullmatches_[l]->getName().substr(3,4)
-		     <<endl;
+	    if (hourglass) {
+	      int layer=tracklet->layer();
+	      int disk=abs(tracklet->disk());
+	      if (!hourglassExtended) {
+		if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
+		    (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")||
+		    (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
+		    (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
+		    (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
+		    (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
+		    (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
+		    (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")){
+		  assert(tracklet->homeSector()==iSector_);
+		  if (debug1) {
+		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
+		  }
+		  if (writeSeeds) {
+		    ofstream fout("seeds.txt", ofstream::app);
+		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		    fout.close();
+		  }
+		  fullmatches_[l]->addMatch(tracklet,tmp);
+		} 
 	      }
-	      if (hourglass) {
-		int layer=tracklet->layer();
-		int disk=abs(tracklet->disk());
-                if (!hourglassExtended) {
-                  if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
-                      (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")||
-                      (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
-                      (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
-                      (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
-                      (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
-                      (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
-                      (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")){
-                    assert(tracklet->homeSector()==iSector_);
-                    if (debug1) {
-                      cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-                    }
-                    if (writeSeeds) {
-		      ofstream fout("seeds.txt", ofstream::app);
-		      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		      fout.close();
-		    }
-                    fullmatches_[l]->addMatch(tracklet,tmp);
-                  } 
-                }
-                else {
-                  int iSeed = tracklet->getISeed ();
-                  if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
-                      (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
-                      (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
-                      (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
-                      (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
-                      (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
-                      (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
-                      (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
-                      (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
-                      (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
-                      (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
-                      (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
-                    assert(tracklet->homeSector()==iSector_);
-                    if (debug1) {
-                      cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-                    }
-                    if (writeSeeds) {
-		      ofstream fout("seeds.txt", ofstream::app);
-		      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		      fout.close();
-		    }
-                    fullmatches_[l]->addMatch(tracklet,tmp);
-                  } 
-                }
-	      } else {
+	      else {
+		int iSeed = tracklet->getISeed ();
+		if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
+		    (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
+		    (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
+		    (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
+		    (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
+		    (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
+		    (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
+		    (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
+		    (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
+		    (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
+		    (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
+		    (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
+		  assert(tracklet->homeSector()==iSector_);
+		  if (debug1) {
+		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
+		  }
+		  if (writeSeeds) {
+		    ofstream fout("seeds.txt", ofstream::app);
+		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		    fout.close();
+		  }
+		  fullmatches_[l]->addMatch(tracklet,tmp);
+		} 
+	      }
+	    } else {
 		if ((tracklet->layer()==1&&fullmatches_[l]->getName().substr(3,2)=="L1")||
 		    (tracklet->layer()==3&&fullmatches_[l]->getName().substr(3,2)=="L3")||
 		    (tracklet->layer()==5&&fullmatches_[l]->getName().substr(3,2)=="L5")){
@@ -775,12 +728,9 @@ public:
 		  }
 		  fullmatches_[l]->addMatch(tracklet,tmp);
 		}
-	      }
 	    }
 	  }
-	  
 	}
-	
       } else {  //disk matches
 	
 	
@@ -986,101 +936,72 @@ public:
 		 << " "<<iSector_<<endl;	   
 	  }
 	  
-	  if (tracklet->plusNeighborDisk(disk)){
-            if (writeSeeds) {
-	      ofstream fout("seeds.txt", ofstream::app);
-	      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-	      fout.close();
-	    }
-	    fullmatchesToMinus_->addMatch(tracklet,tmp);
-	    if (debug1) {
-	      cout << "Accepted full match to minus in disk " <<getName()<<" "<<tracklet
-		   <<" "<<fullmatchesToMinus_->getName()<<endl;
-	    }
-	    int nmatch=fullmatchesToMinus_->nMatches();
-	    if (nmatch>1) {
-	      assert(fullmatchesToMinus_->getFPGATracklet(nmatch-2)->TCID()<
-		     fullmatchesToMinus_->getFPGATracklet(nmatch-1)->TCID());
-	    }
-	  } else if (tracklet->minusNeighborDisk(disk)) {
-            if (writeSeeds) {
-	      ofstream fout("seeds.txt", ofstream::app);
-	      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-	      fout.close();
-	    }
-	    fullmatchesToPlus_->addMatch(tracklet,tmp);
-	    if (debug1) {
-	      cout << "Accepted full match to plus in disk " <<getName()<<" "<<tracklet
-		   <<" "<<fullmatchesToPlus_->getName()<<endl;
-	    }
-	  } else {
-	    for (unsigned int l=0;l<fullmatches_.size();l++){
-	      if (hourglass) {
-		int layer=tracklet->layer();
-		int disk=abs(tracklet->disk());
-                if (!hourglassExtended) {
-                  if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
-                      (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
-                      (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
-                      (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
-                      (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
-                      (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
-                      (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")||
-                      (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")){
-                    assert(tracklet->homeSector()==iSector_);
-                    if (debug1) {
-                      cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-                    }
-                    if (writeSeeds) {
-		      ofstream fout("seeds.txt", ofstream::app);
-		      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		      fout.close();
-		    }
-                    fullmatches_[l]->addMatch(tracklet,tmp);
-                  }
-                }
-                else {
-                  int iSeed = tracklet->getISeed ();
-                  if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
-                      (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
-                      (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
-                      (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
-                      (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
-                      (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
-                      (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
-                      (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
-                      (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
-                      (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
-                      (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
-                      (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
-                    assert(tracklet->homeSector()==iSector_);
-                    if (debug1) {
-                      cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
-                    }
-                    if (writeSeeds) {
-		      ofstream fout("seeds.txt", ofstream::app);
-		      fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
-		      fout.close();
-		    }
-                    fullmatches_[l]->addMatch(tracklet,tmp);
-                  }
-                }
-	      } else {
-		if (((abs(tracklet->disk())==1&&tracklet->layer()==1)&&(fullmatches_[l]->getName().substr(3,4)=="D1L1"||fullmatches_[l]->getName().substr(3,4)=="L1D1"))||
-		    (tracklet->layer()==2&&(fullmatches_[l]->getName().substr(3,4)=="D1L2"||fullmatches_[l]->getName().substr(3,4)=="L2D1"))||    //dangerous to check only layer!!!
-		    ((abs(tracklet->disk())==1&&tracklet->layer()==0)&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
-		    ((tracklet->disk()==0&&tracklet->layer()==1)&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
-		    ((tracklet->disk()==0&&tracklet->layer()==3)&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
-		    ((abs(tracklet->disk())==3&&tracklet->layer()==0)&&fullmatches_[l]->getName().substr(3,4)=="D3D4")){
-                  if (writeSeeds) {
+	  for (unsigned int l=0;l<fullmatches_.size();l++){
+	    if (hourglass) {
+	      int layer=tracklet->layer();
+	      int disk=abs(tracklet->disk());
+	      if (!hourglassExtended) {
+		if ((layer==1&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
+		    (layer==3&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
+		    (layer==5&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L5L6")||
+		    (layer==0&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
+		    (layer==0&&disk==3&&fullmatches_[l]->getName().substr(3,4)=="D3D4")||
+		    (layer==1&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L1D1")||
+		    (layer==2&&disk==1&&fullmatches_[l]->getName().substr(3,4)=="L2D1")||
+		    (layer==2&&disk==0&&fullmatches_[l]->getName().substr(3,4)=="L2L3")){
+		  assert(tracklet->homeSector()==iSector_);
+		  if (debug1) {
+		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
+		  }
+		  if (writeSeeds) {
 		    ofstream fout("seeds.txt", ofstream::app);
 		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
 		    fout.close();
 		  }
 		  fullmatches_[l]->addMatch(tracklet,tmp);
+		}
+	      }
+	      else {
+		int iSeed = tracklet->getISeed ();
+		if ((iSeed==0&&fullmatches_[l]->getName().substr(3,6)=="L1L2XX")||
+		    (iSeed==1&&fullmatches_[l]->getName().substr(3,6)=="L2L3XX")||
+		    (iSeed==2&&fullmatches_[l]->getName().substr(3,6)=="L3L4XX")||
+		    (iSeed==3&&fullmatches_[l]->getName().substr(3,6)=="L5L6XX")||
+		    (iSeed==4&&fullmatches_[l]->getName().substr(3,6)=="D1D2XX")||
+		    (iSeed==5&&fullmatches_[l]->getName().substr(3,6)=="D3D4XX")||
+		    (iSeed==6&&fullmatches_[l]->getName().substr(3,6)=="L1D1XX")||
+		    (iSeed==7&&fullmatches_[l]->getName().substr(3,6)=="L2D1XX")||
+		    (iSeed==8&&fullmatches_[l]->getName().substr(3,6)=="L3L4L2")||
+		    (iSeed==9&&fullmatches_[l]->getName().substr(3,6)=="L5L6L4")||
+		    (iSeed==10&&fullmatches_[l]->getName().substr(3,6)=="L2L3D1")||
+		    (iSeed==11&&fullmatches_[l]->getName().substr(3,6)=="D1D2L2")){
+		  assert(tracklet->homeSector()==iSector_);
 		  if (debug1) {
-		    cout << "In "<<getName()<<" added match to "<<fullmatches_[l]->getName()<<endl;
+		    cout << getName()<<" adding match to "<<fullmatches_[l]->getName()<<endl;
 		  }
+		  if (writeSeeds) {
+		    ofstream fout("seeds.txt", ofstream::app);
+		    fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		    fout.close();
+		  }
+		  fullmatches_[l]->addMatch(tracklet,tmp);
+		}
+	      }
+	    } else {
+	      if (((abs(tracklet->disk())==1&&tracklet->layer()==1)&&(fullmatches_[l]->getName().substr(3,4)=="D1L1"||fullmatches_[l]->getName().substr(3,4)=="L1D1"))||
+		  (tracklet->layer()==2&&(fullmatches_[l]->getName().substr(3,4)=="D1L2"||fullmatches_[l]->getName().substr(3,4)=="L2D1"))||    //dangerous to check only layer!!!
+		  ((abs(tracklet->disk())==1&&tracklet->layer()==0)&&fullmatches_[l]->getName().substr(3,4)=="D1D2")||
+		  ((tracklet->disk()==0&&tracklet->layer()==1)&&fullmatches_[l]->getName().substr(3,4)=="L1L2")||
+		  ((tracklet->disk()==0&&tracklet->layer()==3)&&fullmatches_[l]->getName().substr(3,4)=="L3L4")||
+		  ((abs(tracklet->disk())==3&&tracklet->layer()==0)&&fullmatches_[l]->getName().substr(3,4)=="D3D4")){
+		if (writeSeeds) {
+		  ofstream fout("seeds.txt", ofstream::app);
+		  fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << tracklet->getISeed() << endl;
+		  fout.close();
+		}
+		fullmatches_[l]->addMatch(tracklet,tmp);
+		if (debug1) {
+		  cout << "In "<<getName()<<" added match to "<<fullmatches_[l]->getName()<<endl;
 		}
 	      }
 	    }
@@ -1148,41 +1069,21 @@ public:
     if (layer_>0) {
       
       int lastTCID=-1;
-      int lastTCIDplus=-1;
-      int lastTCIDminus=-1;
       bool error=false;
       
       //Allow equal TCIDs since we can have multiple candidate matches
       for(unsigned int i=1;i<tmp.size();i++){
-	if (tmp[i].first.first->minusNeighbor(layer_)) {
-	  //cout << "For minus: tracklet TCID "<<tracklet<<" "<<tracklet->TCID()<<" "<<inputproj_[j]->getName()<<endl;
-	  if (lastTCIDminus>tmp[i].first.first->TCID()) {
-	    cout << "Wrong TCID ordering for Minus projections in "<<getName()<<" last "<<lastTCIDminus<<" "<<tmp[i].first.first->TCID()<<endl;
-	    error=true;
-	  } else {
-	    lastTCIDminus=tmp[i].first.first->TCID();
-	  }
-	} else if (tmp[i].first.first->plusNeighbor(layer_)) {
-	  if (lastTCIDplus>tmp[i].first.first->TCID()) {
-	    cout << "Wrong TCID ordering for Plus projections in "<<getName()<<" last "<<lastTCIDplus<<" "<<tmp[i].first.first->TCID()<<endl;
-	    error=true;
-	  } else {
-	    lastTCIDplus=tmp[i].first.first->TCID();
-	      }
+	if (lastTCID>tmp[i].first.first->TCID()) {
+	  cout << "Wrong TCID ordering for projections in "<<getName()<<" last "<<lastTCID<<" "<<tmp[i].first.first->TCID()<<endl;
+	  error=true;
 	} else {
-	  if (lastTCID>tmp[i].first.first->TCID()) {
-	    cout << "Wrong TCID ordering for projections in "<<getName()<<" last "<<lastTCID<<" "<<tmp[i].first.first->TCID()<<endl;
-	    error=true;
-	  } else {
-	    lastTCID=tmp[i].first.first->TCID();
-	  }
+	  lastTCID=tmp[i].first.first->TCID();
 	}
       }
       
       if (error) {
 	for(unsigned int i=1;i<tmp.size();i++){
-	  cout << "Wrong order for in "<<getName()<<" "<<i<<" "<<tmp[i].first.first<<" "<<tmp[i].first.first->TCID()<<" "
-	       <<tmp[i].first.first->plusNeighbor(layer_)<<" "<<tmp[i].first.first->minusNeighbor(layer_)<<endl;
+	  cout << "Wrong order for in "<<getName()<<" "<<i<<" "<<tmp[i].first.first<<" "<<tmp[i].first.first->TCID()<<endl;
 	}
       }
       
@@ -1202,27 +1103,6 @@ public:
     }
     
     return tmp;
-  }
-
-  void checkOrder(){
-  
-    if (layer_>0) {
-      for (unsigned int l=0;l<matches_.size();l++){
-	for(unsigned int j=1;j<matches_[l]->nMatches();j++) {
-	  bool firstMinus=matches_[l]->getMatch(j-1).first.first->minusNeighbor(layer_);
-	  bool firstPlus=matches_[l]->getMatch(j-1).first.first->plusNeighbor(layer_);
-	  bool firstCenter=!(firstMinus||firstPlus);
-	  bool secondMinus=matches_[l]->getMatch(j).first.first->minusNeighbor(layer_);
-	  bool secondPlus=matches_[l]->getMatch(j).first.first->plusNeighbor(layer_);
-	  bool secondCenter=!(secondMinus||secondPlus);
-	  if (((!firstCenter)&&secondCenter)||
-	      (firstPlus&&secondMinus)){
-	    cout << "Wrong order in  "<<matches_[l]->getName()<<" "<<matches_[l]->getMatch(j-1).first.first->plusNeighbor(layer_)<<" "<<matches_[l]->getMatch(j-1).first.first->minusNeighbor(layer_)<<"  -  "<<
-	      matches_[l]->getMatch(j).first.first->plusNeighbor(layer_)<<" "<<matches_[l]->getMatch(j).first.first->minusNeighbor(layer_)<<endl;
-	  }
-	}
-      } 
-    }
   }
 
     
@@ -1254,8 +1134,7 @@ private:
   vector<FPGACandidateMatch*> matches_;
 
   vector<FPGAFullMatch*> fullmatches_;
-  FPGAFullMatch* fullmatchesToPlus_;
-  FPGAFullMatch* fullmatchesToMinus_;
+
 
 };
 

@@ -34,7 +34,6 @@ public:
 	       bool validproj[4],
 	       int iphiproj[4], int izproj[4],
 	       int iphider[4], int izder[4],
-	       bool minusNeighbor[4], bool plusNeighbor[4],
 	       double phiproj[4], double zproj[4],
 	       double phider[4], double zder[4],
 	       double phiprojapprox[4], double zprojapprox[4],
@@ -42,7 +41,6 @@ public:
 	       bool validprojdisk[5],
 	       int iphiprojDisk[5], int irprojDisk[5],
 	       int iphiderDisk[5], int irderDisk[5],
-	       bool minusNeighborDisk[5], bool plusNeighborDisk[5],
 	       double phiprojDisk[5], double rprojDisk[5],
 	       double phiderDisk[5], double rderDisk[5],
 	       double phiprojapproxDisk[5], double rprojapproxDisk[5],
@@ -328,8 +326,6 @@ public:
 					   izproj[i],
 					   iphider[i],
 					   izder[i],
-					   minusNeighbor[i],
-					   plusNeighbor[i],
 					   phiproj[i],
 					   zproj[i],
 					   phider[i],
@@ -351,8 +347,6 @@ public:
 			    irprojDisk[i],
 			    iphiderDisk[i],
 			    irderDisk[i],
-			    minusNeighborDisk[i],
-			    plusNeighborDisk[i],
 			    phiprojDisk[i],
 			    rprojDisk[i],
 			    phiderDisk[i],
@@ -376,8 +370,6 @@ public:
 					      irprojDisk[i],
 					      iphiderDisk[i],
 					      irderDisk[i],
-					      minusNeighborDisk[i],
-					      plusNeighborDisk[i],
 					      phiprojDisk[i],
 					      rprojDisk[i],
 					      phiderDisk[i],
@@ -398,8 +390,6 @@ public:
 			     izproj[i],
 			     iphider[i],
 			     izder[i],
-			     minusNeighbor[i],
-			     plusNeighbor[i],
 			     phiproj[i],
 			     zproj[i],
 			     phider[i],
@@ -425,8 +415,6 @@ public:
 			     izproj[i],
 			     iphider[i],
 			     izder[i],
-			     minusNeighbor[i],
-			     plusNeighbor[i],
 			     phiproj[i],
 			     zproj[i],
 			     phider[i],
@@ -447,8 +435,6 @@ public:
 				   irprojDisk[i],
 				   iphiderDisk[i],
 				   irderDisk[i],
-				   minusNeighborDisk[i],
-				   plusNeighborDisk[i],
 				   phiprojDisk[i],
 				   rprojDisk[i],
 				   phiderDisk[i],
@@ -475,8 +461,6 @@ public:
 					 izproj[i],
 					 iphider[i],
 					 izder[i],
-					 minusNeighbor[i],
-					 plusNeighbor[i],
 					 phiproj[i],
 					 zproj[i],
 					 phider[i],
@@ -499,8 +483,6 @@ public:
 					    irprojDisk[i],
 					    iphiderDisk[i],
 					    irderDisk[i],
-					    minusNeighborDisk[i],
-					    plusNeighborDisk[i],
 					    phiprojDisk[i],
 					    rprojDisk[i],
 					    phiderDisk[i],
@@ -718,10 +700,6 @@ public:
     tmp.set(trackletIndex_,7,true,__LINE__,__FILE__);
     FPGAWord tcid;
     tcid.set(TCIndex_,7,true,__LINE__,__FILE__);
-    if (!hourglass) {
-      oss << layerproj_[layer-1].plusNeighbor()<<"|"
-	  << layerproj_[layer-1].minusNeighbor()<<"|";
-    }
 
     oss << tcid.str()<<"|"
 	<< tmp.str()<<"|"
@@ -744,10 +722,6 @@ public:
     tmp.set(trackletIndex_,7,true,__LINE__,__FILE__);
     FPGAWord tcid;
     tcid.set(TCIndex_,7,true,__LINE__,__FILE__);
-    if (!hourglass) {
-      oss << diskproj_[abs(disk)-1].plusNeighbor()<<"|"
-	  << diskproj_[abs(disk)-1].minusNeighbor()<<"|";
-    }
     oss << tcid.str()<<"|" 
         << tmp.str()<<"|"
 	<< diskproj_[abs(disk)-1].fpgaphiproj().str()<<"|"
@@ -884,17 +858,6 @@ public:
     assert(layer>=1&&layer<=6);
     return layerproj_[layer-1].rproj();
   }
-
-  bool minusNeighbor(int layer) const {
-    assert(layer>=1&&layer<=6);
-    return layerproj_[layer-1].minusNeighbor();
-  }
-
-  bool plusNeighbor(int layer) const {
-    assert(layer>=1&&layer<=6);
-    return layerproj_[layer-1].plusNeighbor();
-  }
-
 
 
   double rstub(int layer) {
@@ -1048,19 +1011,6 @@ public:
   double rprojderdisk(int disk) const {
     assert(abs(disk)>=1&&abs(disk)<=5);
     return diskproj_[abs(disk)-1].rprojder();
-  }
-
-
-
-  bool minusNeighborDisk(int disk) const {
-    assert(abs(disk)>=1&&abs(disk)<=5);
-    return diskproj_[abs(disk)-1].minusNeighbor();
-  }
-
-
-  bool plusNeighborDisk(int disk) const {
-    assert(abs(disk)>=1&&abs(disk)<=5);
-    return diskproj_[abs(disk)-1].plusNeighbor();
   }
 
 
@@ -1327,8 +1277,6 @@ public:
 	if (layerresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
-	  if (minusNeighbor(i+1)) location = 0; // phi-
-	  if (plusNeighbor(i+1)) location = 2;  // phi+
 	  location<<=layerresid_[i].fpgastubid().nbits();
 	  
 	  stubIDs[1+i] = layerresid_[i].fpgastubid().value()+location;
@@ -1338,8 +1286,6 @@ public:
 	if(diskresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
-	  if (minusNeighborDisk(i+1)) location = 0; // phi-
-	  if (plusNeighborDisk(i+1)) location = 2;  // phi+
 	  location<<=diskresid_[i].fpgastubid().nbits();
 	  
 	  if(itfit().value() < 0) {
@@ -1370,8 +1316,6 @@ public:
 	if(layerresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
-	  if (minusNeighbor(i+1)) location = 0; // phi-
-	  if (plusNeighbor(i+1)) location = 2;  // phi+
 	  location<<=layerresid_[i].fpgastubid().nbits();
 	  
 	  stubIDs[1+i] = layerresid_[i].fpgastubid().value()+location;
@@ -1382,8 +1326,6 @@ public:
 	if(diskresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
-	  if (minusNeighborDisk(i+1)) location = 0; // phi-
-	  if (plusNeighborDisk(i+1)) location = 2;  // phi+
 	  location<<=diskresid_[i].fpgastubid().nbits();
 	  
 	  if(innerStub_->disk() < 0) {
@@ -1426,8 +1368,6 @@ public:
 	if(layerresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
-	  if (minusNeighbor(i+1)) location = 0; // phi-
-	  if (plusNeighbor(i+1)) location = 2;  // phi+
 	  location<<=layerresid_[i].fpgastubid().nbits();
 	  
 	  stubIDs[1+i] = layerresid_[i].fpgastubid().value()+location;
@@ -1437,8 +1377,6 @@ public:
 	if(diskresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
-	  if (minusNeighborDisk(i+1)) location = 0; // phi-
-	  if (plusNeighborDisk(i+1)) location = 2;  // phi+
 	  location<<=diskresid_[i].fpgastubid().nbits();
 	  
 	  if(innerStub_->disk() < 0) { // if negative overlap

@@ -888,11 +888,6 @@ public:
     if (fpgaz.atExtreme()) return false;
 
     if (fabs(fpgaz.value()*kz)>zlength) return false;
-
-    if (hourglass) {
-      assert(!tracklet->plusNeighbor(layer));
-      assert(!tracklet->minusNeighbor(layer));
-    }
     
     int iphivmRaw=fpgaphi.value()>>(fpgaphi.nbits()-5);
 
@@ -1271,15 +1266,12 @@ public:
 					    z0approx,tapprox,
 					    irinv,iphi0,id0,iz0,it,validproj,
 					    iphiproj,izproj,iphider,izder,
-					    minusNeighbor,plusNeighbor,
 					    phiproj,zproj,phider,zder,
 					    phiprojapprox,zprojapprox,
 					    phiderapprox,zderapprox,
 					    validprojdisk,
 					    iphiprojdisk,irprojdisk,
 					    iphiderdisk,irderdisk,
-					    minusNeighborDisk,
-					    plusNeighborDisk,
 					    phiprojdisk,rprojdisk,
 					    phiderdisk,rderdisk,
 					    phiprojdiskapprox,
@@ -1592,15 +1584,12 @@ public:
 					    z0approx,tapprox,
 					    irinv,iphi0,id0,iz0,it,validproj,
 					    iphiproj,izproj,iphider,izder,
-					    minusNeighbor,plusNeighbor,
 					    phiproj,zproj,phider,zder,
 					    phiprojapprox,zprojapprox,
 					    phiderapprox,zderapprox,
 					    validprojdisk,
 					    iphiprojdisk,irprojdisk,
 					    iphiderdisk,irderdisk,
-					    minusNeighborDisk,
-					    plusNeighborDisk,
 					    phiprojdisk,rprojdisk,
 					    phiderdisk,rderdisk,
 					    phiprojdiskapprox,
@@ -1905,15 +1894,12 @@ public:
 					    z0approx,tapprox,
 					    irinv,iphi0,id0,iz0,it,validproj,
 					    iphiproj,izproj,iphider,izder,
-					    minusNeighbor,plusNeighbor,
 					    phiproj,zproj,phider,zder,
 					    phiprojapprox,zprojapprox,
 					    phiderapprox,zderapprox,
 					    validprojdisk,
 					    iphiprojdisk,irprojdisk,
 					    iphiderdisk,irderdisk,
-					    minusNeighborDisk,
-					    plusNeighborDisk,
 					    phiprojdisk,rprojdisk,
 					    phiderdisk,rderdisk,
 					    phiprojdiskapprox,

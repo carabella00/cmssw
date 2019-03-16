@@ -18,8 +18,6 @@ public:
 	    int irproj,
 	    int iphider,
 	    int irder,
-	    bool minusNeighbor,
-	    bool plusNeighbor,
 	    double phiproj,
 	    double rproj,
 	    double phiprojder,
@@ -81,9 +79,6 @@ public:
  
     fpgafinervm_.set(finer,4,true,__LINE__,__FILE__); // fine r postions starting at rbin1
     
-    minusNeighbor_=minusNeighbor;
-    plusNeighbor_=plusNeighbor;
-
     phiproj_=phiproj;
     rproj_=rproj;
     phiprojder_=phiprojder;
@@ -132,16 +127,6 @@ public:
   FPGAWord fpgarprojder() const {
     assert(valid_);
     return fpgarprojder_;
-  };
-
-  bool minusNeighbor() const {
-    assert(valid_);
-    return minusNeighbor_;
-  };
-  
-  bool plusNeighbor() const {
-    assert(valid_);
-    return plusNeighbor_;
   };
 
   FPGAWord fpgaphiprojvm() const {
@@ -231,10 +216,6 @@ protected:
   FPGAWord fpgarproj_;
   FPGAWord fpgaphiprojder_;
   FPGAWord fpgarprojder_;
-
-  bool minusNeighbor_;
-  bool plusNeighbor_;
-
 
   FPGAWord fpgaphiprojvm_;
   FPGAWord fpgarprojvm_;

@@ -189,8 +189,6 @@ public:
     //These are just here to test that the order is correct. Does not affect
     //the actual execution
     int lastTCID=-1;
-    int lastTCIDplus=-1;
-    int lastTCIDminus=-1;
     
     if (layer_!=0) {
       for (unsigned int j=0;j<inputproj_.size();j++){
@@ -234,24 +232,10 @@ public:
 	  FPGATracklet* tracklet=inputproj_[j]->getFPGATracklet(i);
 
 	  //This block of code just checks that the configuration is consistent
-	  if (tracklet->minusNeighbor(layer_)) {
-	    if (lastTCIDminus>=tracklet->TCID()) {
-	      cout << "Wrong TCID ordering for Minus projections in "<<getName()<<" last "<<lastTCIDminus<<" "<<tracklet->TCID()<<endl;
-	    } else {
-	      lastTCIDminus=tracklet->TCID();
-	    }
-	  } else if (tracklet->plusNeighbor(layer_)) {
-	    if (lastTCIDplus>=tracklet->TCID()) {
-	      cout << "Wrong TCID ordering for Plus projections in "<<getName()<<" last "<<lastTCIDplus<<" "<<tracklet->TCID()<<endl;
-	    } else {
-	      lastTCIDplus=tracklet->TCID();
-	    }
+	  if (lastTCID>=tracklet->TCID()) {
+	    cout << "Wrong TCID ordering for projections in "<<getName()<<endl;
 	  } else {
-	    if (lastTCID>=tracklet->TCID()) {
-	      cout << "Wrong TCID ordering for projections in "<<getName()<<endl;
-	    } else {
-	      lastTCID=tracklet->TCID();
-	    }
+	    lastTCID=tracklet->TCID();
 	  }
 
 	  allproj_->addTracklet(inputproj_[j]->getFPGATracklet(i));

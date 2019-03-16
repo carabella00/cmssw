@@ -67,24 +67,6 @@ public:
     trackletproj_L6PHI3_=0;
     trackletproj_L6PHI4_=0;
 
-    trackletproj_L1Plus_=0; 
-    trackletproj_L1Minus_=0;
-    
-    trackletproj_L2Plus_=0; 
-    trackletproj_L2Minus_=0;
-    
-    trackletproj_L3Plus_=0; 
-    trackletproj_L3Minus_=0;
-    
-    trackletproj_L4Plus_=0; 
-    trackletproj_L4Minus_=0;
-    
-    trackletproj_L5Plus_=0; 
-    trackletproj_L5Minus_=0;
-    
-    trackletproj_L6Plus_=0; 
-    trackletproj_L6Minus_=0;
-    
     trackletproj_D1PHI1_=0;
     trackletproj_D1PHI2_=0;
     trackletproj_D1PHI3_=0;
@@ -109,21 +91,6 @@ public:
     trackletproj_D5PHI2_=0;
     trackletproj_D5PHI3_=0;
     trackletproj_D5PHI4_=0;
-    
-    trackletproj_D1Plus_=0; 
-    trackletproj_D1Minus_=0;
-                         
-    trackletproj_D2Plus_=0; 
-    trackletproj_D2Minus_=0;
-    
-    trackletproj_D3Plus_=0; 
-    trackletproj_D3Minus_=0;
-    
-    trackletproj_D4Plus_=0; 
-    trackletproj_D4Minus_=0;
-                         
-    trackletproj_D5Plus_=0; 
-    trackletproj_D5Minus_=0;
     
     
     layer_=0;
@@ -509,160 +476,6 @@ public:
       addOutputProjection(trackletproj_D5PHI4_,memory);
       return;
     }
-
-
-    
-    if (output=="projoutL1ToMinus"){
-      addOutputProjection(trackletproj_L1Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL1ToPlus"){
-      addOutputProjection(trackletproj_L1Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL2ToMinus"){
-      addOutputProjection(trackletproj_L2Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL2ToPlus"){
-      addOutputProjection(trackletproj_L2Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL3ToMinus"){
-      addOutputProjection(trackletproj_L3Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL3ToPlus"){
-      addOutputProjection(trackletproj_L3Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL4ToMinus"){
-      addOutputProjection(trackletproj_L4Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL4ToPlus"){
-      addOutputProjection(trackletproj_L4Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL5ToMinus"){
-      addOutputProjection(trackletproj_L5Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL5ToPlus"){
-      addOutputProjection(trackletproj_L5Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL6ToMinus"){
-      addOutputProjection(trackletproj_L6Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL6ToPlus"){
-      addOutputProjection(trackletproj_L6Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL3D4ToMinus"){
-      addOutputProjection(trackletproj_L3Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL3D4ToPlus"){
-      addOutputProjection(trackletproj_L3Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL4D3ToMinus"){
-      addOutputProjection(trackletproj_L4Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL4D3ToPlus"){
-      addOutputProjection(trackletproj_L4Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL5D2ToMinus"){
-      addOutputProjection(trackletproj_L5Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL5D2ToPlus"){
-      addOutputProjection(trackletproj_L5Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutL6D1ToMinus"){
-      addOutputProjection(trackletproj_L6Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutL6D1ToPlus"){
-      addOutputProjection(trackletproj_L6Plus_,memory);
-      return;
-    }
-
-
-    if (output=="projoutD1ToPlus"){
-      addOutputProjection(trackletproj_D1Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutD2ToPlus"){
-      addOutputProjection(trackletproj_D2Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutD3ToPlus"){
-      addOutputProjection(trackletproj_D3Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutD4ToPlus"){
-      addOutputProjection(trackletproj_D4Plus_,memory);
-      return;
-    }
-
-    if (output=="projoutD5ToPlus"){
-      addOutputProjection(trackletproj_D5Plus_,memory);
-      return;
-    }    
-    
-
-    if (output=="projoutD1ToMinus"){
-      addOutputProjection(trackletproj_D1Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutD2ToMinus"){
-      addOutputProjection(trackletproj_D2Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutD3ToMinus"){
-      addOutputProjection(trackletproj_D3Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutD4ToMinus"){
-      addOutputProjection(trackletproj_D4Minus_,memory);
-      return;
-    }
-
-    if (output=="projoutD5ToMinus"){
-      addOutputProjection(trackletproj_D5Minus_,memory);
-      return;
-    }    
     
 
     cout << "Could not find output : "<<output<<endl;
@@ -1105,51 +918,7 @@ public:
     if (fpgar.value()*krprojshiftdisk<12.0) return;
     if (fpgar.value()*krprojshiftdisk>112.0) return;
 
-    //cout << "addDiskProj neighbor: "<<tracklet->plusNeighborDisk(disk)<<" "<<tracklet->minusNeighborDisk(disk)<<endl;
 
-    if (tracklet->plusNeighborDisk(disk)) {
-      if (getName().find("L1L2")!=std::string::npos) {
-	if (abs(disk)==1) addNeighborProjectionDisk(disk,trackletproj_L6Plus_,tracklet);
-	if (abs(disk)==2) addNeighborProjectionDisk(disk,trackletproj_L5Plus_,tracklet);
-	if (abs(disk)==3) addNeighborProjectionDisk(disk,trackletproj_L4Plus_,tracklet);
-	if (abs(disk)==4) addNeighborProjectionDisk(disk,trackletproj_L3Plus_,tracklet);
-	return;
-      }
-      if (getName().find("L3L4")!=std::string::npos) {
-	if (abs(disk)==1) addNeighborProjectionDisk(disk,trackletproj_L6Plus_,tracklet);
-	if (abs(disk)==2) addNeighborProjectionDisk(disk,trackletproj_L5Plus_,tracklet);
-	return;
-      }
-      if (abs(disk)==1) addNeighborProjectionDisk(disk,trackletproj_D1Plus_,tracklet);
-      if (abs(disk)==2) addNeighborProjectionDisk(disk,trackletproj_D2Plus_,tracklet);
-      if (abs(disk)==3) addNeighborProjectionDisk(disk,trackletproj_D3Plus_,tracklet);
-      if (abs(disk)==4) addNeighborProjectionDisk(disk,trackletproj_D4Plus_,tracklet);
-      if (abs(disk)==5) addNeighborProjectionDisk(disk,trackletproj_D5Plus_,tracklet);
-      return;
-    }
-      
-    if (tracklet->minusNeighborDisk(disk)) {
-      if (getName().find("L1L2")!=std::string::npos) {
-	if (abs(disk)==1) addNeighborProjectionDisk(disk,trackletproj_L6Minus_,tracklet);
-	if (abs(disk)==2) addNeighborProjectionDisk(disk,trackletproj_L5Minus_,tracklet);
-	if (abs(disk)==3) addNeighborProjectionDisk(disk,trackletproj_L4Minus_,tracklet);
-	if (abs(disk)==4) addNeighborProjectionDisk(disk,trackletproj_L3Minus_,tracklet);
-	return;
-      }
-      if (getName().find("L3L4")!=std::string::npos) {
-	if (abs(disk)==1) addNeighborProjectionDisk(disk,trackletproj_L6Minus_,tracklet);
-	if (abs(disk)==2) addNeighborProjectionDisk(disk,trackletproj_L5Minus_,tracklet);
-	return;
-      }
-
-      if (abs(disk)==1) addNeighborProjectionDisk(disk,trackletproj_D1Minus_,tracklet);
-      if (abs(disk)==2) addNeighborProjectionDisk(disk,trackletproj_D2Minus_,tracklet);
-      if (abs(disk)==3) addNeighborProjectionDisk(disk,trackletproj_D3Minus_,tracklet);
-      if (abs(disk)==4) addNeighborProjectionDisk(disk,trackletproj_D4Minus_,tracklet);
-      if (abs(disk)==5) addNeighborProjectionDisk(disk,trackletproj_D5Minus_,tracklet);
-      return;
-    }
-      
     
     FPGAWord fpgaphi=tracklet->fpgaphiprojdisk(disk);
     
@@ -1212,31 +981,6 @@ public:
     if (fpgaz.atExtreme()) return false;
 
     if (fabs(fpgaz.value()*kz)>zlength) return false;
-
-    assert(!tracklet->plusNeighbor(layer));
-    assert(!tracklet->minusNeighbor(layer));
-    
-    if (tracklet->plusNeighbor(layer)) {
-      if (layer==1) addNeighborProjection(layer,trackletproj_L1Plus_,tracklet);
-      if (layer==2) addNeighborProjection(layer,trackletproj_L2Plus_,tracklet);
-      if (layer==3) addNeighborProjection(layer,trackletproj_L3Plus_,tracklet);
-      if (layer==4) addNeighborProjection(layer,trackletproj_L4Plus_,tracklet);
-      if (layer==5) addNeighborProjection(layer,trackletproj_L5Plus_,tracklet);
-      if (layer==6) addNeighborProjection(layer,trackletproj_L6Plus_,tracklet);
-      return true;
-    }
-      
-    if (tracklet->minusNeighbor(layer)) {
-      if (layer==1) addNeighborProjection(layer,trackletproj_L1Minus_,tracklet);
-      if (layer==2) addNeighborProjection(layer,trackletproj_L2Minus_,tracklet);
-      if (layer==3) addNeighborProjection(layer,trackletproj_L3Minus_,tracklet);
-      if (layer==4) addNeighborProjection(layer,trackletproj_L4Minus_,tracklet);
-      if (layer==5) addNeighborProjection(layer,trackletproj_L5Minus_,tracklet);
-      if (layer==6) addNeighborProjection(layer,trackletproj_L6Minus_,tracklet);
-      return true;
-    }
-      
-
 
     int iphivmRaw=fpgaphi.value()>>(fpgaphi.nbits()-5);
 
@@ -1314,54 +1058,6 @@ public:
     assert(trackletprojs!=0);
     trackletprojs->addProj(tracklet);
   }
-
-  void addNeighborProjection(int layer, FPGATrackletProjections* trackletprojs,FPGATracklet* tracklet){
-    if (trackletprojs==0) {
-      if (warnNoMem) {
-	string str="";
-	if (tracklet->minusNeighbor(layer)){
-	  str="Minus";
-	}
-	if (tracklet->plusNeighbor(layer)){
-	  str="Plus";
-	}
-	assert(str!="");
-	cout << "Error no projection memory exists in "<<getName()<<" for layer = "<<layer<<" to "
-	     <<str<<" neighbor"<<endl;
-      }
-      return;
-    }
-    assert(trackletprojs!=0);
-    trackletprojs->addProj(tracklet);
-  
-
-  }
-
-  
-  void addNeighborProjectionDisk(int disk, FPGATrackletProjections* trackletprojs,FPGATracklet* tracklet){
-
-    if (trackletprojs==0) {
-      if (warnNoMem) {
-	string str="";
-	if (tracklet->minusNeighborDisk(disk)){
-	  str="Minus";
-	}
-	if (tracklet->plusNeighborDisk(disk)){
-	  str="Plus";
-	}
-	assert(str!="");
-	cout << "Error no projection memory exists in "<<getName()<<" for disk = "<<abs(disk)<<" to "
-	     <<str<<" neighbor"<<endl;
-      }
-      return;
-    }
-    assert(trackletprojs!=0);
-
-    trackletprojs->addProj(tracklet);
-
-    
-  }
-
 
   bool barrelSeeding(FPGAStub* innerFPGAStub, L1TStub* innerStub, FPGAStub* outerFPGAStub, L1TStub* outerStub){
 	  
@@ -1529,10 +1225,8 @@ public:
     int irinv,iphi0,it,iz0;
     bool validproj[4];
     int iphiproj[4],izproj[4],iphider[4],izder[4];
-    bool minusNeighbor[4],plusNeighbor[4];
     bool validprojdisk[5];
     int iphiprojdisk[5],irprojdisk[5],iphiderdisk[5],irderdisk[5];
-    bool minusNeighborDisk[5],plusNeighborDisk[5];
     
     int ir1=innerFPGAStub->ir();
     int iphi1=innerFPGAStub->iphi();
@@ -1620,9 +1314,6 @@ public:
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
 
-      minusNeighbor[i]=false;
-      plusNeighbor[i]=false;
-
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1) {
 	iphiproj[i]=(1<<nbitsphistubL456)-2; //-2 not to hit atExtreme
@@ -1668,9 +1359,6 @@ public:
 	iphiderdisk[i] = ITC->der_phiD_final.get_ival();
 	irderdisk[i]   = ITC->der_rD_final.get_ival();
       
-	minusNeighborDisk[i]=false;
-	plusNeighborDisk[i]=false;
-     
 	if (iphiprojdisk[i]<0) {
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
@@ -1720,28 +1408,6 @@ public:
     bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
       if (!keep) return false;
     
-    for(unsigned int j=0;j<5;j++){
-      if (minusNeighborDisk[j]) {
-	phiprojdiskapprox[j]+=dphisector;
-	phiprojdisk[j]+=dphisector;
-      }
-      if (plusNeighborDisk[j]) {
-	phiprojdiskapprox[j]-=dphisector;
-	phiprojdisk[j]-=dphisector;
-      }
-    }
-	  
-    for(unsigned int j=0;j<4;j++){
-      if (minusNeighbor[j]) {
-	phiprojapprox[j]+=dphisector;
-	phiproj[j]+=dphisector;
-      }
-      if (plusNeighbor[j]) {
-	phiprojapprox[j]-=dphisector;
-	phiproj[j]-=dphisector;
-      }	    
-    }
-    
     
     if (writeTrackletPars) {
       static ofstream out("trackletpars.txt");
@@ -1762,15 +1428,12 @@ public:
 					    z0approx,tapprox,
 					    irinv,iphi0,0,iz0,it,validproj,
 					    iphiproj,izproj,iphider,izder,
-					    minusNeighbor,plusNeighbor,
 					    phiproj,zproj,phider,zder,
 					    phiprojapprox,zprojapprox,
 					    phiderapprox,zderapprox,
 					    validprojdisk,
 					    iphiprojdisk,irprojdisk,
 					    iphiderdisk,irderdisk,
-					    minusNeighborDisk,
-					    plusNeighborDisk,
 					    phiprojdisk,rprojdisk,
 					    phiderdisk,rderdisk,
 					    phiprojdiskapprox,
@@ -2007,11 +1670,9 @@ public:
     int irinv,iphi0,it,iz0;
     bool validproj[3];
     int iphiproj[3],izproj[3],iphider[3],izder[3];
-    bool minusNeighbor[3],plusNeighbor[3];
     
     bool validprojdisk[3];
     int iphiprojdisk[3],irprojdisk[3],iphiderdisk[3],irderdisk[3];
-    bool minusNeighborDisk[3],plusNeighborDisk[3];
 
     int ir1=innerFPGAStub->ir();
     int iphi1=innerFPGAStub->iphi();
@@ -2080,9 +1741,6 @@ public:
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
 
-      minusNeighbor[i]=false;
-      plusNeighbor[i]=false;
-
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1){
 	iphiproj[i]=(1<<nbitsphistubL456)-2; //-2 not to hit atExtreme
@@ -2113,9 +1771,6 @@ public:
     for(int i=0; i<3; ++i){
       iphiderdisk[i] = ITC->der_phiD_final.get_ival();
       irderdisk[i]   = ITC->der_rD_final.get_ival();
-      
-      minusNeighborDisk[i]=false;
-      plusNeighborDisk[i]=false;
       
       //"protection" from the original
       if (iphiprojdisk[i]<0) iphiprojdisk[i]=0;
@@ -2149,29 +1804,6 @@ public:
     bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
     if (!keep) return false;
     
-    for(unsigned int j=0;j<3;j++){
-      if (minusNeighborDisk[j]) {
-	phiprojdiskapprox[j]+=dphisector;
-	phiprojdisk[j]+=dphisector;
-      }
-      if (plusNeighborDisk[j]) {
-	phiprojdiskapprox[j]-=dphisector;
-	phiprojdisk[j]-=dphisector;
-      }	    
-    }
-	    
-    for(unsigned int j=0;j<3;j++){
-      if (minusNeighbor[j]) {
-	phiprojapprox[j]+=dphisector;
-	phiproj[j]+=dphisector;
-      }
-      if (plusNeighbor[j]) {
-	phiprojapprox[j]-=dphisector;
-	phiproj[j]-=dphisector;
-      }
-    }
-	    
-    
     if (writeTrackletParsDisk) {
       static ofstream out("trackletparsdisk.txt");
       out <<"Trackpars         "<<disk_
@@ -2192,15 +1824,12 @@ public:
 					    irinv,iphi0,0,iz0,it,
 					    validproj,
 					    iphiproj,izproj,iphider,izder,
-					    minusNeighbor,plusNeighbor,	
 					    phiproj,zproj,phider,zder,
 					    phiprojapprox,zprojapprox,
 					    phiderapprox,zderapprox,
 					    validprojdisk,
 					    iphiprojdisk,irprojdisk,
 					    iphiderdisk,irderdisk,
-					    minusNeighborDisk,
-					    plusNeighborDisk,
 					    phiprojdisk,rprojdisk,
 					    phiderdisk,rderdisk,
 					    phiprojdiskapprox,
@@ -2404,11 +2033,9 @@ public:
     int irinv,iphi0,it,iz0;
     bool validproj[3];
     int iphiproj[3],izproj[3],iphider[3],izder[3];
-    bool minusNeighbor[3],plusNeighbor[3];
     
     bool validprojdisk[4];
     int iphiprojdisk[4],irprojdisk[4],iphiderdisk[4],irderdisk[4];
-    bool minusNeighborDisk[4],plusNeighborDisk[4];
     
     int ir2=innerFPGAStub->ir();
     int iphi2=innerFPGAStub->iphi();
@@ -2486,9 +2113,6 @@ public:
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
 
-      minusNeighbor[i]=false;
-      plusNeighbor[i]=false;
-
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)) {
 	iphiproj[i]=(1<<nbitsphistubL456)-2; //-2 not to hit atExtreme
@@ -2523,9 +2147,6 @@ public:
       iphiderdisk[i] = ITC->der_phiD_final.get_ival();
       irderdisk[i]   = ITC->der_rD_final.get_ival();
 
-      minusNeighborDisk[i]=false;
-      plusNeighborDisk[i]=false;
-	
       //"protection" from the original
       if (iphiprojdisk[i]<0) iphiprojdisk[i]=0;
       if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
@@ -2585,29 +2206,6 @@ public:
     }
     
 
-    for(unsigned int j=0;j<3;j++){
-      if (minusNeighborDisk[j]) {
-	phiprojdiskapprox[j]+=dphisector;
-	phiprojdisk[j]+=dphisector;
-      }
-      if (plusNeighborDisk[j]) {
-	phiprojdiskapprox[j]-=dphisector;
-	phiprojdisk[j]-=dphisector;
-      }	    
-    }
-    
-    for(unsigned int j=0;j<3;j++){
-      if (minusNeighbor[j]) {
-	phiprojapprox[j]+=dphisector;
-	phiproj[j]+=dphisector;
-      }
-      if (plusNeighbor[j]) {
-	phiprojapprox[j]-=dphisector;
-	phiproj[j]-=dphisector;
-      }
-    }
-    
-    
     if (writeTrackletParsOverlap) {
       static ofstream out("trackletparsoverlap.txt");
       out <<"Trackpars "<<disk_
@@ -2628,17 +2226,12 @@ public:
 					    irinv,iphi0,0,iz0,it,
 					    validproj,
 					    iphiproj,izproj,iphider,izder,
-					    minusNeighbor,plusNeighbor,
-					    
-					    
 					    phiproj,zproj,phider,zder,
 					    phiprojapprox,zprojapprox,
 					    phiderapprox,zderapprox,
 					    validprojdisk,
 					    iphiprojdisk,irprojdisk,
 					    iphiderdisk,irderdisk,
-					    minusNeighborDisk,
-					    plusNeighborDisk,
 					    phiprojdisk,rprojdisk,
 					    phiderdisk,rderdisk,
 					    phiprojdiskapprox,
@@ -2772,42 +2365,6 @@ private:
   FPGATrackletProjections* trackletproj_D5PHI2_;
   FPGATrackletProjections* trackletproj_D5PHI3_;
   FPGATrackletProjections* trackletproj_D5PHI4_;
-
-
-  
-  FPGATrackletProjections* trackletproj_L1Plus_; 
-  FPGATrackletProjections* trackletproj_L1Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_L2Plus_; 
-  FPGATrackletProjections* trackletproj_L2Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_L3Plus_; 
-  FPGATrackletProjections* trackletproj_L3Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_L4Plus_; 
-  FPGATrackletProjections* trackletproj_L4Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_L5Plus_; 
-  FPGATrackletProjections* trackletproj_L5Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_L6Plus_; 
-  FPGATrackletProjections* trackletproj_L6Minus_;
-
-
-  FPGATrackletProjections* trackletproj_D1Plus_; 
-  FPGATrackletProjections* trackletproj_D1Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_D2Plus_; 
-  FPGATrackletProjections* trackletproj_D2Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_D3Plus_; 
-  FPGATrackletProjections* trackletproj_D3Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_D4Plus_; 
-  FPGATrackletProjections* trackletproj_D4Minus_;
-			                         
-  FPGATrackletProjections* trackletproj_D5Plus_; 
-  FPGATrackletProjections* trackletproj_D5Minus_;
 
 public:
   static IMATH_TrackletCalculator ITC_L1L2;

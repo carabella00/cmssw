@@ -87,25 +87,16 @@ public:
   double phi0() const {
 
     double dphi=two_pi/NSector;
-    double dphiHG=0.0;
-    if (hourglass) {
-      dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-    }
+    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
     double phimin=sector_*dphi-dphiHG;
     double phimax=phimin+dphi+2*dphiHG;
-    if (hourglass) {
-      phimin-=0.5*two_pi/NSector;
-      phimax-=0.5*two_pi/NSector;
-    }
+    phimin-=0.5*two_pi/NSector;
+    phimax-=0.5*two_pi/NSector;
     if (phimin>0.5*two_pi) phimin-=two_pi;
     if (phimax>0.5*two_pi) phimax-=two_pi;
     if (phimin>phimax)  phimin-=two_pi;
-    double phioffset=phimin-dphi/6.0;
-    if (hourglass) {
-      phioffset=phimin;
-    } 
-
-
+    double phioffset=phimin;
+  
     return iphi0_*kphi0pars+phioffset;
   }
   double eta() const {

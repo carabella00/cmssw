@@ -16,9 +16,6 @@ public:
     layer_=0;
     disk_=0;
     string subname=name.substr(3,2);
-    if (!hourglass) {
-      subname=name.substr(8,2);
-    }
     if (subname=="L1") layer_=1;
     if (subname=="L2") layer_=2;
     if (subname=="L3") layer_=3;

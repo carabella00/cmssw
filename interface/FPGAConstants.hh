@@ -23,7 +23,7 @@ static bool hourglass=true;
 static bool hourglassExtended=false; // This is turn on Displaced Tracking. Also change the file in Tracklet_cfi from hourglass to hourglassExtended ****************
 
 //Gemetry extensions
-static std::string geomext=hourglass?(hourglassExtended?"hourglassExtended":"hourglass"):"new";  
+static std::string geomext=hourglassExtended?"hourglassExtended":"hourglass";  
 
 static int TMUX = 6;
 
@@ -262,7 +262,7 @@ static double bendcutdisk=2.0;
 static double z0cut=15.0;
 
 
-static unsigned int NSector=hourglass?9:27; 
+static unsigned int NSector=9; 
 static int Nphibits=2;         //Number of bits required to label the phi VM
 static int L1Nphi=(1<<Nphibits)-1; //Number of odd layer VMs
 static int Nzbits=3;         //Number of bits required to label the z VM
@@ -302,18 +302,17 @@ static const double rinnerdisk=22.0;
 
 static unsigned int MAXOFFSET=10000; //set to 0 for regular truncation
 
-static unsigned int MAXSTUBSLINK = (hourglass?108:54) + MAXOFFSET; //Max stubs per link
-static unsigned int MAXLAYERROUTER = (hourglass?108:54) + MAXOFFSET; //Max stubs handled by layer router
-static unsigned int MAXDISKROUTER = (hourglass?108:54) + MAXOFFSET; //Max stubs handled by disk router
-static unsigned int MAXVMROUTER = (hourglass?108:54) + MAXOFFSET; //Max stubs handled by VM router
-static unsigned int MAXTE = (hourglass?108:54) + MAXOFFSET; //Maximum number of stub pairs to try in TE 
-static unsigned int MAXTRE = (hourglass?108:54) + MAXOFFSET; //Maximum number of stub pairs to try in TRE 
-static unsigned int MAXTC = (hourglass?108:54) + MAXOFFSET; //Maximum number of tracklet parameter calculations
-//static unsigned int MAXPROJECTIONTRANSCEIVER = 10000; //Maximum number of projections to neighbor
-static unsigned int MAXPROJROUTER = (hourglass?108:54) + MAXOFFSET; //Maximum number of projections to route
-static unsigned int MAXME = (hourglass?108:54) + MAXOFFSET; //Maximum number of stub-projection matches to try
-static unsigned int MAXMC = (hourglass?108:54) + MAXOFFSET; //Maximum number of match calculations
-static unsigned int MAXFIT = (hourglass?108:54) + MAXOFFSET; //Maximum number of track fits
+static unsigned int MAXSTUBSLINK = 108 + MAXOFFSET; //Max stubs per link
+static unsigned int MAXLAYERROUTER = 108 + MAXOFFSET; //Max stubs handled by layer router
+static unsigned int MAXDISKROUTER = 108 + MAXOFFSET; //Max stubs handled by disk router
+static unsigned int MAXVMROUTER = 108 + MAXOFFSET; //Max stubs handled by VM router
+static unsigned int MAXTE = 108 + MAXOFFSET; //Maximum number of stub pairs to try in TE 
+static unsigned int MAXTRE = 108 + MAXOFFSET; //Maximum number of stub pairs to try in TRE 
+static unsigned int MAXTC = 108 + MAXOFFSET; //Maximum number of tracklet parameter calculations
+static unsigned int MAXPROJROUTER = 108 + MAXOFFSET; //Maximum number of projections to route
+static unsigned int MAXME = 108 + MAXOFFSET; //Maximum number of stub-projection matches to try
+static unsigned int MAXMC = 108 + MAXOFFSET; //Maximum number of match calculations
+static unsigned int MAXFIT = 108 + MAXOFFSET; //Maximum number of track fits
 
 
 static double dphisector=two_pi/NSector;
@@ -340,7 +339,7 @@ static int nbitsphiprojL456=nbitsphistubL456;
 static int nbitszprojL123=12;
 static int nbitszprojL456=hourglassExtended?12:8;
 
-static int nbitsphiprojderL123=hourglass?(hourglassExtended?16:8+2):8+3;
+static int nbitsphiprojderL123=hourglassExtended?16:8+2;
 static int nbitsphiprojderL456=hourglassExtended?16:8+2;
 
 static int nbitszprojderL123=8+2;
@@ -375,15 +374,15 @@ static double rmin[6]={rminL1,rminL2,rminL3,rminL4,rminL5,rminL6};
 
 //These are constants defining global coordinate system
 
-static double kphi=hourglass?dphisectorHG/(1<<nbitsphistubL123):two_pi/((0.75*NSector)*(1<<nbitsphistubL123));
-static double kphi1=hourglass?dphisectorHG/(1<<nbitsphistubL456):two_pi/((0.75*NSector)*(1<<nbitsphistubL456));
+static double kphi=dphisectorHG/(1<<nbitsphistubL123);
+static double kphi1=dphisectorHG/(1<<nbitsphistubL456);
 static double kz=2*zlength/(1<<nbitszL123);
 //static double kr=2*drmax/(1<<nbitsrL456);
 static double kr=rmaxdisk/(1<<nrbitsdisk);
 static double kd0 = 2*maxd0/(1<<nbitsd0);
 
 //track and tracklet parameters
-const int rinv_shift = hourglass?-8:-6;  // Krinv = 2^shift * Kphi/Kr
+const int rinv_shift = -8;  // Krinv = 2^shift * Kphi/Kr
 const int phi0_shift = 1;   // Kphi0 = 2^shift * Kphi
 const int t_shift    = -10; // Kt    = 2^shift * Kz/Kr
 const int z0_shift   = 0;   // Kz0   = 2^shift * kz
@@ -396,8 +395,8 @@ const int SS_phiL_shift = 0;
 const int PS_zL_shift   = 0;   // z projections have global precision in ITC
 const int SS_zL_shift   = 0;
 
-const int PS_phiderL_shift = hourglass?-5:-3;   // Kderphi = 2^shift * Kphi/Kr
-const int SS_phiderL_shift = hourglass?-5:-3; 
+const int PS_phiderL_shift = -5;   // Kderphi = 2^shift * Kphi/Kr
+const int SS_phiderL_shift = -5; 
 const int PS_zderL_shift   = -7;  // Kderz = 2^shift * Kz/Kr
 const int SS_zderL_shift   = -7;  
   

@@ -15,8 +15,7 @@ public:
     FPGAMemoryBase(name,iSector){
     phimin_=phimin;
     phimax_=phimax;
-    string subname=name.substr(8,2);
-    if (hourglass) subname=name.substr(3,2);
+    string subname=name.substr(3,2);
     if (subname[0]=='_') subname=name.substr(9,2);
     
     layer_ = 0; 

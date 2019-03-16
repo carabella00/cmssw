@@ -1187,14 +1187,11 @@ class FPGAFitTrack:public FPGAProcessBase{
    ichisqfit = ichisqfit>>3;
    if(ichisqfit >= (1<<8)) ichisqfit = (1<<8)-1;
 
-   if (hourglass) {
 
-    double phicrit=phi0fit-asin(0.5*rcrit*rinvfit);
-    bool keep=(phicrit>phicritmin)&&(phicrit<phicritmax);
-
-    if (!keep) return;
-
-   }
+   double phicrit=phi0fit-asin(0.5*rcrit*rinvfit);
+   bool keep=(phicrit>phicritmin)&&(phicrit<phicritmax);
+   
+   if (!keep) return;
 
    tracklet->setFitPars(rinvfit,phi0fit,tfit,z0fit,chisqfit,
      rinvfitexact,phi0fitexact,tfitexact,

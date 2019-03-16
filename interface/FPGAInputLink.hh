@@ -85,76 +85,54 @@ public:
 
     }
     
-    bool add=false;
     unsigned int asindex = 0;
     int iphivmRaw=stub.iphivmRaw();
     
-    
-    if (hourglass) {
-
-      //cout << getName()<<" layer = "<<stub.layer().value()+1<<endl;
-      
-      if (stub.layer().value()==-1 && isLayer() ) return false; 
-      if (stub.layer().value()!=-1 && isDisk() ) return false;
-      if (stub.layer().value()!=-1){
-	if (stub.layer().value()+1!=layerdisk()) return false;
-      } else {
-	if (abs(stub.disk().value())!=layerdisk()) return false;
-      }
-
-      int phibin=-1;
-      if (stub.layer().value()!=-1) {
-	if (phiregionoverlap()==-1) {
-	  phibin=iphivmRaw/(32/nallstubslayers[layerdisk()-1]);
-	} else {
-	  phibin=iphivmRaw/(32/nallstubsoverlaplayers[layerdisk()-1]);
-	}
-      } else {
-	phibin=iphivmRaw/(32/nallstubsdisks[layerdisk()-1]); 
-      }
-
-      //cout << getName()<<" "<<iSector_<<" phibin phiregion : "<<phibin<<" "<<phiregion()<<endl;
-      
-      if (phibin!=phiregion() && phibin!=phiregionoverlap()) return false;
-
-
-      
- 
-      //cout << getName()<<" "<<getName().substr(10,dtc.size())<<" "<<dtc<<endl;
-      
-      if (getName().substr(10,dtc.size())!=dtc) return false;
-
-      string half=getName().substr(getName().size()-3,3);
-      if (half[1]!='n') {
-	half=getName().substr(getName().size()-1,1);
-      }
-      //cout << "iSector half iphivmRaw: "<<iSector_<<" "<<half<<" "<<iphivmRaw<<endl;
-      assert(half[0]=='A' || half[0]=='B');
-
-
-      double sectorphi=al1stub.phi();
-      if (sectorphi<0.0) sectorphi+=two_pi;
-
-      while (sectorphi>3*two_pi/(2*NSector)) {
-	sectorphi-=(two_pi/NSector);
-      }
-      
-      
-      if (half[0]=='B' && iphivmRaw<=15) return false;
-      if (half[0]=='A' && iphivmRaw>15) return false;
-      
-
-      
-      //cout << getName() << " adding stub to phibin : "<<phibin<<" iphivmRaw "<<iphivmRaw<<endl;
-      add=true;
-
-
-    } 
-      
-    if (!add) {
-      //cout << "Will not add stub" << endl;
-      return false;
+       
+    if (stub.layer().value()==-1 && isLayer() ) return false; 
+    if (stub.layer().value()!=-1 && isDisk() ) return false;
+    if (stub.layer().value()!=-1){
+      if (stub.layer().value()+1!=layerdisk()) return false;
+    } else {
+      if (abs(stub.disk().value())!=layerdisk()) return false;
     }
+    
+    int phibin=-1;
+    if (stub.layer().value()!=-1) {
+      if (phiregionoverlap()==-1) {
+	phibin=iphivmRaw/(32/nallstubslayers[layerdisk()-1]);
+      } else {
+	phibin=iphivmRaw/(32/nallstubsoverlaplayers[layerdisk()-1]);
+      }
+    } else {
+      phibin=iphivmRaw/(32/nallstubsdisks[layerdisk()-1]); 
+    }
+    
+    if (phibin!=phiregion() && phibin!=phiregionoverlap()) return false;
+    
+    if (getName().substr(10,dtc.size())!=dtc) return false;
+    
+    string half=getName().substr(getName().size()-3,3);
+    if (half[1]!='n') {
+      half=getName().substr(getName().size()-1,1);
+    }
+
+    assert(half[0]=='A' || half[0]=='B');
+
+
+    double sectorphi=al1stub.phi();
+    if (sectorphi<0.0) sectorphi+=two_pi;
+    
+    while (sectorphi>3*two_pi/(2*NSector)) {
+      sectorphi-=(two_pi/NSector);
+    }
+    
+    
+    if (half[0]=='B' && iphivmRaw<=15) return false;
+    if (half[0]=='A' && iphivmRaw>15) return false;
+    
+
+    
     if (debug1) {
       cout << "Will add stub in "<<getName()<<" phimin_ phimax_ "<<phimin_<<" "<<phimax_<<" "<<"iphiwmRaw = "<<iphivmRaw<<" phi="<<al1stub.phi()<<" z="<<al1stub.z()<<" r="<<al1stub.r()<<endl;
     }

@@ -19,255 +19,234 @@ public:
 
   FPGATrackletCalculator(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    double dphi=two_pi/NSector;
-    double dphiHG=0.0;
-    if (hourglass) {
-      dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-    }
+   double dphi=two_pi/NSector;
+   double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    if (hourglass) {
-      phimin_-=0.5*two_pi/NSector;
-      phimax_-=0.5*two_pi/NSector;
-    }
+    phimin_-=0.5*two_pi/NSector;
+    phimax_-=0.5*two_pi/NSector;
     if (phimin_>0.5*two_pi) phimin_-=two_pi;
     if (phimax_>0.5*two_pi) phimax_-=two_pi;
     if (phimin_>phimax_)  phimin_-=two_pi;
-    if (hourglass) {
-      phioffset_=phimin_;
-    } else {
-      phioffset_=phimin_-dphi/6.0;
-    }
-
-    maxtracklet_=63;
-    if (hourglass) maxtracklet_=127;
+    phioffset_=phimin_;
     
-   trackletproj_L1PHI1_=0;
-   trackletproj_L1PHI2_=0;
-   trackletproj_L1PHI3_=0;
-   trackletproj_L1PHI4_=0;
-   trackletproj_L1PHI5_=0;
-   trackletproj_L1PHI6_=0;
-   trackletproj_L1PHI7_=0;
-   trackletproj_L1PHI8_=0;
+    maxtracklet_=127;
+    
+    trackletproj_L1PHI1_=0;
+    trackletproj_L1PHI2_=0;
+    trackletproj_L1PHI3_=0;
+    trackletproj_L1PHI4_=0;
+    trackletproj_L1PHI5_=0;
+    trackletproj_L1PHI6_=0;
+    trackletproj_L1PHI7_=0;
+    trackletproj_L1PHI8_=0;
+    
+
+    trackletproj_L2PHI1_=0;
+    trackletproj_L2PHI2_=0;
+    trackletproj_L2PHI3_=0;
+    trackletproj_L2PHI4_=0;
+    
+    trackletproj_L3PHI1_=0;
+    trackletproj_L3PHI2_=0;
+    trackletproj_L3PHI3_=0;
+    trackletproj_L3PHI4_=0;
+    
+    trackletproj_L4PHI1_=0;
+    trackletproj_L4PHI2_=0;
+    trackletproj_L4PHI3_=0;
+    trackletproj_L4PHI4_=0;
+    
+    trackletproj_L5PHI1_=0;
+    trackletproj_L5PHI2_=0;
+    trackletproj_L5PHI3_=0;
+    trackletproj_L5PHI4_=0;
+    
+    trackletproj_L6PHI1_=0;
+    trackletproj_L6PHI2_=0;
+    trackletproj_L6PHI3_=0;
+    trackletproj_L6PHI4_=0;
+
+    trackletproj_L1Plus_=0; 
+    trackletproj_L1Minus_=0;
+    
+    trackletproj_L2Plus_=0; 
+    trackletproj_L2Minus_=0;
+    
+    trackletproj_L3Plus_=0; 
+    trackletproj_L3Minus_=0;
+    
+    trackletproj_L4Plus_=0; 
+    trackletproj_L4Minus_=0;
+    
+    trackletproj_L5Plus_=0; 
+    trackletproj_L5Minus_=0;
+    
+    trackletproj_L6Plus_=0; 
+    trackletproj_L6Minus_=0;
+    
+    trackletproj_D1PHI1_=0;
+    trackletproj_D1PHI2_=0;
+    trackletproj_D1PHI3_=0;
+    trackletproj_D1PHI4_=0;
+
+    trackletproj_D2PHI1_=0;
+    trackletproj_D2PHI2_=0;
+    trackletproj_D2PHI3_=0;
+    trackletproj_D2PHI4_=0;
+    
+    trackletproj_D3PHI1_=0;
+    trackletproj_D3PHI2_=0;
+    trackletproj_D3PHI3_=0;
+    trackletproj_D3PHI4_=0;
+    
+    trackletproj_D4PHI1_=0;
+    trackletproj_D4PHI2_=0;
+    trackletproj_D4PHI3_=0;
+    trackletproj_D4PHI4_=0;
+    
+    trackletproj_D5PHI1_=0;
+    trackletproj_D5PHI2_=0;
+    trackletproj_D5PHI3_=0;
+    trackletproj_D5PHI4_=0;
+    
+    trackletproj_D1Plus_=0; 
+    trackletproj_D1Minus_=0;
+                         
+    trackletproj_D2Plus_=0; 
+    trackletproj_D2Minus_=0;
+    
+    trackletproj_D3Plus_=0; 
+    trackletproj_D3Minus_=0;
+    
+    trackletproj_D4Plus_=0; 
+    trackletproj_D4Minus_=0;
+                         
+    trackletproj_D5Plus_=0; 
+    trackletproj_D5Minus_=0;
+    
+    
+    layer_=0;
+    disk_=0;
+    
+    if (name_[3]=='L') layer_=name_[4]-'0';    
+    if (name_[3]=='D') disk_=name_[4]-'0';    
+    
+
+    // set TC index
+    if      (name_[7]=='A') iTC_ =0;
+    else if (name_[7]=='B') iTC_ =1;
+    else if (name_[7]=='C') iTC_ =2;
+    else if (name_[7]=='D') iTC_ =3;
+    else if (name_[7]=='E') iTC_ =4;
+    else if (name_[7]=='F') iTC_ =5;
+    else if (name_[7]=='G') iTC_ =6;
+    else if (name_[7]=='H') iTC_ =7;
+    else if (name_[7]=='I') iTC_ =8;
+    else if (name_[7]=='J') iTC_ =9;
+    else if (name_[7]=='K') iTC_ =10;
+    else if (name_[7]=='L') iTC_ =11;
+    else if (name_[7]=='M') iTC_ =12;
+    else if (name_[7]=='N') iTC_ =13;
+    else if (name_[7]=='O') iTC_ =14;
+    
+    assert(iTC_!=-1);
+    
+    if (name_.substr(3,4)=="L1L2") iSeed_ = 0;
+    else if (name_.substr(3,4)=="L3L4") iSeed_ = 2;
+    else if (name_.substr(3,4)=="L5L6") iSeed_ = 3;
+    else if (name_.substr(3,4)=="D1D2") iSeed_ = 4;
+    else if (name_.substr(3,4)=="D3D4") iSeed_ = 5;
+    else if (name_.substr(3,4)=="D1L1") iSeed_ = 6;
+    else if (name_.substr(3,4)=="D1L2") iSeed_ = 7;
+    else if (name_.substr(3,4)=="L1D1") iSeed_ = 6;
+    else if (name_.substr(3,4)=="L2D1") iSeed_ = 7;
+    else if (name_.substr(3,4)=="L2L3") iSeed_ = 1;
+    
+    assert(iSeed_!=-1);
+
+    TCIndex_ = (iSeed_<<4) + iTC_;
+    assert(TCIndex_>=0 && TCIndex_<128);
    
-
-   trackletproj_L2PHI1_=0;
-   trackletproj_L2PHI2_=0;
-   trackletproj_L2PHI3_=0;
-   trackletproj_L2PHI4_=0;
-
-   trackletproj_L3PHI1_=0;
-   trackletproj_L3PHI2_=0;
-   trackletproj_L3PHI3_=0;
-   trackletproj_L3PHI4_=0;
-
-   trackletproj_L4PHI1_=0;
-   trackletproj_L4PHI2_=0;
-   trackletproj_L4PHI3_=0;
-   trackletproj_L4PHI4_=0;
-
-   trackletproj_L5PHI1_=0;
-   trackletproj_L5PHI2_=0;
-   trackletproj_L5PHI3_=0;
-   trackletproj_L5PHI4_=0;
-
-   trackletproj_L6PHI1_=0;
-   trackletproj_L6PHI2_=0;
-   trackletproj_L6PHI3_=0;
-   trackletproj_L6PHI4_=0;
-
-   trackletproj_L1Plus_=0; 
-   trackletproj_L1Minus_=0;
-                         
-   trackletproj_L2Plus_=0; 
-   trackletproj_L2Minus_=0;
-                         
-   trackletproj_L3Plus_=0; 
-   trackletproj_L3Minus_=0;
-                         
-   trackletproj_L4Plus_=0; 
-   trackletproj_L4Minus_=0;
-                         
-   trackletproj_L5Plus_=0; 
-   trackletproj_L5Minus_=0;
-                         
-   trackletproj_L6Plus_=0; 
-   trackletproj_L6Minus_=0;
-
-   trackletproj_D1PHI1_=0;
-   trackletproj_D1PHI2_=0;
-   trackletproj_D1PHI3_=0;
-   trackletproj_D1PHI4_=0;
-
-   trackletproj_D2PHI1_=0;
-   trackletproj_D2PHI2_=0;
-   trackletproj_D2PHI3_=0;
-   trackletproj_D2PHI4_=0;
-
-   trackletproj_D3PHI1_=0;
-   trackletproj_D3PHI2_=0;
-   trackletproj_D3PHI3_=0;
-   trackletproj_D3PHI4_=0;
-
-   trackletproj_D4PHI1_=0;
-   trackletproj_D4PHI2_=0;
-   trackletproj_D4PHI3_=0;
-   trackletproj_D4PHI4_=0;
-
-   trackletproj_D5PHI1_=0;
-   trackletproj_D5PHI2_=0;
-   trackletproj_D5PHI3_=0;
-   trackletproj_D5PHI4_=0;
-
-   trackletproj_D1Plus_=0; 
-   trackletproj_D1Minus_=0;
-                         
-   trackletproj_D2Plus_=0; 
-   trackletproj_D2Minus_=0;
-                         
-   trackletproj_D3Plus_=0; 
-   trackletproj_D3Minus_=0;
-                         
-   trackletproj_D4Plus_=0; 
-   trackletproj_D4Minus_=0;
-                         
-   trackletproj_D5Plus_=0; 
-   trackletproj_D5Minus_=0;
-
-  
-   layer_=0;
-   disk_=0;
-
-   if (name_[3]=='L') layer_=name_[4]-'0';    
-   if (name_[3]=='D') disk_=name_[4]-'0';    
-
-
-   // set TC index
-   if      (name_[7]=='A') iTC_ =0;
-   else if (name_[7]=='B') iTC_ =1;
-   else if (name_[7]=='C') iTC_ =2;
-   else if (name_[7]=='D') iTC_ =3;
-   else if (name_[7]=='E') iTC_ =4;
-   else if (name_[7]=='F') iTC_ =5;
-   else if (name_[7]=='G') iTC_ =6;
-   else if (name_[7]=='H') iTC_ =7;
-   else if (name_[7]=='I') iTC_ =8;
-   else if (name_[7]=='J') iTC_ =9;
-   else if (name_[7]=='K') iTC_ =10;
-   else if (name_[7]=='L') iTC_ =11;
-   else if (name_[7]=='M') iTC_ =12;
-   else if (name_[7]=='N') iTC_ =13;
-   else if (name_[7]=='O') iTC_ =14;
-
-   assert(iTC_!=-1);
-   
-   if (name_.substr(3,4)=="L1L2") iSeed_ = 0;
-   else if (name_.substr(3,4)=="L3L4") iSeed_ = 2;
-   else if (name_.substr(3,4)=="L5L6") iSeed_ = 3;
-   else if (name_.substr(3,4)=="D1D2") iSeed_ = 4;
-   else if (name_.substr(3,4)=="D3D4") iSeed_ = 5;
-   else if (name_.substr(3,4)=="D1L1") iSeed_ = 6;
-   else if (name_.substr(3,4)=="D1L2") iSeed_ = 7;
-   else if (name_.substr(3,4)=="L1D1") iSeed_ = 6;
-   else if (name_.substr(3,4)=="L2D1") iSeed_ = 7;
-   else if (name_.substr(3,4)=="L2L3") iSeed_ = 1;
-
-   assert(iSeed_!=-1);
-
-   if (hourglass) {
-     TCIndex_ = (iSeed_<<4) + iTC_;
-     assert(TCIndex_>=0 && TCIndex_<128);
-   } else {
-     TCIndex_ = (iSeed_<<3) + iTC_;
-     assert(TCIndex_>=0 && TCIndex_<64);
-   }
-     
-   //if (hourglass) {
-   //if (iSeed_!=0)  TCIndex_+=8;
-     //cout << "iTC_ iSeed_ TCIndex_ "<<iTC_<<" "<<iSeed_<<" "<<TCIndex_<<endl;
-   //}
-   
-   
-   assert((layer_!=0)||(disk_!=0));
+    assert((layer_!=0)||(disk_!=0));
 
    
-   if (iSeed_==0||iSeed_==1||iSeed_==2||iSeed_==3) {
-     if (layer_==1) {
-       rproj_[0]=rmeanL3;
-       rproj_[1]=rmeanL4;
-       rproj_[2]=rmeanL5;
-       rproj_[3]=rmeanL6;
-       lproj_[0]=3;
-       lproj_[1]=4;
-       lproj_[2]=5;
-       lproj_[3]=6;
-     }
-
-     if (layer_==2) {
-       rproj_[0]=rmeanL1;
-       rproj_[1]=rmeanL4;
-       rproj_[2]=rmeanL5;
-       rproj_[3]=rmeanL6;
-       lproj_[0]=1;
-       lproj_[1]=4;
-       lproj_[2]=5;
-       lproj_[3]=6;
-     }
+    if (iSeed_==0||iSeed_==1||iSeed_==2||iSeed_==3) {
+      if (layer_==1) {
+	rproj_[0]=rmeanL3;
+	rproj_[1]=rmeanL4;
+	rproj_[2]=rmeanL5;
+	rproj_[3]=rmeanL6;
+	lproj_[0]=3;
+	lproj_[1]=4;
+	lproj_[2]=5;
+	lproj_[3]=6;
+      }
       
-     if (layer_==3) {
-       rproj_[0]=rmeanL1;
-       rproj_[1]=rmeanL2;
-       rproj_[2]=rmeanL5;
-       rproj_[3]=rmeanL6;
-       lproj_[0]=1;
-       lproj_[1]=2;
-       lproj_[2]=5;
-       lproj_[3]=6;
-     }
-	  
-     if (layer_==5) {
-       rproj_[0]=rmeanL1;
-       rproj_[1]=rmeanL2;
-       rproj_[2]=rmeanL3;
-       rproj_[3]=rmeanL4;
-       lproj_[0]=1;
-       lproj_[1]=2;
-       lproj_[2]=3;
-       lproj_[3]=4;
-     }
-   }
-
-   if (iSeed_==4||iSeed_==5) {
-     if (disk_==1) {
-       zproj_[0]=zmeanD3;
-       zproj_[1]=zmeanD4;
-       zproj_[2]=zmeanD5;
-       dproj_[0]=3;
-       dproj_[1]=4;
-       dproj_[2]=5;
-     }
-     
-     if (disk_==3) {
-       zproj_[0]=zmeanD1;
-       zproj_[1]=zmeanD2;
-       zproj_[2]=zmeanD5;
-       dproj_[0]=1;
-       dproj_[1]=2;
-       dproj_[2]=5;
-     }
-   }
-
-
-   if (iSeed_==6||iSeed_==7) {
-     zprojoverlap_[0]=zmeanD2;
-     zprojoverlap_[1]=zmeanD3;
-     zprojoverlap_[2]=zmeanD4;
-     zprojoverlap_[3]=zmeanD5;
-   }
+      if (layer_==2) {
+	rproj_[0]=rmeanL1;
+	rproj_[1]=rmeanL4;
+	rproj_[2]=rmeanL5;
+	rproj_[3]=rmeanL6;
+	lproj_[0]=1;
+	lproj_[1]=4;
+	lproj_[2]=5;
+	lproj_[3]=6;
+      }
       
+      if (layer_==3) {
+	rproj_[0]=rmeanL1;
+	rproj_[1]=rmeanL2;
+	rproj_[2]=rmeanL5;
+	rproj_[3]=rmeanL6;
+	lproj_[0]=1;
+	lproj_[1]=2;
+	lproj_[2]=5;
+	lproj_[3]=6;
+      }
+      
+      if (layer_==5) {
+	rproj_[0]=rmeanL1;
+	rproj_[1]=rmeanL2;
+	rproj_[2]=rmeanL3;
+	rproj_[3]=rmeanL4;
+	lproj_[0]=1;
+	lproj_[1]=2;
+	lproj_[2]=3;
+	lproj_[3]=4;
+      }
+    }
+    
+    if (iSeed_==4||iSeed_==5) {
+      if (disk_==1) {
+	zproj_[0]=zmeanD3;
+	zproj_[1]=zmeanD4;
+	zproj_[2]=zmeanD5;
+	dproj_[0]=3;
+	dproj_[1]=4;
+	dproj_[2]=5;
+      }
+      
+      if (disk_==3) {
+	zproj_[0]=zmeanD1;
+	zproj_[1]=zmeanD2;
+	zproj_[2]=zmeanD5;
+	dproj_[0]=1;
+	dproj_[1]=2;
+	dproj_[2]=5;
+      }
+    }
+    
+    
+    if (iSeed_==6||iSeed_==7) {
+      zprojoverlap_[0]=zmeanD2;
+      zprojoverlap_[1]=zmeanD3;
+      zprojoverlap_[2]=zmeanD4;
+      zprojoverlap_[3]=zmeanD5;
+    }
+    
   }
-
+  
   void addOutputProjection(FPGATrackletProjections* &outputProj, FPGAMemoryBase* memory){
       outputProj=dynamic_cast<FPGATrackletProjections*>(memory);
       assert(outputProj!=0);
@@ -782,12 +761,8 @@ public:
     
     rinv=2*sin(deltaphi)/dist;
 
-    double phi1tmp=phi1-phimin_+(phimax_-phimin_)/6.0;    
-
-    if (hourglass) {
-      phi1tmp=phi1-phimin_;    
-    }
-    
+    double phi1tmp=phi1-phimin_;    
+     
     phi0=phi1tmp+asin(0.5*r1*rinv);
     
     if (phi0>0.5*two_pi) phi0-=two_pi;
@@ -842,14 +817,7 @@ public:
     
     rinv=2*sin(deltaphi)/dist;
 
-    double phi1tmp=phi1-phimin_+(phimax_-phimin_)/6.0;    
-
-    if (hourglass) {
-      phi1tmp=phi1-phimin_;    
-    }
-
-    
-    //cout << "phi1 phi2 phi1tmp : "<<phi1<<" "<<phi2<<" "<<phi1tmp<<endl;
+    double phi1tmp=phi1-phimin_;    
 
     phi0=phi1tmp+asin(0.5*r1*rinv);
     
@@ -925,11 +893,7 @@ public:
 
     if (r1>r2) rinv=-rinv;
 
-    double phi1tmp=phi1-phimin_+(phimax_-phimin_)/6.0;    
-
-    if (hourglass) {
-      phi1tmp=phi1-phimin_;    
-    }
+    double phi1tmp=phi1-phimin_;    
 
     
     //cout << "phi1 phi2 phi1tmp : "<<phi1<<" "<<phi2<<" "<<phi1tmp<<endl;
@@ -1191,25 +1155,8 @@ public:
     
     int iphivmRaw=fpgaphi.value()>>(fpgaphi.nbits()-5);
 
-    int iphi=-1;
-
-
-    if (hourglass) {
-
-      iphi=iphivmRaw/(32/nallstubsdisks[abs(disk)-1]);
+    int iphi=iphivmRaw/(32/nallstubsdisks[abs(disk)-1]);
       
-    } else {
-    
-      assert(iphivmRaw>=4);
-      assert(iphivmRaw<=27);
-
-      iphi=(iphivmRaw-4)>>3;
-
-      assert(iphi>=0);
-      assert(iphi<=2);
-
-    }
-    
     if (abs(disk)==1) {
       if (iphi==0) addProjectionDisk(disk,iphi,trackletproj_D1PHI1_,tracklet);
       if (iphi==1) addProjectionDisk(disk,iphi,trackletproj_D1PHI2_,tracklet);
@@ -1266,10 +1213,8 @@ public:
 
     if (fabs(fpgaz.value()*kz)>zlength) return false;
 
-    if (hourglass) {
-      assert(!tracklet->plusNeighbor(layer));
-      assert(!tracklet->minusNeighbor(layer));
-    }
+    assert(!tracklet->plusNeighbor(layer));
+    assert(!tracklet->minusNeighbor(layer));
     
     if (tracklet->plusNeighbor(layer)) {
       if (layer==1) addNeighborProjection(layer,trackletproj_L1Plus_,tracklet);
@@ -1295,33 +1240,8 @@ public:
 
     int iphivmRaw=fpgaphi.value()>>(fpgaphi.nbits()-5);
 
-    int iphi=-1;
-    
-    if (hourglass) {
+    int iphi=iphivmRaw/(32/nallstubslayers[layer-1]);
       
-      iphi=iphivmRaw/(32/nallstubslayers[layer-1]);
-      
-    } else {
-
-      assert(iphivmRaw>=4);
-      assert(iphivmRaw<=27);
-
-      iphi=(iphivmRaw-4)>>3;
-
-      if (layer==2||layer==4||layer==6) {
-	iphi=(iphivmRaw>>3);
-      }
-      assert(iphi>=0);
-      assert(iphi<=7);
-      
-
-    }
-      
- 
-    //cout << "layer fpgaphi iphivmRaw iphi : "<<layer<<" "<<fpgaphi.value()<<" "<<iphivmRaw<<" "<<iphi<<endl;
-
-    
-
     if (layer==1) {
       if (iphi==0) addProjection(layer,iphi,trackletproj_L1PHI1_,tracklet);
       if (iphi==1) addProjection(layer,iphi,trackletproj_L1PHI2_,tracklet);
@@ -1702,16 +1622,6 @@ public:
 
       minusNeighbor[i]=false;
       plusNeighbor[i]=false;
-      if (!hourglass) {
-	if (iphiproj[i]<(1<<nbitsphistubL456)/8) {
-	  minusNeighbor[i]=true;
-	  iphiproj[i]+=3*(1<<nbitsphistubL456)/4;
-	}
-	if (iphiproj[i]>=7*(1<<nbitsphistubL456)/8) {
-	  plusNeighbor[i]=true;
-	  iphiproj[i]-=3*(1<<nbitsphistubL456)/4;
-	}
-      }
 
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1) {
@@ -1760,16 +1670,6 @@ public:
       
 	minusNeighborDisk[i]=false;
 	plusNeighborDisk[i]=false;
-	if (!hourglass) {
-	  if (iphiprojdisk[i]<(1<<nbitsphistubL123)/8) {
-	    minusNeighborDisk[i]=true;
-	    iphiprojdisk[i]+=3*(1<<nbitsphistubL123)/4;
-	  }
-	  if (iphiprojdisk[i]>=7*(1<<nbitsphistubL123)/8) {
-	    plusNeighborDisk[i]=true;
-	    iphiprojdisk[i]-=3*(1<<nbitsphistubL123)/4;
-	  }
-	}
      
 	if (iphiprojdisk[i]<0) {
 	  iphiprojdisk[i]=0;
@@ -1816,12 +1716,9 @@ public:
     
     if (!success) return false;
 
-    if (hourglass) {
-      double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-      //cout << "phicrit phicritminmc phicritmaxmc : "<<phicrit<<" "<<phicritminmc<<" "<<phicritmaxmc<<endl;
-      bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
       if (!keep) return false;
-    }
     
     for(unsigned int j=0;j<5;j++){
       if (minusNeighborDisk[j]) {
@@ -2185,16 +2082,6 @@ public:
 
       minusNeighbor[i]=false;
       plusNeighbor[i]=false;
-      if (!hourglass) {
-	if (iphiproj[i]<(1<<nbitsphistubL456)/8) {
-	  minusNeighbor[i]=true;
-	  iphiproj[i]+=3*(1<<nbitsphistubL456)/4;
-	}
-	if (iphiproj[i]>=7*(1<<nbitsphistubL456)/8) {
-	  plusNeighbor[i]=true;
-	  iphiproj[i]-=3*(1<<nbitsphistubL456)/4;
-	}
-      }
 
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1){
@@ -2229,16 +2116,6 @@ public:
       
       minusNeighborDisk[i]=false;
       plusNeighborDisk[i]=false;
-      if (!hourglass) {
-	if (iphiprojdisk[i]<(1<<nbitsphistubL123)/8) {
-	  minusNeighborDisk[i]=true;
-	  iphiprojdisk[i]+=3*(1<<nbitsphistubL123)/4;
-	}
-	if (iphiprojdisk[i]>=7*(1<<nbitsphistubL123)/8) {
-	  plusNeighborDisk[i]=true;
-	  iphiprojdisk[i]-=3*(1<<nbitsphistubL123)/4;
-	}
-      }
       
       //"protection" from the original
       if (iphiprojdisk[i]<0) iphiprojdisk[i]=0;
@@ -2268,11 +2145,9 @@ public:
    
     if (!success) return false;
 
-    if (hourglass) {
-      double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-      bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-      if (!keep) return false;
-    }
+    double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    if (!keep) return false;
     
     for(unsigned int j=0;j<3;j++){
       if (minusNeighborDisk[j]) {
@@ -2613,16 +2488,6 @@ public:
 
       minusNeighbor[i]=false;
       plusNeighbor[i]=false;
-      if (!hourglass) {
-	if (iphiproj[i]<(1<<nbitsphistubL456)/8) {
-	  minusNeighbor[i]=true;
-	  iphiproj[i]+=3*(1<<nbitsphistubL456)/4;
-	}
-	if (iphiproj[i]>=7*(1<<nbitsphistubL456)/8) {
-	  plusNeighbor[i]=true;
-	  iphiproj[i]-=3*(1<<nbitsphistubL456)/4;
-	}
-      }
 
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)) {
@@ -2660,16 +2525,6 @@ public:
 
       minusNeighborDisk[i]=false;
       plusNeighborDisk[i]=false;
-      if (!hourglass) {
-	if (iphiprojdisk[i]<(1<<nbitsphistubL123)/8) {
-	  minusNeighborDisk[i]=true;
-	  iphiprojdisk[i]+=3*(1<<nbitsphistubL123)/4;
-	}
-	if (iphiprojdisk[i]>=7*(1<<nbitsphistubL123)/8) {
-	  plusNeighborDisk[i]=true;
-	  iphiprojdisk[i]-=3*(1<<nbitsphistubL123)/4;
-	}
-      }
 	
       //"protection" from the original
       if (iphiprojdisk[i]<0) iphiprojdisk[i]=0;
@@ -2720,15 +2575,13 @@ public:
       return false;
     }
 
-    if (hourglass) {
-      double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-      bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-      if (!keep) {
-	if (debug1) {
-	  cout << "FPGATrackletCalculator::OverlapSeeding fail phicrit "<<endl;
-	}
-	return false;
+    double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    if (!keep) {
+      if (debug1) {
+	cout << "FPGATrackletCalculator::OverlapSeeding fail phicrit "<<endl;
       }
+      return false;
     }
     
 

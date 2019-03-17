@@ -13,12 +13,12 @@ public:
 
   FPGATrackletEngineDisplaced(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    double dphi=two_pi/NSector;
+    double dphi=2*M_PI/NSector;
     phimin_=iSector*dphi;
     phimax_=phimin_+dphi;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    if (phimin_>M_PI) phimin_-=2*M_PI;
+    if (phimax_>M_PI) phimax_-=2*M_PI;
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
     assert(phimax_>phimin_);
     stubpairs_.clear();
     firstvmstubs_.clear();

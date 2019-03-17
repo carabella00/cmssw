@@ -9,6 +9,7 @@
 #include "L1TStub.hh"
 
 #include "FPGAWord.hh"
+#include "FPGAUtil.hh"
 #include "FPGAConstants.hh"
 
 using namespace std;
@@ -107,15 +108,14 @@ public:
       assert(phimaxsec-phiminsec>0.0);
 
       if (stubphi_<phiminsec-(phimaxsec-phiminsec)/6.0) {
-	stubphi_+=two_pi;
+	stubphi_+=2*M_PI;
       }
       assert((phimaxsec-phiminsec)>0.0);
 
       int iphibits=nbitsphistubL123;
       if (layer>=4) iphibits=nbitsphistubL456;
 
-      double deltaphi=stubphi_-phiminsec;
-      if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
+      double deltaphi=FPGAUtil::phiRange(stubphi_-phiminsec);
       
       int iphi=(1<<iphibits)*deltaphi/(phimaxsec-phiminsec);
 
@@ -177,20 +177,17 @@ public:
       
       assert(phimaxsec-phiminsec>0.0);
       if (stubphi_<phiminsec-(phimaxsec-phiminsec)/6.0) {
-	stubphi_+=two_pi;
+	stubphi_+=2*M_PI;
       }
 
       assert(phimaxsec-phiminsec>0.0);
       if (stubphi_<phiminsec-(phimaxsec-phiminsec)/6.0) {
-	stubphi_+=two_pi;
+	stubphi_+=2*M_PI;
       }
 
       int iphibits=nbitsphistubL123;
-      //if (layer>=4) iphibits=nbitsphistubL456; //Need to figure out this...
-      //cout << "phimax-phimin : "<<phimax-phimin<<" "<<two_pi/NSector<<endl;
 
-      double deltaphi=stubphi_-phiminsec;
-      if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
+      double deltaphi=FPGAUtil::phiRange(stubphi_-phiminsec);
       
       int iphi=(1<<iphibits)*deltaphi/(phimaxsec-phiminsec);
       
@@ -692,10 +689,7 @@ public:
     if (layer_.value()>=3) {
       lphi=8;
     }
-    double phi=phimin+phi_.value()*kphi/lphi;
-    if (phi>0.5*two_pi) phi-=two_pi;
-    if (phi<-0.5*two_pi) phi+=two_pi;
-    return phi;
+    return FPGAUtil::phiRange(phimin+phi_.value()*kphi/lphi);
   }
 
   void setfiner(int finer) {

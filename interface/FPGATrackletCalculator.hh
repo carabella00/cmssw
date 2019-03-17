@@ -9,6 +9,7 @@
 #include "FPGAProcessBase.hh"
 #include "FPGATrackletProjections.hh"
 #include "FPGAGlobal.hh"
+#include "FPGAUtil.hh"
 
 
 using namespace std;
@@ -19,15 +20,15 @@ public:
 
   FPGATrackletCalculator(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-   double dphi=two_pi/NSector;
-   double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
+   double dphi=2*M_PI/NSector;
+   double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    phimin_-=0.5*two_pi/NSector;
-    phimax_-=0.5*two_pi/NSector;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    phimin_-=M_PI/NSector;
+    phimax_-=M_PI/NSector;
+    phimin_=FPGAUtil::phiRange(phimin_);
+    phimax_=FPGAUtil::phiRange(phimax_);
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
     phioffset_=phimin_;
     
     maxtracklet_=127;
@@ -243,7 +244,7 @@ public:
 
 
   void exacttracklet(double r1, double z1, double phi1,
-		     double r2, double z2, double phi2, double sigmaz,
+		     double r2, double z2, double phi2, double,
 		     double& rinv, double& phi0,
 		     double& t, double& z0,
 		     double phiproj[4], double zproj[4], 
@@ -251,28 +252,15 @@ public:
 		     double phiprojdisk[5], double rprojdisk[5], 
 		     double phiderdisk[5], double rderdisk[5]) {
 
-    double deltaphi=phi1-phi2;
-
-    if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
-    if (deltaphi<-0.5*two_pi) deltaphi+=two_pi;
-    assert(fabs(deltaphi)<0.5*two_pi);
-
+    double deltaphi=FPGAUtil::phiRange(phi1-phi2);
     
-    if (sigmaz<-10.0) {
-      cout << "Negative sigmaz"<<endl;
-    }
-
     double dist=sqrt(r2*r2+r1*r1-2*r1*r2*cos(deltaphi));
     
     rinv=2*sin(deltaphi)/dist;
 
     double phi1tmp=phi1-phimin_;    
      
-    phi0=phi1tmp+asin(0.5*r1*rinv);
-    
-    if (phi0>0.5*two_pi) phi0-=two_pi;
-    if (phi0<-0.5*two_pi) phi0+=two_pi;
-    assert(fabs(phi0)<0.5*two_pi);
+    phi0=FPGAUtil::phiRange(phi1tmp+asin(0.5*r1*rinv));
     
     double rhopsi1=2*asin(0.5*r1*rinv)/rinv;
 	    
@@ -300,7 +288,7 @@ public:
 
 
   void exacttrackletdisk(double r1, double z1, double phi1,
-			 double r2, double z2, double phi2, double sigmaz,
+			 double r2, double z2, double phi2, double,
 			 double& rinv, double& phi0,
 			 double& t, double& z0,
 			 double phiprojLayer[3], double zprojLayer[3], 
@@ -308,15 +296,7 @@ public:
 			 double phiproj[3], double rproj[3], 
 			 double phider[3], double rder[3]) {
 
-    double deltaphi=phi1-phi2;
-
-    if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
-    if (deltaphi<-0.5*two_pi) deltaphi+=two_pi;
-    assert(fabs(deltaphi)<0.5*two_pi);
-
-    if (sigmaz<-10.0) {
-      cout << "Negative sigmaz"<<endl;
-    }
+    double deltaphi=FPGAUtil::phiRange(phi1-phi2);
 
     double dist=sqrt(r2*r2+r1*r1-2*r1*r2*cos(deltaphi));
     
@@ -324,16 +304,7 @@ public:
 
     double phi1tmp=phi1-phimin_;    
 
-    phi0=phi1tmp+asin(0.5*r1*rinv);
-    
-    if (phi0>0.5*two_pi) phi0-=two_pi;
-    if (phi0<-0.5*two_pi) phi0+=two_pi;
-    if (!(fabs(phi0)<0.5*two_pi)) {
-      cout << "phi1tmp r1 rinv phi0 deltaphi dist: "
-	   <<phi1tmp<<" "<<r1<<" "<<rinv<<" "<<phi0
-	   <<" "<<deltaphi<<" "<<dist<<endl;
-      exit(1);
-    }
+    phi0=FPGAUtil::phiRange(phi1tmp+asin(0.5*r1*rinv));
     
     double rhopsi1=2*asin(0.5*r1*rinv)/rinv;
 	    
@@ -374,7 +345,7 @@ public:
   }
 
   void exacttrackletOverlap(double r1, double z1, double phi1,
-			    double r2, double z2, double phi2, double sigmaz,
+			    double r2, double z2, double phi2, double,
 			    double& rinv, double& phi0,
 			    double& t, double& z0,
 			    double phiprojLayer[3], double zprojLayer[3], 
@@ -382,15 +353,7 @@ public:
 			    double phiproj[3], double rproj[3], 
 			    double phider[3], double rder[3]) {
 
-    double deltaphi=phi1-phi2;
-
-    if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
-    if (deltaphi<-0.5*two_pi) deltaphi+=two_pi;
-    assert(fabs(deltaphi)<0.5*two_pi);
-
-    if (sigmaz<-10.0) {
-      cout << "Negative sigmaz"<<endl;
-    }
+    double deltaphi=FPGAUtil::phiRange(phi1-phi2);
 
     double dist=sqrt(r2*r2+r1*r1-2*r1*r2*cos(deltaphi));
     
@@ -403,16 +366,7 @@ public:
     
     //cout << "phi1 phi2 phi1tmp : "<<phi1<<" "<<phi2<<" "<<phi1tmp<<endl;
 
-    phi0=phi1tmp+asin(0.5*r1*rinv);
-    
-    if (phi0>0.5*two_pi) phi0-=two_pi;
-    if (phi0<-0.5*two_pi) phi0+=two_pi;
-    if (!(fabs(phi0)<0.5*two_pi)) {
-      cout << "phi1tmp r1 rinv phi0 deltaphi dist: "
-	   <<phi1tmp<<" "<<r1<<" "<<rinv<<" "<<phi0
-	   <<" "<<deltaphi<<" "<<dist<<endl;
-      exit(1);
-    }
+    phi0=FPGAUtil::phiRange(phi1tmp+asin(0.5*r1*rinv));
     
     double rhopsi1=2*asin(0.5*r1*rinv)/rinv;
 	    

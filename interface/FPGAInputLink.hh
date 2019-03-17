@@ -121,10 +121,10 @@ public:
 
 
     double sectorphi=al1stub.phi();
-    if (sectorphi<0.0) sectorphi+=two_pi;
+    if (sectorphi<0.0) sectorphi+=2*M_PI;
     
-    while (sectorphi>3*two_pi/(2*NSector)) {
-      sectorphi-=(two_pi/NSector);
+    while (sectorphi>3*M_PI/NSector) {
+      sectorphi-=(2*M_PI/NSector);
     }
     
     

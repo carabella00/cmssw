@@ -19,15 +19,15 @@ public:
 
   FPGATrackletCalculatorDisplaced(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    double dphi=two_pi/NSector;
-    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
+    double dphi=2*M_PI/NSector;
+    double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    phimin_-=0.5*two_pi/NSector;
-    phimax_-=0.5*two_pi/NSector;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    phimin_-=M_PI/NSector;
+    phimax_-=M_PI/NSector;
+    if (phimin_>M_PI) phimin_-=2*M_PI;
+    if (phimax_>M_PI) phimax_-=2*M_PI;
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
     phioffset_=phimin_;
 
     maxtracklet_=127;

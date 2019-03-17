@@ -4,6 +4,7 @@
 
 #include "FPGAProcessBase.hh"
 #include "FPGAGlobal.hh"
+#include "FPGAUtil.hh"
 
 using namespace std;
 
@@ -14,15 +15,15 @@ public:
   FPGAMatchCalculator(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
     
-    double dphi=two_pi/NSector;
-    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
+    double dphi=2*M_PI/NSector;
+    double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    phimin_-=0.5*two_pi/NSector;
-    phimax_-=0.5*two_pi/NSector;
-    if (phimin_>0.5*two_pi) {
-      phimin_-=two_pi;
-      phimax_-=two_pi;
+    phimin_-=M_PI/NSector;
+    phimax_-=M_PI/NSector;
+    if (phimin_>M_PI) {
+      phimin_-=2*M_PI;
+      phimax_-=2*M_PI;
     }
     phioffset_=phimin_;
     
@@ -551,33 +552,26 @@ public:
 
 	
 	if (useapprox) {
-	  double dphi=phi-fpgastub->phiapprox(phimin_,phimax_);
-	  if (dphi<-0.5*two_pi) dphi+=two_pi;
-	  if (dphi>0.5*two_pi) dphi-=two_pi;
+	  double dphi=FPGAUtil::phiRange(phi-fpgastub->phiapprox(phimin_,phimax_));
 	  assert(fabs(dphi)<0.001);
 	  phi=fpgastub->phiapprox(phimin_,phimax_);
 	  z=fpgastub->zapprox();
 	  r=fpgastub->rapprox();
 	}
 	
-	if (phi<0) phi+=two_pi;
+	if (phi<0) phi+=2*M_PI;
 	phi-=phioffset_;
 	
 	double dr=r-tracklet->rproj(layer_);
 	assert(fabs(dr)<drmax);
 
-	double dphi=phi-(tracklet->phiproj(layer_)+dr*tracklet->phiprojder(layer_));
-	if (dphi>0.5*two_pi) dphi-=two_pi;
-	if (dphi<-0.5*two_pi) dphi+=two_pi;
+	double dphi=FPGAUtil::phiRange(phi-(tracklet->phiproj(layer_)+dr*tracklet->phiprojder(layer_)));
 	
        	double dz=z-(tracklet->zproj(layer_)+dr*tracklet->zprojder(layer_));
 	
-	double dphiapprox=phi-(tracklet->phiprojapprox(layer_)+
-			       dr*tracklet->phiprojderapprox(layer_));
+	double dphiapprox=FPGAUtil::phiRange(phi-(tracklet->phiprojapprox(layer_)+
+						  dr*tracklet->phiprojderapprox(layer_)));
 	    
-	if (dphiapprox>0.5*two_pi) dphiapprox-=two_pi;
-	if (dphiapprox<-0.5*two_pi) dphiapprox+=two_pi;
-	
 	double dzapprox=z-(tracklet->zprojapprox(layer_)+
 				   dr*tracklet->zprojderapprox(layer_));
 	
@@ -769,16 +763,14 @@ public:
 
 		
 	if (useapprox) {
-	  double dphi=phi-fpgastub->phiapprox(phimin_,phimax_);
-	  if (dphi>0.5*two_pi) dphi-=two_pi;
-	  if (dphi<-0.5*two_pi) dphi+=two_pi;
+	  double dphi=FPGAUtil::phiRange(phi-fpgastub->phiapprox(phimin_,phimax_));
 	  assert(fabs(dphi)<0.001);
 	  phi=fpgastub->phiapprox(phimin_,phimax_);
 	  z=fpgastub->zapprox();
 	  r=fpgastub->rapprox();
 	}
 
-	if (phi<0) phi+=two_pi;
+	if (phi<0) phi+=2*M_PI;
 	phi-=phioffset_;
 	  
 	double dz=z-tracklet->zprojdisk(disk);
@@ -799,18 +791,10 @@ public:
 	
 	double dr=stub->r()-rproj;
 	
-	double dphi=phi-phiproj;
+	double dphi=FPGAUtil::phiRange(phi-phiproj);
 
-	
-	if (dphi>0.5*two_pi) dphi-=two_pi;
-	if (dphi<-0.5*two_pi) dphi+=two_pi;
-
-	double dphiapprox=phi-(tracklet->phiprojapproxdisk(disk)+
-			       dz*tracklet->phiprojderapproxdisk(disk));
-
-	
-	if (dphiapprox>0.5*two_pi) dphiapprox-=two_pi;
-	if (dphiapprox<-0.5*two_pi) dphiapprox+=two_pi;
+	double dphiapprox=FPGAUtil::phiRange(phi-(tracklet->phiprojapproxdisk(disk)+
+						  dz*tracklet->phiprojderapproxdisk(disk)));
 
 	double drapprox=stub->r()-(tracklet->rprojapproxdisk(disk)+
 				   dz*tracklet->rprojderapproxdisk(disk));

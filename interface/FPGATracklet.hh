@@ -1802,18 +1802,9 @@ public:
   bool foundTrack(L1SimTrack simtrk){
 
     double deta=simtrk.eta()-asinh(itfit().value()*ktpars);
-    double dphi=simtrk.phi()-(iphi0fit().value()*kphi0pars+phioffset_);
-
-    if (dphi>0.5*two_pi) dphi-=two_pi;
-    if (dphi<-0.5*two_pi) dphi+=two_pi;
-
-    //if (match(1)==false) {
-    //  return false; 
-    //}
+    double dphi=FPGAUtil::phiRange(simtrk.phi()-(iphi0fit().value()*kphi0pars+phioffset_));
     
     bool found=(fabs(deta)<0.06)&&(fabs(dphi)<0.01);
-    
-    //cout << "deta dphi "<<deta<<" "<<dphi<<" "<<found<<endl;
     
     return found;
 

@@ -3,6 +3,7 @@
 #define FPGAMATCHPROCESSOR_H
 
 #include "FPGAProcessBase.hh"
+#include "FPGAUtil.hh"
 
 using namespace std;
 
@@ -15,12 +16,12 @@ public:
     
     fullmatchesToPlus_=0;
     fullmatchesToMinus_=0;
-    double dphi=two_pi/NSector;
-    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
+    double dphi=2*M_PI/NSector;
+    double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     phimin_=iSector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
+    phimin_=FPGAUtil::phiRange(phimin_);
+    phimax_=FPGAUtil::phiRange(phimax_);
     phioffset_=phimin_;
     
     string subname=name.substr(3,2);

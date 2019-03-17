@@ -3,6 +3,7 @@
 #define FPGATRACKLETENGINE_H
 
 #include "FPGAProcessBase.hh"
+#include "FPGAUtil.hh"
 
 
 using namespace std;
@@ -13,12 +14,10 @@ public:
 
   FPGATrackletEngine(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    double dphi=two_pi/NSector;
-    phimin_=iSector*dphi;
-    phimax_=phimin_+dphi;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    double dphi=2*M_PI/NSector;
+    phimin_=FPGAUtil::phiRange(iSector*dphi);
+    phimax_=FPGAUtil::phiRange(phimin_+dphi);
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
     assert(phimax_>phimin_);
     stubpairs_=0;
     innervmstubs_=0;

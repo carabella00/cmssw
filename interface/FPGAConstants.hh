@@ -250,7 +250,7 @@ static double zmaxD4=zmeanD4+dzmax;
 static double zminD5=zmeanD5-dzmax; 
 static double zmaxD5=zmeanD5+dzmax; 
 
-static double two_pi=8.0*atan(1.0);
+static double two_pi=2*M_PI;
 
 static double ptcut=1.91; //Minimum pt
 static double rinvcut=0.01*0.3*3.8/ptcut; //0.01 to convert to cm-1
@@ -274,11 +274,11 @@ static int VMphibits=3;      //Number of bits for phi position in VM
 
 static double rinvmax=0.01*0.3*3.8/2.0; //0.01 to convert to cm-1
 
-static double dphisectorHG=two_pi/NSector+2*fmax(fabs(asin(0.5*rinvmax*rmean[0])-asin(0.5*rinvmax*rcrit)),
+static double dphisectorHG=2*M_PI/NSector+2*fmax(fabs(asin(0.5*rinvmax*rmean[0])-asin(0.5*rinvmax*rcrit)),
 						fabs(asin(0.5*rinvmax*rmean[5])-asin(0.5*rinvmax*rcrit)));
 
-static double phicritmin=0.5*(dphisectorHG-two_pi/NSector);
-static double phicritmax=dphisectorHG-0.5*(dphisectorHG-two_pi/NSector);
+static double phicritmin=0.5*dphisectorHG-M_PI/NSector;
+static double phicritmax=dphisectorHG-0.5*dphisectorHG+M_PI/NSector;
 
 static double dphicritmc=0.005; //lose for MC
 static double phicritminmc=phicritmin-dphicritmc;
@@ -314,7 +314,7 @@ static unsigned int MAXMC = 108 + MAXOFFSET; //Maximum number of match calculati
 static unsigned int MAXFIT = 108 + MAXOFFSET; //Maximum number of track fits
 
 
-static double dphisector=two_pi/NSector;
+static double dphisector=2*M_PI/NSector;
 
 //Constants for defining stub representations
 static int nbitsrL123=7;

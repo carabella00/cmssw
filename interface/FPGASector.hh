@@ -31,6 +31,7 @@
 #include "FPGAMatchProcessor.hh"
 #include "FPGAFitTrack.hh"
 #include "FPGAPurgeDuplicate.hh"
+#include "FPGAUtil.hh"
 
 using namespace std;
 
@@ -40,15 +41,15 @@ public:
 
   FPGASector(unsigned int i){
     isector_=i;
-    double dphi=two_pi/NSector;
-    double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
+    double dphi=2*M_PI/NSector;
+    double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     phimin_=isector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    phimin_-=0.5*two_pi/NSector;
-    phimax_-=0.5*two_pi/NSector;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    phimin_-=M_PI/NSector;
+    phimax_-=M_PI/NSector;
+    phimin_=FPGAUtil::phiRange(phimin_);
+    phimax_=FPGAUtil::phiRange(phimax_);
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
   }
 
   ~FPGASector() {
@@ -62,7 +63,7 @@ public:
     
     double phi=stub.phi();
     //cout << "FPGASector::addStub layer phi phimin_ phimax_ : "<<stub.layer()+1<<" "<<" "<<dtc<<" "<<phi<<" "<<phimin_<<" "<<phimax_<<endl;
-    double dphi=0.5*(dphisectorHG-two_pi/NSector);
+    double dphi=0.5*dphisectorHG-M_PI/NSector;
     
     static std::map<string,std::vector<int> > ILindex;
     std::vector<int>& tmp=ILindex[dtc];
@@ -78,7 +79,7 @@ public:
     }
     
     if (((phi>phimin_-dphi)&&(phi<phimax_+dphi))||
-	((phi>two_pi+phimin_-dphi)&&(phi<two_pi+phimax_+dphi))) {
+	((phi>2*M_PI+phimin_-dphi)&&(phi<2*M_PI+phimax_+dphi))) {
       FPGAStub fpgastub(stub,phimin_,phimax_);
       std::vector<int>& tmp=ILindex[dtc];
       assert(tmp.size()!=0);

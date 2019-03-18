@@ -438,9 +438,8 @@ public:
   }
 
   void executeFT(){
-    fpgatracks_.clear();
     for (unsigned int i=0;i<FT_.size();i++){
-      FT_[i]->execute(fpgatracks_);
+      FT_[i]->execute();
     }
   }
 
@@ -502,8 +501,6 @@ private:
   int isector_;
   double phimin_;
   double phimax_;
-
-  std::vector<FPGATrack*> fpgatracks_;
 
 
   std::map<string, FPGAMemoryBase*> Memories_;

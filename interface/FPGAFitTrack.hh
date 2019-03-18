@@ -1237,7 +1237,7 @@ class FPGAFitTrack:public FPGAProcessBase{
    return tmp;
   }
 
-  void execute(std::vector<FPGATrack*>& tracks) {
+  void execute() {
 
 
    // merge
@@ -1365,7 +1365,7 @@ class FPGAFitTrack:public FPGAProcessBase{
       if (fakefit_5par) {
         trackFitFake(bestTracklet);
       } else {
-        trackFitNew(bestTracklet);
+        trackFitNew(bestTracklet,trackstublist,stubidslist);
       }
       if(RemovalType=="merge") {
         trackfit_->addStubList(trackstublist);
@@ -1380,7 +1380,6 @@ class FPGAFitTrack:public FPGAProcessBase{
           fout.close();
         }
         trackfit_->addTrack(bestTracklet);
-        tracks.push_back(bestTracklet->getTrack())
       }
     }
 

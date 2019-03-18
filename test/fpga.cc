@@ -244,12 +244,10 @@ int main(const int argc, const char** argv)
   FPGATimer TRETimer;
   FPGATimer TCTimer;
   FPGATimer TCDTimer;
-  FPGATimer PTTimer;
   FPGATimer PRTimer;
   FPGATimer METimer;
   FPGATimer MCTimer;
   FPGATimer MPTimer;
-  FPGATimer MTTimer;
   FPGATimer FTTimer;
   FPGATimer PDTimer;
 
@@ -616,12 +614,6 @@ int main(const int argc, const char** argv)
        <<setw(10)<<TCDTimer.ntimes()
        <<setw(20)<<setprecision(3)<<TCDTimer.avgtime()*1000.0
        <<setw(20)<<setprecision(3)<<TCDTimer.tottime()<<endl;
-  if (!hourglass) {
-    cout << "ProjectionTransceiver "
-	 <<setw(10)<<PTTimer.ntimes()
-	 <<setw(20)<<setprecision(3)<<PTTimer.avgtime()*1000.0
-	 <<setw(20)<<setprecision(3)<<PTTimer.tottime()<<endl;
-  }
   cout << "ProjectionRouter      "
        <<setw(10)<<PRTimer.ntimes()
        <<setw(20)<<setprecision(3)<<PRTimer.avgtime()*1000.0
@@ -638,12 +630,6 @@ int main(const int argc, const char** argv)
        <<setw(10)<<MPTimer.ntimes()
        <<setw(20)<<setprecision(3)<<MPTimer.avgtime()*1000.0
        <<setw(20)<<setprecision(3)<<MPTimer.tottime()<<endl;
-  if (!hourglass) {
-    cout << "MatchTranceiver       "
-	 <<setw(10)<<MTTimer.ntimes()
-	 <<setw(20)<<setprecision(3)<<MTTimer.avgtime()*1000.0
-	 <<setw(20)<<setprecision(3)<<MTTimer.tottime()<<endl;
-  }
   cout << "FitTrack              "
        <<setw(10)<<FTTimer.ntimes()
        <<setw(20)<<setprecision(3)<<FTTimer.avgtime()*1000.0

@@ -12,11 +12,7 @@ public:
 
   FPGAProjectionRouter(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    string subname=name.substr(8,2);
-    if (hourglass) {
-      subname=name.substr(3,2);
-    }
-    //cout << "name subname : "<<name<<" "<<subname<<endl;
+    string subname=name.substr(3,2);
     layer_=0;
     disk_=0;
 
@@ -56,88 +52,32 @@ public:
       return;
     }
     
-    if (hourglass) {
-
-      int nproj=-1;
-      int nprojvm=-1;
-      if (layer_>0) {
-	nproj=nallprojlayers[layer_-1];
-	nprojvm=nvmmelayers[layer_-1];
-      }
-      if (disk_>0) {
-	nproj=nallprojdisks[disk_-1];
-	nprojvm=nvmmedisks[disk_-1];
-      }
-      assert(nproj!=-1);
-
-      for (int iproj=0;iproj<nproj;iproj++) {
-	for (int iprojvm=0;iprojvm<nprojvm;iprojvm++) {
-	  ostringstream oss;
-	  oss << "vmprojoutPHI"<<char(iproj+'A')<<iproj*nprojvm+iprojvm+1;
-	  string name=oss.str();
-	  if (output==name) {
-	    FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	    assert(tmp!=0);
-	    vmprojs_[iprojvm]=tmp;
-	    return;
-	  }
-	}
-      }
-
-    } else {
-      if (layer_==2||layer_==4||layer_==6) {
-	if (output=="vmprojoutPHI1"||output=="vmprojoutPHI5"||output=="vmprojoutPHI9"){
+    int nproj=-1;
+    int nprojvm=-1;
+    if (layer_>0) {
+      nproj=nallprojlayers[layer_-1];
+      nprojvm=nvmmelayers[layer_-1];
+    }
+    if (disk_>0) {
+      nproj=nallprojdisks[disk_-1];
+      nprojvm=nvmmedisks[disk_-1];
+    }
+    assert(nproj!=-1);
+    
+    for (int iproj=0;iproj<nproj;iproj++) {
+      for (int iprojvm=0;iprojvm<nprojvm;iprojvm++) {
+	ostringstream oss;
+	oss << "vmprojoutPHI"<<char(iproj+'A')<<iproj*nprojvm+iprojvm+1;
+	string name=oss.str();
+	if (output==name) {
 	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
 	  assert(tmp!=0);
-	  vmprojs_[0]=tmp;
+	  vmprojs_[iprojvm]=tmp;
 	  return;
-	}
-	if (output=="vmprojoutPHI2"||output=="vmprojoutPHI6"||output=="vmprojoutPHI10"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	  vmprojs_[1]=tmp;
-	  return;
-	}
-	if (output=="vmprojoutPHI3"||output=="vmprojoutPHI7"||output=="vmprojoutPHI11"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	  vmprojs_[2]=tmp;
-	  return;
-	}
-	if (output=="vmprojoutPHI4"||output=="vmprojoutPHI8"||output=="vmprojoutPHI12"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	  vmprojs_[3]=tmp;
-	  return;
-	}      
-      } else {
-	if (output=="vmprojoutPHI1"||output=="vmprojoutPHI5"||output=="vmprojoutPHI9"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	vmprojs_[0]=tmp;
-	return;
-	}
-	if (output=="vmprojoutPHI2"||output=="vmprojoutPHI6"||output=="vmprojoutPHI10"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	  vmprojs_[1]=tmp;
-	  return;
-	}
-	if (output=="vmprojoutPHI3"||output=="vmprojoutPHI7"||output=="vmprojoutPHI11"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	  vmprojs_[2]=tmp;
-	  return;
-	}
-	if (output=="vmprojoutPHI4"||output=="vmprojoutPHI8"||output=="vmprojoutPHI12"){
-	  FPGAVMProjections* tmp=dynamic_cast<FPGAVMProjections*>(memory);
-	  assert(tmp!=0);
-	  vmprojs_[3]=tmp;
-	return;
 	}
       }
     }
-
+    
     cout << "Did not find output : "<<output<<endl;
     assert(0);
   }
@@ -189,8 +129,6 @@ public:
     //These are just here to test that the order is correct. Does not affect
     //the actual execution
     int lastTCID=-1;
-    int lastTCIDplus=-1;
-    int lastTCIDminus=-1;
     
     if (layer_!=0) {
       for (unsigned int j=0;j<inputproj_.size();j++){
@@ -210,22 +148,12 @@ public:
 	  int iphitmp=fpgaphi.value();
 	  int iphi=iphitmp>>(fpgaphi.nbits()-5);
 
-	  if (hourglass) {
-	    int nvm=-1;
-	    int nbins=-1;
-	    nvm=nvmmelayers[layer_-1]*nallstubslayers[layer_-1];
-	    nbins=nvmmelayers[layer_-1];
-	    assert(nvm>0);
-	    iphi=(iphi/(32/nvm))&(nbins-1);	    
-	  } else {
-	    assert(iphi>=4);
-	    assert(iphi<=27);
-	    iphi-=4;
-	    iphi=(iphi>>1);
-	    iphi=iphi&3;
-	    assert(iphi>=0);
-	    assert(iphi<=3);
-	  }
+	  int nvm=-1;
+	  int nbins=-1;
+	  nvm=nvmmelayers[layer_-1]*nallstubslayers[layer_-1];
+	  nbins=nvmmelayers[layer_-1];
+	  assert(nvm>0);
+	  iphi=(iphi/(32/nvm))&(nbins-1);	    
 	  
 	  assert(allproj_!=0);
 
@@ -234,24 +162,10 @@ public:
 	  FPGATracklet* tracklet=inputproj_[j]->getFPGATracklet(i);
 
 	  //This block of code just checks that the configuration is consistent
-	  if (tracklet->minusNeighbor(layer_)) {
-	    if (lastTCIDminus>=tracklet->TCID()) {
-	      cout << "Wrong TCID ordering for Minus projections in "<<getName()<<" last "<<lastTCIDminus<<" "<<tracklet->TCID()<<endl;
-	    } else {
-	      lastTCIDminus=tracklet->TCID();
-	    }
-	  } else if (tracklet->plusNeighbor(layer_)) {
-	    if (lastTCIDplus>=tracklet->TCID()) {
-	      cout << "Wrong TCID ordering for Plus projections in "<<getName()<<" last "<<lastTCIDplus<<" "<<tracklet->TCID()<<endl;
-	    } else {
-	      lastTCIDplus=tracklet->TCID();
-	    }
+	  if (lastTCID>=tracklet->TCID()) {
+	    cout << "Wrong TCID ordering for projections in "<<getName()<<endl;
 	  } else {
-	    if (lastTCID>=tracklet->TCID()) {
-	      cout << "Wrong TCID ordering for projections in "<<getName()<<endl;
-	    } else {
-	      lastTCID=tracklet->TCID();
-	    }
+	    lastTCID=tracklet->TCID();
 	  }
 
 	  allproj_->addTracklet(inputproj_[j]->getFPGATracklet(i));
@@ -281,23 +195,13 @@ public:
 	  int iphitmp=fpgaphi.value();
 	  int iphi=iphitmp>>(fpgaphi.nbits()-5);
 
-	  if (hourglass) {
-	    int nvm=-1;
-	    int nbins=-1;
-	    nvm=nvmmedisks[disk_-1]*nallstubsdisks[disk_-1];
-	    nbins=nvmmedisks[disk_-1];
-	    assert(nvm>0);
-	    iphi=(iphi/(32/nvm))&(nbins-1);
-	  } else {
-	    assert(iphi>=4);
-	    assert(iphi<=27);
-	    iphi-=4;
-	    iphi=(iphi>>1);
-	    iphi=iphi&3;
-	    assert(iphi>=0);
-	    assert(iphi<=3);
-	  }
-	    
+	  int nvm=-1;
+	  int nbins=-1;
+	  nvm=nvmmedisks[disk_-1]*nallstubsdisks[disk_-1];
+	  nbins=nvmmedisks[disk_-1];
+	  assert(nvm>0);
+	  iphi=(iphi/(32/nvm))&(nbins-1);
+
 	  assert(allproj_!=0);
 
 	  unsigned int index=allproj_->nTracklets();

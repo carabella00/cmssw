@@ -621,52 +621,27 @@ public:
 
 	  int iphistub=iphiRaw;
 
-	  if (hourglass) {
+	  int layer=stub.first->layer().value();
+	  int disk=abs(stub.first->disk().value());
 
-	    int layer=stub.first->layer().value();
-	    int disk=abs(stub.first->disk().value());
-
-	    //cout << getName()<<" layer,disk : "<<layer<<" "<<disk<<endl;
+	  //cout << getName()<<" layer,disk : "<<layer<<" "<<disk<<endl;
 	    
-	    int nvm=-1;
-	    if (layer!=-1) {
-	      nvm=nallstubslayers[layer]*nvmmelayers[layer];
-	    }
-	    if (disk!=0){
-	      nvm=nallstubsdisks[disk-1]*nvmmedisks[disk-1];
-	    }
-	    assert(nvm>0&&nvm<=32);
-	    iphiRaw=iphiRaw/(32/nvm);
-	    iphiRawPlus=iphiRawPlus/(32/nvm);
-	    iphiRawMinus=iphiRawMinus/(32/nvm);
-	    if (iphiRawPlus<0) iphiRawPlus=0;
-	    if (iphiRawPlus>=nvm) iphiRawPlus=nvm-1;
-	    if (iphiRawMinus<0) iphiRawMinus=0;
-	    if (iphiRawMinus>=nvm) iphiRawMinus=nvm-1;
-	    
-	  } else {
-
-	    assert(iphiRaw>=4 and iphiRaw<=27);
-	  
-	  
-	    iphiRaw-=4;
-	    iphiRaw=iphiRaw>>1;
-	    assert(iphiRaw>=0);
-	    assert(iphiRaw<=11);
-	    
-	    iphiRawPlus-=4;
-	    iphiRawPlus=iphiRawPlus>>1;
-	    if (iphiRawPlus<0) iphiRawPlus=0;
-	    if (iphiRawPlus>11) iphiRawPlus=11;
-	    
-	    iphiRawMinus-=4;
-	    iphiRawMinus=iphiRawMinus>>1;
-	    if (iphiRawMinus<0) iphiRawMinus=0;
-	    if (iphiRawMinus>11) iphiRawMinus=11;
-
+	  int nvm=-1;
+	  if (layer!=-1) {
+	    nvm=nallstubslayers[layer]*nvmmelayers[layer];
 	  }
-
-
+	  if (disk!=0){
+	    nvm=nallstubsdisks[disk-1]*nvmmedisks[disk-1];
+	  }
+	  assert(nvm>0&&nvm<=32);
+	  iphiRaw=iphiRaw/(32/nvm);
+	  iphiRawPlus=iphiRawPlus/(32/nvm);
+	  iphiRawMinus=iphiRawMinus/(32/nvm);
+	  if (iphiRawPlus<0) iphiRawPlus=0;
+	  if (iphiRawPlus>=nvm) iphiRawPlus=nvm-1;
+	  if (iphiRawMinus<0) iphiRawMinus=0;
+	  if (iphiRawMinus>=nvm) iphiRawMinus=nvm-1;
+	    
 	  if (disk_!=0) {
 
 	    int index=stub.first->r().value();

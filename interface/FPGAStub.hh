@@ -9,6 +9,7 @@
 #include "L1TStub.hh"
 
 #include "FPGAWord.hh"
+#include "FPGAUtil.hh"
 #include "FPGAConstants.hh"
 
 using namespace std;
@@ -107,21 +108,16 @@ public:
       assert(phimaxsec-phiminsec>0.0);
 
       if (stubphi_<phiminsec-(phimaxsec-phiminsec)/6.0) {
-	stubphi_+=two_pi;
+	stubphi_+=2*M_PI;
       }
       assert((phimaxsec-phiminsec)>0.0);
 
       int iphibits=nbitsphistubL123;
       if (layer>=4) iphibits=nbitsphistubL456;
 
-      double deltaphi=stubphi_-phiminsec;
-      if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
+      double deltaphi=FPGAUtil::phiRange(stubphi_-phiminsec);
       
-      int iphi=(1<<iphibits)*(0.125+0.75*(deltaphi)/(phimaxsec-phiminsec));
-
-      if (hourglass) {
-	iphi=(1<<iphibits)*deltaphi/(phimaxsec-phiminsec);
-      }
+      int iphi=(1<<iphibits)*deltaphi/(phimaxsec-phiminsec);
 
       phitmp_=stubphi_-phiminsec+(phimaxsec-phiminsec)/6.0;
 
@@ -181,26 +177,19 @@ public:
       
       assert(phimaxsec-phiminsec>0.0);
       if (stubphi_<phiminsec-(phimaxsec-phiminsec)/6.0) {
-	stubphi_+=two_pi;
+	stubphi_+=2*M_PI;
       }
 
       assert(phimaxsec-phiminsec>0.0);
       if (stubphi_<phiminsec-(phimaxsec-phiminsec)/6.0) {
-	stubphi_+=two_pi;
+	stubphi_+=2*M_PI;
       }
 
       int iphibits=nbitsphistubL123;
-      //if (layer>=4) iphibits=nbitsphistubL456; //Need to figure out this...
-      //cout << "phimax-phimin : "<<phimax-phimin<<" "<<two_pi/NSector<<endl;
 
-      double deltaphi=stubphi_-phiminsec;
-      if (deltaphi>0.5*two_pi) deltaphi-=two_pi;
+      double deltaphi=FPGAUtil::phiRange(stubphi_-phiminsec);
       
-      int iphi=(1<<iphibits)*(0.125+0.75*(deltaphi)/(phimaxsec-phiminsec));
-      if (hourglass) {
-	//cout << "stubphi_ phiminsec "<<stubphi_<<" "<<phiminsec<<endl;
-	iphi=(1<<iphibits)*deltaphi/(phimaxsec-phiminsec);
-      }
+      int iphi=(1<<iphibits)*deltaphi/(phimaxsec-phiminsec);
       
       double rmin=0;
       double rmax=rmaxdisk;
@@ -459,49 +448,23 @@ public:
   FPGAWord phiregion() const {
 	// 3 bits
 
-    if (hourglass) {
-      if (layer_.value()>=0) {
-	unsigned int nallstubs=nallstubslayers[layer_.value()];
-	int iphiregion=iphivmRaw()/(32/nallstubs);
-	FPGAWord phi;
-	phi.set(iphiregion,3);
-	return phi;
-      }
-      if (abs(disk_.value())>=1) {
-	unsigned int nallstubs=nallstubsdisks[abs(disk_.value())-1];
-	int iphiregion=iphivmRaw()/(32/nallstubs);
-	FPGAWord phi;
-	phi.set(iphiregion,3);
-	return phi;
-      }
-
-      assert(0);
-      
+    if (layer_.value()>=0) {
+      unsigned int nallstubs=nallstubslayers[layer_.value()];
+      int iphiregion=iphivmRaw()/(32/nallstubs);
+      FPGAWord phi;
+      phi.set(iphiregion,3);
+      return phi;
     }
-    
-    int iphiregion = 7;
-	
-    if (layer_.value()==0 or layer_.value()==2 or layer_.value()==4) { // L1, L3, L5
-      if (iphivmRaw()>=4 and iphivmRaw()<=11) iphiregion = 0;
-      else if (iphivmRaw()>=12 and iphivmRaw()<=19) iphiregion = 1;
-      else if (iphivmRaw()>=20 and iphivmRaw()<=27) iphiregion = 2;
-    }
-    else if (layer_.value()==1 or layer_.value()==3 or layer_.value()==5) { // L2, L4, L6
-      if (iphivmRaw()>=4 and iphivmRaw()<=7) iphiregion = 0;
-      else if (iphivmRaw()>=8 and iphivmRaw()<=15) iphiregion = 1;
-      else if (iphivmRaw()>=16 and iphivmRaw()<=23) iphiregion = 2;
-      else if (iphivmRaw()>=24 and iphivmRaw()<=27) iphiregion = 3;
-    }
-    else if (abs(disk_.value())>=1 and abs(disk_.value())<=5) { // Disk
-      if (iphivmRaw()>=4 and iphivmRaw()<=11) iphiregion = 0;
-      else if (iphivmRaw()>=12 and iphivmRaw()<=19) iphiregion = 1;
-      else if (iphivmRaw()>=20 and iphivmRaw()<=27) iphiregion = 2;
+    if (abs(disk_.value())>=1) {
+      unsigned int nallstubs=nallstubsdisks[abs(disk_.value())-1];
+      int iphiregion=iphivmRaw()/(32/nallstubs);
+      FPGAWord phi;
+      phi.set(iphiregion,3);
+      return phi;
     }
 
-    FPGAWord phi;
-    phi.set(iphiregion,3);
-    
-    return phi;
+    assert(0);
+          
   }
 
  
@@ -721,18 +684,12 @@ public:
     //return z_.value()*kz+sign*zmean[abs(disk_.value())-1];
   }
 
-  double phiapprox(double phimin, double phimax){
+  double phiapprox(double phimin, double){
     int lphi=1;
     if (layer_.value()>=3) {
       lphi=8;
     }
-    double phi=phimin-(phimax-phimin)/6.0+phi_.value()*kphi/lphi;
-    if (hourglass) {
-      phi=phimin+phi_.value()*kphi/lphi;
-    }
-    if (phi>0.5*two_pi) phi-=two_pi;
-    if (phi<-0.5*two_pi) phi+=two_pi;
-    return phi;
+    return FPGAUtil::phiRange(phimin+phi_.value()*kphi/lphi);
   }
 
   void setfiner(int finer) {

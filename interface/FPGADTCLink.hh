@@ -12,9 +12,9 @@ class FPGADTCLink{
 public:
 
   FPGADTCLink(double phimin, double phimax){
-    if (phimin>0.5*two_pi) {
-      phimin-=two_pi;
-      phimax-=two_pi;
+    if (phimin>M_PI) {
+      phimin-=2*M_PI;
+      phimax-=2*M_PI;
     }
     assert(phimax>phimin);
     phimin_=phimin;
@@ -32,13 +32,13 @@ public:
     if (overlaplayer) {
       double dphi=phimax-phimin;
       assert(dphi>0.0);
-      assert(dphi<0.5*two_pi);
+      assert(dphi<M_PI);
       phimin-=dphi/6.0;
       phimax+=dphi/6.0;
     }
     //cout << "FPGADTCLink::inRange phi : "<<phi
     // 	 <<" phi min max "<<phimin<<" "<<phimax<<endl;
-    return (phi<phimax&&phi>phimin)||(phi+two_pi<phimax&&phi+two_pi>phimin);
+    return (phi<phimax&&phi>phimin)||(phi+2*M_PI<phimax&&phi+2*M_PI>phimin);
   }
   
   unsigned int nStubs() const {return stubs_.size();}

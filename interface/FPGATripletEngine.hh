@@ -4,6 +4,7 @@
 
 #include "FPGAProcessBase.hh"
 #include "FPGAStubTriplets.hh"
+#include "FPGAUtil.hh"
 
 using namespace std;
 
@@ -13,12 +14,10 @@ public:
 
   FPGATripletEngine(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    double dphi=two_pi/NSector;
-    phimin_=iSector*dphi;
-    phimax_=phimin_+dphi;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    double dphi=2*M_PI/NSector;
+    phimin_=FPGAUtil::phiRange(iSector*dphi);
+    phimax_=FPGAUtil::phiRange(phimin_+dphi);
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
     //cout << "phimin_ phimax_ "<<phimin_<<" "<<phimax_<<endl;
     assert(phimax_>phimin_);
     stubpairs_.clear();
@@ -200,18 +199,12 @@ public:
                 assert(secondphibits_!=-1);
                 assert(thirdphibits_!=-1);
                 
-                int iphisecondbin=secondstub.first->iphivmFineBins(5,secondphibits_);
-                int iphithirdbin=thirdstub.first->iphivmFineBins(4,thirdphibits_);
-
-                if (hourglass) {
-                  unsigned int nvmsecond=nallstubslayers[layer2_-1]*nvmtelayers[layer2_-1];
-                  unsigned int nvmthird=nallstubslayers[layer3_-1]*nvmtelayers[layer3_-1];
-                  unsigned int nvmbitssecond=nbits(nvmsecond);
-                  unsigned int nvmbitsthird=nbits(nvmthird);
-                  iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
-                  iphithirdbin=thirdstub.first->iphivmFineBins(nvmbitsthird,thirdphibits_);
-                }
-                
+		unsigned int nvmsecond=nallstubslayers[layer2_-1]*nvmtelayers[layer2_-1];
+		unsigned int nvmthird=nallstubslayers[layer3_-1]*nvmtelayers[layer3_-1];
+		unsigned int nvmbitssecond=nbits(nvmsecond);
+		unsigned int nvmbitsthird=nbits(nvmthird);
+		int iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
+		int iphithirdbin=thirdstub.first->iphivmFineBins(nvmbitsthird,thirdphibits_);
                 
                 unsigned int index = (iphisecondbin<<thirdphibits_)+iphithirdbin;
 
@@ -304,24 +297,16 @@ public:
                 assert(secondphibits_!=-1);
                 assert(thirdphibits_!=-1);
                 
-                int iphisecondbin=secondstub.first->iphivmFineBins(5,secondphibits_);
-                int iphithirdbin=thirdstub.first->iphivmFineBins(4,thirdphibits_);
-                
-                if (hourglass) {
-                  unsigned int nvmsecond;
-                  unsigned int nvmthird;
-                  nvmsecond=nallstubsoverlapdisks[disk2_-1]*nvmteoverlapdisks[disk2_-1];
-                  nvmthird=nallstubsoverlaplayers[layer3_-1]*nvmteoverlaplayers[layer3_-1];
-                  unsigned int nvmbitssecond=nbits(nvmsecond);
-                  unsigned int nvmbitsthird=nbits(nvmthird);
-                  iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
-                  iphithirdbin=thirdstub.first->iphivmFineBins(nvmbitsthird,thirdphibits_);
-                }
-                  
+		unsigned int nvmsecond;
+		unsigned int nvmthird;
+		nvmsecond=nallstubsoverlapdisks[disk2_-1]*nvmteoverlapdisks[disk2_-1];
+		nvmthird=nallstubsoverlaplayers[layer3_-1]*nvmteoverlaplayers[layer3_-1];
+		unsigned int nvmbitssecond=nbits(nvmsecond);
+		unsigned int nvmbitsthird=nbits(nvmthird);
+		int iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
+		int iphithirdbin=thirdstub.first->iphivmFineBins(nvmbitsthird,thirdphibits_);
                   
                 unsigned int index = (iphisecondbin<<thirdphibits_)+iphithirdbin;
-                
-                //assert(index<(int)phitable_.size());		
                 
                   
                 /*if (!phitable_[index]) {
@@ -398,24 +383,17 @@ public:
                 assert(secondphibits_!=-1);
                 assert(thirdphibits_!=-1);
                 
-                int iphisecondbin=secondstub.first->iphivmFineBins(5,secondphibits_);
-                int iphithirdbin=thirdstub.first->iphivmFineBins(4,thirdphibits_);
-                
-                if (hourglass) {
-                  unsigned int nvmsecond;
-                  unsigned int nvmthird;
-                  nvmsecond=nallstubsoverlaplayers[layer2_-1]*nvmteoverlaplayers[layer2_-1];
-                  nvmthird=nallstubsoverlapdisks[disk3_-1]*nvmteoverlapdisks[disk3_-1];
-                  unsigned int nvmbitssecond=nbits(nvmsecond);
-                  unsigned int nvmbitsthird=nbits(nvmthird);
-                  iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
-                  iphithirdbin=thirdstub.first->iphivmFineBins(nvmbitsthird,thirdphibits_);
-                }
-                  
+		unsigned int nvmsecond;
+		unsigned int nvmthird;
+		nvmsecond=nallstubsoverlaplayers[layer2_-1]*nvmteoverlaplayers[layer2_-1];
+		nvmthird=nallstubsoverlapdisks[disk3_-1]*nvmteoverlapdisks[disk3_-1];
+		unsigned int nvmbitssecond=nbits(nvmsecond);
+		unsigned int nvmbitsthird=nbits(nvmthird);
+		int iphisecondbin=secondstub.first->iphivmFineBins(nvmbitssecond,secondphibits_);
+		int iphithirdbin=thirdstub.first->iphivmFineBins(nvmbitsthird,thirdphibits_);
                   
                 unsigned int index = (iphisecondbin<<thirdphibits_)+iphithirdbin;
                 
-                //assert(index<(int)phitable_.size());		
                 
                   
                 /*if (!phitable_[index]) {

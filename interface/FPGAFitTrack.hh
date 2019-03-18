@@ -1187,14 +1187,11 @@ class FPGAFitTrack:public FPGAProcessBase{
    ichisqfit = ichisqfit>>3;
    if(ichisqfit >= (1<<8)) ichisqfit = (1<<8)-1;
 
-   if (hourglass) {
 
-    double phicrit=phi0fit-asin(0.5*rcrit*rinvfit);
-    bool keep=(phicrit>phicritmin)&&(phicrit<phicritmax);
-
-    if (!keep) return;
-
-   }
+   double phicrit=phi0fit-asin(0.5*rcrit*rinvfit);
+   bool keep=(phicrit>phicritmin)&&(phicrit<phicritmax);
+   
+   if (!keep) return;
 
    tracklet->setFitPars(rinvfit,phi0fit,tfit,z0fit,chisqfit,
      rinvfitexact,phi0fitexact,tfitexact,
@@ -1333,43 +1330,65 @@ class FPGAFitTrack:public FPGAProcessBase{
 
     if (bestTracklet==0) break;
 
+    //Counts total number of matched hits
     int nMatches=0;
+
+    //Counts unique hits in each layer
+    int nMatchesUniq=0;
+    bool match=false;
 
     if (indexArray[0]<matches1.size()) {
      while (matches1[indexArray[0]]==bestTracklet && indexArray[0]<matches1.size()) {
       indexArray[0]++;
       nMatches++;
+      match=true;
      }
     }
 
+    if (match) nMatchesUniq++;
+    match=false;
+    
     if (indexArray[1]<matches2.size()) {
      while (matches2[indexArray[1]]==bestTracklet && indexArray[1]<matches2.size()) {
       indexArray[1]++;
       nMatches++;
+      match=true;
      }
     }
+
+    if (match) nMatchesUniq++;
+    match=false;
 
     if (indexArray[2]<matches3.size()) {
      while (matches3[indexArray[2]]==bestTracklet && indexArray[2]<matches3.size()) {
       indexArray[2]++;
       nMatches++;
+      match=true;
      }
     }
+
+    if (match) nMatchesUniq++;
+    match=false;
 
     if (indexArray[3]<matches4.size()) {
      while (matches4[indexArray[3]]==bestTracklet && indexArray[3]<matches4.size()) {
       indexArray[3]++;
       nMatches++;
+      match=true;
      }
     }
 
+    if (match) nMatchesUniq++;
 
     if(debug1) cout<<getName()<<" : nMatches = "<<nMatches<<" "<<asinh(bestTracklet->t())<<"\n";
 
-    if ((hourglassExtended && nMatches>=1) || nMatches>=2) { // aedit , should've been >=2
+    if ((hourglassExtended && nMatchesUniq>=1) || nMatchesUniq>=2) { // aedit , should've been >=2
      countFit++;
-     if (fakefit_5par) trackFitFake(bestTracklet);
-     else trackFitNew(bestTracklet);
+     if (fakefit_5par) {
+       trackFitFake(bestTracklet);
+     } else {
+       trackFitNew(bestTracklet);
+     }
      if (bestTracklet->fit()){
       assert(trackfit_!=0);
       if (writeSeeds) {

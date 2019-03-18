@@ -47,17 +47,15 @@ public:
     if (subname=="R") overlap_=true;
     if (subname=="S") overlap_=true;
     if (subname=="T") overlap_=true;
-    if (hourglass) {
-      if (subname=="Z") overlap_=true;
-      if (subname=="x") overlap_=true;
-      if (subname=="y") overlap_=true;
-      if (subname=="z") overlap_=true;
-      if (subname=="w") overlap_=true;
-      if (subname=="q") overlap_=true;
-      if (subname=="r") overlap_=true;
-      if (subname=="s") overlap_=true;
-      if (subname=="t") overlap_=true;
-    }
+    if (subname=="Z") overlap_=true;
+    if (subname=="x") overlap_=true;
+    if (subname=="y") overlap_=true;
+    if (subname=="z") overlap_=true;
+    if (subname=="w") overlap_=true;
+    if (subname=="q") overlap_=true;
+    if (subname=="r") overlap_=true;
+    if (subname=="s") overlap_=true;
+    if (subname=="t") overlap_=true;
     if (subname=="I") extra_=true;
     if (subname=="J") extra_=true;
     if (subname=="K") extra_=true;
@@ -360,87 +358,32 @@ public:
   void getPhiRange(double &phimin, double &phimax) {
 
 
-    if (hourglass) {
-
-      int nvm=-1;
-      if (overlap_) {
-	if (layer_>0) {
-	  nvm=nallstubsoverlaplayers[layer_-1]*nvmteoverlaplayers[layer_-1];
-	}
-	if (disk_>0) {
-	  nvm=nallstubsoverlapdisks[disk_-1]*nvmteoverlapdisks[disk_-1];
-	}
-      } else {
-	if (layer_>0) {
-	  nvm=nallstubslayers[layer_-1]*nvmtelayers[layer_-1];
-	  if (extra_) {
-	    nvm=nallstubslayers[layer_-1]*nvmteextralayers[layer_-1];
-	  }
-	}
-	if (disk_>0) {
-	  nvm=nallstubsdisks[disk_-1]*nvmtedisks[disk_-1];
+    int nvm=-1;
+    if (overlap_) {
+      if (layer_>0) {
+	nvm=nallstubsoverlaplayers[layer_-1]*nvmteoverlaplayers[layer_-1];
+      }
+      if (disk_>0) {
+	nvm=nallstubsoverlapdisks[disk_-1]*nvmteoverlapdisks[disk_-1];
+      }
+    } else {
+      if (layer_>0) {
+	nvm=nallstubslayers[layer_-1]*nvmtelayers[layer_-1];
+	if (extra_) {
+	  nvm=nallstubslayers[layer_-1]*nvmteextralayers[layer_-1];
 	}
       }
-      assert(nvm>0);
-      assert(nvm<=32);
-      double dphi=dphisectorHG/nvm;
-      phimax=phibin()*dphi;
-      phimin=phimax-dphi;
-      //if (iSector_==1) cout << "phiRange: "<<getName()<<" "<<phibin()<<" overlap "<<overlap_<<" phimin, max "<<phimin<<" "<<phimax<<endl;
-      return;
+      if (disk_>0) {
+	nvm=nallstubsdisks[disk_-1]*nvmtedisks[disk_-1];
+      }
     }
-    
-    
-    if (layer_==1 || layer_==3 || layer_==5) {
-      int nphibin=24;
-      double dphi=dphisector/nphibin;
-      phimax=phibin()*dphi;
-      phimin=phimax-dphi;
-      return;
-    }
-
-    if (layer_==2 || layer_==4 || layer_==6) {
-      int nphibin=12;
-      double dphi=dphisector/nphibin;
-      phimax=phibin()*dphi-dphisector/6.0;
-      phimin=phimax-dphi;
-      return;
-    }
-
-    if (disk_==1) {
-      int nphibin=12;
-      double dphi=dphisector/nphibin;
-      phimax=phibin()*dphi;
-      phimin=phimax-dphi;
-      return;
-    }
-
-    if (disk_==3) {
-      int nphibin=6;
-      double dphi=dphisector/nphibin;
-      phimax=phibin()*dphi;
-      phimin=phimax-dphi;
-      return;
-    }
-
-    if (disk_==2) {
-      int nphibin=12;
-      double dphi=dphisector/nphibin;
-      phimax=phibin()*dphi-dphisector/6.0;
-      phimin=phimax-dphi;
-      return;
-    }
-
-    if (disk_==4 ) {
-      int nphibin=6;
-      double dphi=dphisector/nphibin;
-      phimax=phibin()*dphi-dphisector/6.0;
-      phimin=phimax-dphi;
-      return;
-    }
-    
-    
-    assert(0); //not implemented yet
+    assert(nvm>0);
+    assert(nvm<=32);
+    double dphi=dphisectorHG/nvm;
+    phimax=phibin()*dphi;
+    phimin=phimax-dphi;
+    //if (iSector_==1) cout << "phiRange: "<<getName()<<" "<<phibin()<<" overlap "<<overlap_<<" phimin, max "<<phimin<<" "<<phimax<<endl;
+    return;
     
   }
   

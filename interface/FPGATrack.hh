@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+#include "FPGAUtil.hh"
+
 using namespace std;
 
 class FPGATrack{
@@ -86,30 +88,21 @@ public:
   }
   double phi0() const {
 
-    double dphi=two_pi/NSector;
-    double dphiHG=0.0;
-    if (hourglass) {
-      dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-    }
+    double dphi=2*M_PI/NSector;
+    double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     double phimin=sector_*dphi-dphiHG;
     double phimax=phimin+dphi+2*dphiHG;
-    if (hourglass) {
-      phimin-=0.5*two_pi/NSector;
-      phimax-=0.5*two_pi/NSector;
-    }
-    if (phimin>0.5*two_pi) phimin-=two_pi;
-    if (phimax>0.5*two_pi) phimax-=two_pi;
-    if (phimin>phimax)  phimin-=two_pi;
-    double phioffset=phimin-dphi/6.0;
-    if (hourglass) {
-      phioffset=phimin;
-    } 
-
-
+    phimin-=M_PI/NSector;
+    phimax-=M_PI/NSector;
+    phimin=FPGAUtil::phiRange(phimin);
+    phimax=FPGAUtil::phiRange(phimax);
+    if (phimin>phimax)  phimin-=2*M_PI;
+    double phioffset=phimin;
+  
     return iphi0_*kphi0pars+phioffset;
   }
   double eta() const {
-    return -log(tan(0.5*(0.25*two_pi-atan(it_*ktpars))));
+    return asinh(it_*ktpars);
   }
   double z0() const {
     return iz0_*kz0pars;

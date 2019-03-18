@@ -6,6 +6,7 @@
 #include "FPGAStub.hh"
 #include "FPGADTCLink.hh"
 #include "FPGADTC.hh"
+#include "FPGAUtil.hh"
 
 using namespace std;
 
@@ -120,11 +121,8 @@ public:
       isec=dtc[4]-'0';
     }
 
-    double phisec=phi-isec*two_pi/9.0; //Nonant cabling hardcoded here
+    double phisec=FPGAUtil::phiRange(phi-isec*2*M_PI/9.0); //Nonant cabling hardcoded here
 
-    if (phisec<0.5*two_pi) phisec+=two_pi;
-    if (phisec>0.5*two_pi) phisec-=two_pi;
-    
     //cout << "dtc : "<<dtc<<" "<<layerdisk<<" "<<dtcbase<<" "<<isec<<" "<<phisec<<endl;
     
     assert(dtcranges.find(dtcbase)!=dtcranges.end());

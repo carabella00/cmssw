@@ -20,21 +20,18 @@
 #include "FPGACleanTrack.hh"
 
 #include "FPGAVMRouter.hh"
-#include "FPGAVMRouterME.hh"
-#include "FPGAVMRouterTE.hh"
 #include "FPGATrackletEngine.hh"
 #include "FPGATrackletEngineDisplaced.hh"
 #include "FPGATripletEngine.hh"
 #include "FPGATrackletCalculator.hh"
 #include "FPGATrackletCalculatorDisplaced.hh"
 #include "FPGAProjectionRouter.hh"
-#include "FPGAProjectionTransceiver.hh"
 #include "FPGAMatchEngine.hh"
 #include "FPGAMatchCalculator.hh"
 #include "FPGAMatchProcessor.hh"
-#include "FPGAMatchTransceiver.hh"
 #include "FPGAFitTrack.hh"
 #include "FPGAPurgeDuplicate.hh"
+#include "FPGAUtil.hh"
 
 using namespace std;
 
@@ -44,20 +41,15 @@ public:
 
   FPGASector(unsigned int i){
     isector_=i;
-    double dphi=two_pi/NSector;
-    double dphiHG=0.0;
-    if (hourglass) {
-      dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-    }
+    double dphi=2*M_PI/NSector;
+    double dphiHG=0.5*dphisectorHG-M_PI/NSector;
     phimin_=isector_*dphi-dphiHG;
     phimax_=phimin_+dphi+2*dphiHG;
-    if (hourglass) {
-      phimin_-=0.5*two_pi/NSector;
-      phimax_-=0.5*two_pi/NSector;
-    }
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    phimin_-=M_PI/NSector;
+    phimax_-=M_PI/NSector;
+    phimin_=FPGAUtil::phiRange(phimin_);
+    phimax_=FPGAUtil::phiRange(phimax_);
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
   }
 
   ~FPGASector() {
@@ -69,66 +61,34 @@ public:
 
     bool add=false;
     
-    if (hourglass) {
-      double phi=stub.phi();
-      //cout << "FPGASector::addStub layer phi phimin_ phimax_ : "<<stub.layer()+1<<" "<<" "<<dtc<<" "<<phi<<" "<<phimin_<<" "<<phimax_<<endl;
-      double dphi=two_pi/NSector/6.0;
-      if (hourglass) {
-	dphi=0.5*(dphisectorHG-two_pi/NSector);
-      }
-
-      static std::map<string,std::vector<int> > ILindex;
-      std::vector<int>& tmp=ILindex[dtc];
-      if (tmp.size()==0){
-	//cout << "Adding entries for dtc : "<<dtc;
-	for (unsigned int i=0;i<IL_.size();i++){
-	  if (IL_[i]->getName().find("_"+dtc)!=string::npos){
-	    //cout << " Adding link "<<IL_[i]->getName()<<endl;
-	    tmp.push_back(i);
-	  }
+    double phi=stub.phi();
+    //cout << "FPGASector::addStub layer phi phimin_ phimax_ : "<<stub.layer()+1<<" "<<" "<<dtc<<" "<<phi<<" "<<phimin_<<" "<<phimax_<<endl;
+    double dphi=0.5*dphisectorHG-M_PI/NSector;
+    
+    static std::map<string,std::vector<int> > ILindex;
+    std::vector<int>& tmp=ILindex[dtc];
+    if (tmp.size()==0){
+      //cout << "Adding entries for dtc : "<<dtc;
+      for (unsigned int i=0;i<IL_.size();i++){
+	if (IL_[i]->getName().find("_"+dtc)!=string::npos){
+	  //cout << " Adding link "<<IL_[i]->getName()<<endl;
+	  tmp.push_back(i);
 	}
+      }
 	//cout << endl;
-      }
-      
-      if (((phi>phimin_-dphi)&&(phi<phimax_+dphi))||
-	  ((phi>two_pi+phimin_-dphi)&&(phi<two_pi+phimax_+dphi))) {
-	FPGAStub fpgastub(stub,phimin_,phimax_);
-	std::vector<int>& tmp=ILindex[dtc];
-	assert(tmp.size()!=0);
-	for (unsigned int i=0;i<tmp.size();i++){
-	  //cout << "Add stub to link"<<IL_[tmp[i]]->getName()<<endl;
-	  if (IL_[tmp[i]]->addStub(stub,fpgastub,dtc)) add=true;
-	}
-      }
-    }  else {
-      
-      double phi=stub.phi();
-      int layer=stub.layer()+1;
-      //cout << "FPGASector::addStub phi phimin_ phimax_ : "<<phi<<" "<<phimin_<<" "<<phimax_<<endl;
-      double dphi=two_pi/NSector/6.0;
-      if (layer<999) {
-	if (((phi>phimin_-dphi)&&(phi<phimax_+dphi))||
-	    ((phi>two_pi+phimin_-dphi)&&(phi<two_pi+phimax_+dphi))) {
-	  FPGAStub fpgastub(stub,phimin_,phimax_);
-	  //cout << "Trying to add stub in sector : "<<isector_<<" layer = "<<layer<<endl;
-	  for (unsigned int i=0;i<IL_.size();i++){
-	    //cout << i<<" "<<IL_[i]->getName()<<" "<<isector_<<endl;
-	    if (IL_[i]->addStub(stub,fpgastub)) add=true;
-	  }
-	}
-      } else {
-	//int disk=stub.disk();
-	if (((phi>phimin_-dphi)&&(phi<phimax_+dphi))||
-	    ((phi>two_pi+phimin_-dphi)&&(phi<two_pi+phimax_+dphi))) {
-	  //cout << "Trying to add stub in sector : "<<isector_<<" disk = "<<disk<<endl;
-	  for (unsigned int i=0;i<IL_.size();i++){
-	    FPGAStub fpgastub(stub,phimin_,phimax_);
-	    if (IL_[i]->addStub(stub,fpgastub)) add=true;
-	  }      
-	}
+    }
+    
+    if (((phi>phimin_-dphi)&&(phi<phimax_+dphi))||
+	((phi>2*M_PI+phimin_-dphi)&&(phi<2*M_PI+phimax_+dphi))) {
+      FPGAStub fpgastub(stub,phimin_,phimax_);
+      std::vector<int>& tmp=ILindex[dtc];
+      assert(tmp.size()!=0);
+      for (unsigned int i=0;i<tmp.size();i++){
+	//cout << "Add stub to link"<<IL_[tmp[i]]->getName()<<endl;
+	if (IL_[tmp[i]]->addStub(stub,fpgastub,dtc)) add=true;
       }
     }
-
+    
     return add;
     
   }
@@ -202,12 +162,6 @@ public:
     if (procType=="VMRouter:") {
       VMR_.push_back(new FPGAVMRouter(procName,isector_));
       Processes_[procName]=VMR_.back();
-    } else if (procType=="VMRouterTE:") {
-      VMRTE_.push_back(new FPGAVMRouterTE(procName,isector_));
-      Processes_[procName]=VMRTE_.back();
-    } else if (procType=="VMRouterME:") {
-      VMRME_.push_back(new FPGAVMRouterME(procName,isector_));
-      Processes_[procName]=VMRME_.back();
     } else if (procType=="TrackletEngine:") {
       TE_.push_back(new FPGATrackletEngine(procName,isector_));
       Processes_[procName]=TE_.back();
@@ -227,9 +181,6 @@ public:
     } else if (procType=="ProjectionRouter:") {
       PR_.push_back(new FPGAProjectionRouter(procName,isector_));
       Processes_[procName]=PR_.back();
-    } else if (procType=="ProjectionTransceiver:") {
-      PT_.push_back(new FPGAProjectionTransceiver(procName,isector_));
-      Processes_[procName]=PT_.back();
     } else if (procType=="MatchEngine:") {
       ME_.push_back(new FPGAMatchEngine(procName,isector_));
       Processes_[procName]=ME_.back();
@@ -240,9 +191,6 @@ public:
     } else if (procType=="MatchProcessor:") {
       MP_.push_back(new FPGAMatchProcessor(procName,isector_));
       Processes_[procName]=MP_.back();
-    } else if (procType=="MatchTransceiver:") {
-      MT_.push_back(new FPGAMatchTransceiver(procName,isector_));
-      Processes_[procName]=MT_.back();
     } else if (procType=="FitTrack:") {
       FT_.push_back(new FPGAFitTrack(procName,isector_));
       Processes_[procName]=FT_.back();
@@ -433,12 +381,6 @@ public:
     for (unsigned int i=0;i<VMR_.size();i++){
       VMR_[i]->execute();
     }
-    for (unsigned int i=0;i<VMRTE_.size();i++){
-      VMRTE_[i]->execute();
-    }
-    for (unsigned int i=0;i<VMRME_.size();i++){
-      VMRME_[i]->execute();
-    }
   }
 
   void executeTE(){
@@ -505,72 +447,6 @@ public:
   void executePD(std::vector<FPGATrack*>& tracks){
     for (unsigned int i=0;i<PD_.size();i++){
       PD_[i]->execute(tracks);
-    }
-  }
-
-  void executePT(FPGASector* sectorPlus,FPGASector* sectorMinus){
-    //For now the order is assumed
-    for (unsigned int i=0;i<PT_.size();i++){
-      string name=PT_[i]->getName();
-      //cout << "FPGASector:executePT "<<name<<endl;
-      //cout << "name.find(\"Minus\") : "<<name.find("Minus")<<endl;
-      if (name.find("Minus")!=std::string::npos) {
-	name.replace(name.find("Minus"),5,"Plus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorMinus->PT_.size();j++){
-	  if (sectorMinus->PT_[j]->getName()==name) {
-	    PT_[i]->execute(sectorMinus->PT_[j]);
-	  }
-	}
-      } else if (name.find("Plus")!=std::string::npos) {
-	name.replace(name.find("Plus"),4,"Minus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorPlus->PT_.size();j++){
-	  if (sectorPlus->PT_[j]->getName()==name) {
-	    PT_[i]->execute(sectorPlus->PT_[j]);
-	  }
-	}
-      } else {
-	assert(0);
-      }
-      
-    }
-
-    if (writeTrackProjOcc) {
-      static ofstream out("trackprojocc.txt");
-      for (unsigned int i=0; i<TPROJ_.size();i++){
-	out << TPROJ_[i]->getName()<<" "<<TPROJ_[i]->nTracklets()<<endl;
-      }
-    }
-    
-
-  }
-
-
-  void executeMT(FPGASector* sectorPlus,FPGASector* sectorMinus){
-    //For now the order is assumed
-    for (unsigned int i=0;i<MT_.size();i++){
-      string name=MT_[i]->getName();
-      //cout << "FPGASector:executePT "<<name<<endl;
-      if (name.find("Minus")!=std::string::npos) {
-	name.replace(6,5,"Plus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorMinus->MT_.size();j++){
-	  if (sectorMinus->MT_[j]->getName()==name) {
-	    MT_[i]->execute(sectorMinus->MT_[j]);
-	  }
-	}
-      } else if (name.find("Plus")!=std::string::npos) {
-	name.replace(6,4,"Minus");
-	//cout << "New name : "<<name<<endl;
-	for (unsigned int j=0;j<sectorPlus->MT_.size();j++){
-	  if (sectorPlus->MT_[j]->getName()==name) {
-	    MT_[i]->execute(sectorPlus->MT_[j]);
-	  }
-	}
-      } else {
-	assert(0);
-      }
     }
   }
 
@@ -649,19 +525,15 @@ private:
   
   std::map<string, FPGAProcessBase*> Processes_;
   std::vector<FPGAVMRouter*> VMR_;
-  std::vector<FPGAVMRouterTE*> VMRTE_;
-  std::vector<FPGAVMRouterME*> VMRME_;
   std::vector<FPGATrackletEngine*> TE_;
   std::vector<FPGATrackletEngineDisplaced*> TED_;
   std::vector<FPGATripletEngine*> TRE_;
   std::vector<FPGATrackletCalculator*> TC_;
   std::vector<FPGATrackletCalculatorDisplaced*> TCD_;
   std::vector<FPGAProjectionRouter*> PR_;
-  std::vector<FPGAProjectionTransceiver*> PT_;
   std::vector<FPGAMatchEngine*> ME_;
   std::vector<FPGAMatchCalculator*> MC_;
   std::vector<FPGAMatchProcessor*> MP_;
-  std::vector<FPGAMatchTransceiver*> MT_;
   std::vector<FPGAFitTrack*> FT_;
   std::vector<FPGAPurgeDuplicate*> PD_;
 

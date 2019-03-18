@@ -18,8 +18,6 @@ public:
 	    int izproj,
 	    int iphider,
 	    int izder,
-	    bool minusNeighbor,
-	    bool plusNeighbor,
 	    double phiproj,
 	    double zproj,
 	    double phiprojder,
@@ -93,9 +91,6 @@ public:
 										
 										   
     
-    minusNeighbor_=minusNeighbor;
-    plusNeighbor_=plusNeighbor;
-
     phiproj_=phiproj;
     zproj_=zproj;
     phiprojder_=phiprojder;
@@ -143,16 +138,6 @@ public:
   FPGAWord fpgazprojder() const {
     assert(valid_);
     return fpgazprojder_;
-  };
-
-  bool minusNeighbor() const {
-    assert(valid_);
-    return minusNeighbor_;
-  };
-  
-  bool plusNeighbor() const {
-    assert(valid_);
-    return plusNeighbor_;
   };
 
   FPGAWord fpgaphiprojvm() const {
@@ -234,10 +219,6 @@ protected:
   FPGAWord fpgazproj_;
   FPGAWord fpgaphiprojder_;
   FPGAWord fpgazprojder_;
-
-  bool minusNeighbor_;
-  bool plusNeighbor_;
-
 
   FPGAWord fpgaphiprojvm_;
   FPGAWord fpgazprojvm_;

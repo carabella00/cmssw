@@ -36,8 +36,7 @@ public:
 
     fpgaphiresid_.set(iphiresid,phiresidbits,false,__LINE__,__FILE__);
     fpgazresid_.set(izresid,zresidbits,false,__LINE__,__FILE__);
-    int nbitsid=9;
-    if (hourglass) nbitsid=10;
+    int nbitsid=10;
     fpgastubid_.set(istubid,nbitsid,true,__LINE__,__FILE__);
     assert(!fpgaphiresid_.atExtreme());
     

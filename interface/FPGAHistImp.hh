@@ -175,8 +175,8 @@ public:
 	h_rinvres_L1L2_->Fill(rinv-simtrk.rinv());
 	h_irinvres_L1L2_->Fill(irinv-simtrk.rinv());
 	double simtrkphi0=simtrk.phi();
-	double dphiHG=0.5*(dphisectorHG-two_pi/NSector);
-	double phimin=+dphiHG-0.5*two_pi/NSector;
+	double dphiHG=0.5*dphisectorHG-M_PI/NSector;
+	double phimin=+dphiHG-M_PI/NSector;
 	double phioffset=phimin;
 	while (iphi0-phioffset-simtrkphi0>M_PI/NSector) simtrkphi0+=2*M_PI/NSector;
 	while (iphi0-phioffset-simtrkphi0<-M_PI/NSector) simtrkphi0-=2*M_PI/NSector;

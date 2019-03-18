@@ -3,6 +3,7 @@
 #define FPGATRACKLETENGINE_H
 
 #include "FPGAProcessBase.hh"
+#include "FPGAUtil.hh"
 
 
 using namespace std;
@@ -13,12 +14,10 @@ public:
 
   FPGATrackletEngine(string name, unsigned int iSector):
     FPGAProcessBase(name,iSector){
-    double dphi=two_pi/NSector;
-    phimin_=iSector*dphi;
-    phimax_=phimin_+dphi;
-    if (phimin_>0.5*two_pi) phimin_-=two_pi;
-    if (phimax_>0.5*two_pi) phimax_-=two_pi;
-    if (phimin_>phimax_)  phimin_-=two_pi;
+    double dphi=2*M_PI/NSector;
+    phimin_=FPGAUtil::phiRange(iSector*dphi);
+    phimax_=FPGAUtil::phiRange(phimin_+dphi);
+    if (phimin_>phimax_)  phimin_-=2*M_PI;
     assert(phimax_>phimin_);
     stubpairs_=0;
     innervmstubs_=0;
@@ -147,7 +146,8 @@ public:
     assert(innervmstubs_!=0);
     assert(outervmstubs_!=0);
 
-    if (hourglass&&(disk2_==1 && (layer1_==1 || layer1_==2)) ) {
+    //overlap seeding
+    if (disk2_==1 && (layer1_==1 || layer1_==2) ) {
       for(unsigned int i=0;i<innervmstubs_->nStubs();i++){
 	std::pair<FPGAStub*,L1TStub*> innerstub=innervmstubs_->getStub(i);
 
@@ -186,17 +186,12 @@ public:
 	    assert(innerphibits_!=-1);
 	    assert(outerphibits_!=-1);
 	    
-	    int iphiinnerbin=innerstub.first->iphivmFineBins(5,innerphibits_);
-	    int iphiouterbin=outerstub.first->iphivmFineBins(4,outerphibits_);
-	    
-	    if (hourglass) {
-	      unsigned int nvminner=nallstubsoverlaplayers[layer1_-1]*nvmteoverlaplayers[layer1_-1];
-	      unsigned int nvmouter=nallstubsoverlapdisks[disk2_-1]*nvmteoverlapdisks[disk2_-1];
-	      unsigned int nvmbitsinner=nbits(nvminner);
-	      unsigned int nvmbitsouter=nbits(nvmouter);
-	      iphiinnerbin=innerstub.first->iphivmFineBins(nvmbitsinner,innerphibits_);
-	      iphiouterbin=outerstub.first->iphivmFineBins(nvmbitsouter,outerphibits_);
-	    }
+	    unsigned int nvminner=nallstubsoverlaplayers[layer1_-1]*nvmteoverlaplayers[layer1_-1];
+	    unsigned int nvmouter=nallstubsoverlapdisks[disk2_-1]*nvmteoverlapdisks[disk2_-1];
+	    unsigned int nvmbitsinner=nbits(nvminner);
+	    unsigned int nvmbitsouter=nbits(nvmouter);
+	    int iphiinnerbin=innerstub.first->iphivmFineBins(nvmbitsinner,innerphibits_);
+	    int iphiouterbin=outerstub.first->iphivmFineBins(nvmbitsouter,outerphibits_);
 	      
 	      
 	    int index = (iphiinnerbin<<outerphibits_)+iphiouterbin;
@@ -240,47 +235,6 @@ public:
 	}
       }
 
-    } else if (disk1_==1 && (layer2_==1 || layer2_==2) ) {
-
-      for(unsigned int i=0;i<outervmstubs_->nStubs();i++){
-	std::pair<FPGAStub*,L1TStub*> outerstub=outervmstubs_->getStub(i);
-
-	if (debug1) cout << "Have overlap stub in layer = "<<outerstub.first->layer().value()+1<<" disk = "<<outerstub.first->disk().value()<<endl;
-	
-	int lookupbits=outerstub.first->getVMBitsOverlap().value();
-        int rdiffmax=(lookupbits>>7);	
-	int newbin=(lookupbits&127);
-	int bin=newbin/8;
-
-	int rbinfirst=newbin&7;
-
-	int start=(bin>>1);
-	int last=start+(bin&1);
-	if (last==8) {
-	  cout << "Warning last==8 start="<<start<<endl;
-	  last=start;
-	}
-	for(int ibin=start;ibin<=last;ibin++) {
-
-	  for(unsigned int j=0;j<innervmstubs_->nStubsBinned(ibin);j++){
-	    if (countall>=MAXTE) break;
-	    countall++;
-	    std::pair<FPGAStub*,L1TStub*> innerstub=innervmstubs_->getStubBinned(ibin,j);
-	    int rbin=(innerstub.first->getVMBits().value()&7);
-	    if (start!=ibin) rbin+=8;
-	    if (rbin<rbinfirst) continue;
-	    if (rbin-rbinfirst>rdiffmax) continue;
-            if (writeSeeds) {
-              ofstream fout("seeds.txt", ofstream::app);
-              fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << iSeed_ << endl;
-              fout.close();
-            }
-	    stubpairs_->addStubPair(innerstub,outerstub);
-	    countpass++;
-	  }
-	}
-
-      }
     } else {
 
       //cout << getName() <<" "<<innervmstubs_->nStubs()<<" "<<innervmstubs_->getName()<<" "<<innervmstubs_<<endl;
@@ -352,29 +306,22 @@ public:
 	      assert(innerphibits_!=-1);
 	      assert(outerphibits_!=-1);
 	      
-	      int iphiinnerbin=innerstub.first->iphivmFineBins(5,innerphibits_);
-	      int iphiouterbin=outerstub.first->iphivmFineBins(4,outerphibits_);
-
-	      if (hourglass) {
-		unsigned int nvminner=nallstubslayers[layer1_-1]*nvmtelayers[layer1_-1];
-		unsigned int nvmouter=nallstubslayers[layer1_]*nvmtelayers[layer1_];
-		if (extra_){
-		  nvminner=nallstubslayers[layer1_-1]*nvmteextralayers[layer1_-1];
-		  nvmouter=nallstubslayers[layer1_]*nvmteextralayers[layer1_];
-		}
-		unsigned int nvmbitsinner=nbits(nvminner);
-		unsigned int nvmbitsouter=nbits(nvmouter);
-	      	iphiinnerbin=innerstub.first->iphivmFineBins(nvmbitsinner,innerphibits_);
-	      	iphiouterbin=outerstub.first->iphivmFineBins(nvmbitsouter,outerphibits_);
+	      unsigned int nvminner=nallstubslayers[layer1_-1]*nvmtelayers[layer1_-1];
+	      unsigned int nvmouter=nallstubslayers[layer1_]*nvmtelayers[layer1_];
+	      if (extra_){
+		nvminner=nallstubslayers[layer1_-1]*nvmteextralayers[layer1_-1];
+		nvmouter=nallstubslayers[layer1_]*nvmteextralayers[layer1_];
 	      }
-	      
+	      unsigned int nvmbitsinner=nbits(nvminner);
+	      unsigned int nvmbitsouter=nbits(nvmouter);
+	      int iphiinnerbin=innerstub.first->iphivmFineBins(nvmbitsinner,innerphibits_);
+	      int iphiouterbin=outerstub.first->iphivmFineBins(nvmbitsouter,outerphibits_);
 	      
 	      int index = (iphiinnerbin<<outerphibits_)+iphiouterbin;
 
 
 	      assert(index<(int)phitable_.size());		
 
-	      //cout << "Stubpair layer rinv/rinvmax : "<<layer1_<<" "<<trinv/0.0057<<" "<<phitable_[index]<<endl;
 	      
 	      if (!phitable_[index]) {
 		if (debug1) {
@@ -446,32 +393,17 @@ public:
 	      if (rbin-rbinfirst>rdiffmax) continue;
 
 	      
-	      unsigned int iphiinnerbin=innerstub.first->iphivmFineBins(4,innerphibits_);
-	      unsigned int iphiouterbin=outerstub.first->iphivmFineBins(4,outerphibits_);
-
-	      if (disk1_==3&&disk2_==4) {
-		iphiinnerbin=innerstub.first->iphivmFineBins(3,innerphibits_);
-		iphiouterbin=outerstub.first->iphivmFineBins(3,outerphibits_);
-	      }
-	      
 	      unsigned int irouterbin=outerstub.first->getVMBits().value()>>2;
 
-	      if (hourglass) {
-		unsigned int nvminner=nallstubsdisks[disk1_-1]*nvmtedisks[disk1_-1];
-		unsigned int nvmouter=nallstubsdisks[disk1_]*nvmtedisks[disk1_];
-		unsigned int nvmbitsinner=nbits(nvminner);
-		unsigned int nvmbitsouter=nbits(nvmouter);
-	      	iphiinnerbin=innerstub.first->iphivmFineBins(nvmbitsinner,innerphibits_);
-	      	iphiouterbin=outerstub.first->iphivmFineBins(nvmbitsouter,outerphibits_);
-	      }
-	      
-
-	      
+	      unsigned int nvminner=nallstubsdisks[disk1_-1]*nvmtedisks[disk1_-1];
+	      unsigned int nvmouter=nallstubsdisks[disk1_]*nvmtedisks[disk1_];
+	      unsigned int nvmbitsinner=nbits(nvminner);
+	      unsigned int nvmbitsouter=nbits(nvmouter);
+	      int iphiinnerbin=innerstub.first->iphivmFineBins(nvmbitsinner,innerphibits_);
+	      int iphiouterbin=outerstub.first->iphivmFineBins(nvmbitsouter,outerphibits_);
+	      	      
 	      unsigned int index = (irouterbin<<(outerphibits_+innerphibits_))+(iphiinnerbin<<outerphibits_)+iphiouterbin;
 
-	      //cout << "outerphibits_ innerphibits_"<<outerphibits_<<" "<<innerphibits_<<endl;
-	      //cout << "index size : "<<index<<" "<<phitable_.size()<<" "<<irouterbin<<" "<<iphiinnerbin<<" "<<iphiouterbin<<endl;
-	      
 	      assert(index<phitable_.size());		
 	      if (!phitable_[index]) {
 		if (debug1) {

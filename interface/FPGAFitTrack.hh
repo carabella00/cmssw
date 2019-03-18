@@ -169,70 +169,22 @@ class FPGAFitTrack:public FPGAProcessBase{
 
 
 
-  void trackFitNew(FPGATracklet* tracklet){
+  void trackFitNew(FPGATracklet* tracklet, std::vector<std::pair<FPGAStub*,L1TStub*>> &trackstublist, std::vector<std::pair<int,int>> &stubidslist){
 
 #ifdef USEHYBRID
    if (doKF) {
 
-    std::vector<const TMTT::Stub*> stubs;
-    std::map<unsigned int, L1TStub*> stubIndices;
-    unsigned int stubID = 0;
+    // From full match lists, collect all the stubs associated with the tracklet seed
 
-    static TMTT::Settings* settings = new TMTT::Settings();
+    // Get seed stubs first
+    trackstublist.push_back(std::make_pair(tracklet->innerFPGAStub(), tracklet->innerStub()));
+    trackstublist.push_back(std::make_pair(tracklet->outerFPGAStub(), tracklet->outerStub()));
 
-    if (printDebugKF) cout << "Will make stub" << endl;
-
-    double kfphi=tracklet->innerStub()->phi();
-    double kfr=tracklet->innerStub()->r();
-    double kfz=tracklet->innerStub()->z();
-    double kfbend=tracklet->innerStub()->bend();
-    int kflayer=tracklet->innerStub()->layer()+1;
-
-    bool barrel = (std::abs(kfz) <125.0);
-    bool psmodule = tracklet->innerStub()->isPSmodule();
-
-    unsigned int iphi = tracklet->innerStub()->iphi();
-    double alpha = tracklet->innerStub()->alpha();
-
-    if (tracklet->innerStub()->layer()>999) {
-     kflayer=abs(tracklet->innerStub()->disk())+10;
-     if (kfz<0.0) kflayer+=10;
-    }
-
-    if (printDebugKF) cout << "Will create stub with : "<<kfphi<<" "<<kfr<<" "<<kfz<<" "<<kfbend<<" "<<kflayer<<" "<<barrel<<" "<<psmodule<<" "<<endl;
-    TMTT::Stub* stubptr= new TMTT::Stub(kfphi,kfr,kfz,kfbend,kflayer, psmodule, barrel, iphi, -alpha, settings, nullptr, stubID);
-    stubs.push_back(stubptr);
-    stubIndices[stubID++] = tracklet->innerStub();
-
-    kfphi=tracklet->outerStub()->phi();
-    kfr=tracklet->outerStub()->r();
-    kfz=tracklet->outerStub()->z();
-    kfbend=tracklet->outerStub()->bend();
-    kflayer=tracklet->outerStub()->layer()+1;
-    psmodule = tracklet->outerStub()->isPSmodule();
-    barrel = (std::abs(kfz) <125.0);
-    iphi = tracklet->outerStub()->iphi();
-    alpha = tracklet->outerStub()->alpha();
-
-    if (tracklet->outerStub()->layer()>999) {
-     kflayer=abs(tracklet->outerStub()->disk())+10;
-     if (kfz<0.0) kflayer+=10;
-    }
-
-
-    if (printDebugKF) cout << "Will create stub with : "<<kfphi<<" "<<kfr<<" "<<kfz<<" "<<kfbend<<" "<<kflayer<<" "<<barrel<<" "<<psmodule<<" "<<endl;
-    stubptr= new TMTT::Stub(kfphi,kfr,kfz,kfbend,kflayer, psmodule ,barrel, iphi, -alpha, settings, nullptr, stubID);
-    stubs.push_back(stubptr);
-    stubIndices[stubID++] = tracklet->outerStub();
-
-    //
-    // from full match lists, collect all the stubs associated with the tracklet seed
-    //
-    std::vector<std::pair<FPGAStub*,L1TStub*> > stublist;
+    // Now get ALL matches (can have multiple per layer)
     for (unsigned int i=0;i<fullmatch1_.size();i++) {
      for (unsigned int j=0;j<fullmatch1_[i]->nMatches();j++) {
       if (fullmatch1_[i]->getFPGATracklet(j)->TCID()==tracklet->TCID()) {
-       stublist.push_back(fullmatch1_[i]->getMatch(j).second);
+       trackstublist.push_back(fullmatch1_[i]->getMatch(j).second);
       }
      }
     }
@@ -240,7 +192,7 @@ class FPGAFitTrack:public FPGAProcessBase{
     for (unsigned int i=0;i<fullmatch2_.size();i++) {
      for (unsigned int j=0;j<fullmatch2_[i]->nMatches();j++) {
       if (fullmatch2_[i]->getFPGATracklet(j)->TCID()==tracklet->TCID()) {
-       stublist.push_back(fullmatch2_[i]->getMatch(j).second);
+       trackstublist.push_back(fullmatch2_[i]->getMatch(j).second);
       }
      }
     }
@@ -248,7 +200,7 @@ class FPGAFitTrack:public FPGAProcessBase{
     for (unsigned int i=0;i<fullmatch3_.size();i++) {
      for (unsigned int j=0;j<fullmatch3_[i]->nMatches();j++) {
       if (fullmatch3_[i]->getFPGATracklet(j)->TCID()==tracklet->TCID()) {
-       stublist.push_back(fullmatch3_[i]->getMatch(j).second);
+       trackstublist.push_back(fullmatch3_[i]->getMatch(j).second);
       }
      }
     }
@@ -256,43 +208,67 @@ class FPGAFitTrack:public FPGAProcessBase{
     for (unsigned int i=0;i<fullmatch4_.size();i++) {
      for (unsigned int j=0;j<fullmatch4_[i]->nMatches();j++) {
       if (fullmatch4_[i]->getFPGATracklet(j)->TCID()==tracklet->TCID()) {
-       stublist.push_back(fullmatch4_[i]->getMatch(j).second);
+       trackstublist.push_back(fullmatch4_[i]->getMatch(j).second);
       }
      }
     }
 
-    for (unsigned int k=0;k<stublist.size();k++) {
-     L1TStub* l1stubptr=stublist[k].second;
 
-     kfphi=l1stubptr->phi();
-     kfr=l1stubptr->r();
-     kfz=l1stubptr->z();
-     kfbend=l1stubptr->bend();
-     psmodule = l1stubptr->isPSmodule();
-     iphi = l1stubptr->iphi();
-     alpha = l1stubptr->alpha();
-
-     bool isBarrel = stublist[k].first->isBarrel();
-
-
-     if (isBarrel) {  // barrel-specific
-      barrel = true;
-      kflayer=l1stubptr->layer()+1;
-
-      if (printDebugKF) cout << "Will create layer stub with : ";
-
-     } else {  // disk-specific
-      barrel = false;
-      kflayer=abs(l1stubptr->disk());
-      if (kfz>0) {
-       kflayer+=10;
-      } else {
-       kflayer+=20;
+    // For merge removal, loop through the resulting list of stubs to calculate their stubids
+    if(RemovalType=="merge") {
+      for(std::vector<std::pair<FPGAStub*,L1TStub*>>::iterator it=trackstublist.begin(); it!=trackstublist.end(); it++) {
+        int layer = it->first->layer().value()+1; // Assume layer (1-6) stub first
+        if(it->first->layer().value() < 0) { // if disk stub, though...
+          layer = it->first->disk().value()+10*it->first->disk().value()/abs(it->first->disk().value()); //disk = +/- 11-15
+        }
+        stubidslist.push_back(std::make_pair(layer,(it->first->phiregion().value()<<7)+it->first->stubindex().value()));
       }
 
-      if (printDebugKF) cout << "Will create disk stub with : ";
+      // And that's all we need! The rest is just for fitting, which is duplicated in FPGAPurgeDuplicate out of necessity
+      return;
+    }
 
-     }
+////////////////////
+
+    // !! Changes made below must be mirrored in FPGAPurgeDuplicate. !!
+
+    // Fit the tracks if not using the merge duplicate removal.
+
+    std::vector<const TMTT::Stub*> TMTTstubs;
+    std::map<unsigned int, L1TStub*> L1StubIndices;
+    unsigned int L1stubID = 0;
+
+    static TMTT::Settings* settings = new TMTT::Settings();
+
+    for (unsigned int k=0;k<trackstublist.size();k++) {
+      L1TStub* L1stubptr=trackstublist[k].second;
+
+      double kfphi=L1stubptr->phi();
+      double kfr=L1stubptr->r();
+      double kfz=L1stubptr->z();
+      double kfbend=L1stubptr->bend();
+      bool psmodule = L1stubptr->isPSmodule();
+      unsigned int iphi = L1stubptr->iphi();
+      double alpha = L1stubptr->alpha();
+
+      bool isBarrel = trackstublist[k].first->isBarrel();
+      int kflayer;
+
+      // Barrel-specific
+      if (isBarrel) {
+        kflayer=L1stubptr->layer()+1;
+        if (printDebugKF) cout << "Will create layer stub with : ";
+
+      // Disk-specific
+      } else {
+        kflayer=abs(L1stubptr->disk());
+        if (kfz>0) {
+          kflayer+=10;
+        } else {
+          kflayer+=20;
+        }
+        if (printDebugKF) cout << "Will create disk stub with : ";
+      }
 
      /* edm::ESHandle<TrackerGeometry> trackerGeometryHandle;
 	iSetup.get<TrackerDigiGeometryRecord>().get( trackerGeometryHandle );
@@ -305,13 +281,13 @@ class FPGAFitTrack:public FPGAProcessBase{
 */	
 
 
-     if (printDebugKF) cout <<kfphi<<" "<<kfr<<" "<<kfz<<" "<<kfbend<<" "<<kflayer<<" "<<barrel<<" "<<psmodule<<" "<<endl;
-     stubptr= new TMTT::Stub(kfphi,kfr,kfz,kfbend,kflayer,psmodule,barrel, iphi, -alpha, settings, nullptr, stubID);
-     stubs.push_back(stubptr);
-     stubIndices[stubID++] = l1stubptr;
+      if (printDebugKF) cout <<kfphi<<" "<<kfr<<" "<<kfz<<" "<<kfbend<<" "<<kflayer<<" "<<isbarrel<<" "<<psmodule<<" "<<endl;
+      TMTTstubptr= new TMTT::Stub(kfphi, kfr, kfz, kfbend, kflayer, psmodule, isbarrel, iphi, -alpha, settings, nullptr, L1stubID);
+      TMTTstubs.push_back(TMTTstubptr);
+      L1StubIndices[L1stubID++] = L1stubptr;
     }
 
-    if (printDebugKF) cout << "Made stubs: stublist.size() = " << stublist.size()<< endl;
+    if (printDebugKF) cout << "Made stubs: trackstublist.size() = " << trackstublist.size()<< endl;
 
 
     double kfrinv=tracklet->rinvapprox();
@@ -410,7 +386,7 @@ class FPGAFitTrack:public FPGAProcessBase{
       vector<L1TStub*> l1stubsFromFit;
       for (const TMTT::Stub* s : stubsFromFit) {
           unsigned int IDf = s->index();
-          L1TStub* l1s = stubIndices.at(IDf);
+          L1TStub* l1s = L1StubIndices.at(IDf);
           l1stubsFromFit.push_back(l1s);
       }
 
@@ -1382,23 +1358,30 @@ class FPGAFitTrack:public FPGAProcessBase{
 
     if(debug1) cout<<getName()<<" : nMatches = "<<nMatches<<" "<<asinh(bestTracklet->t())<<"\n";
 
+    std::vector<std::pair<FPGAStub*,L1TStub*>> trackstublist;
+    std::vector<std::pair<int,int>> stubidslist;
     if ((hourglassExtended && nMatchesUniq>=1) || nMatchesUniq>=2) { // aedit , should've been >=2
-     countFit++;
-     if (fakefit_5par) {
-       trackFitFake(bestTracklet);
-     } else {
-       trackFitNew(bestTracklet);
-     }
-     if (bestTracklet->fit()){
-      assert(trackfit_!=0);
-      if (writeSeeds) {
-	ofstream fout("seeds.txt", ofstream::app);
-	fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << bestTracklet->getISeed() << endl;
-	fout.close();
+      countFit++;
+      if (fakefit_5par) {
+        trackFitFake(bestTracklet);
+      } else {
+        trackFitNew(bestTracklet);
       }
-      trackfit_->addTrack(bestTracklet);
-      tracks.push_back(bestTracklet->getTrack());
-     }
+      if(RemovalType=="merge") {
+        trackfit_->addStubList(trackstublist);
+        trackfit_->addStubidsList(stubidslist);
+        trackfit_->addTrack(bestTracklet);
+      }
+      else if (bestTracklet->fit()){
+        assert(trackfit_!=0);
+        if (writeSeeds) {
+          ofstream fout("seeds.txt", ofstream::app);
+          fout << __FILE__ << ":" << __LINE__ << " " << name_ << "_" << iSector_ << " " << bestTracklet->getISeed() << endl;
+          fout.close();
+        }
+        trackfit_->addTrack(bestTracklet);
+        tracks.push_back(bestTracklet->getTrack())
+      }
     }
 
    } while (bestTracklet!=0);

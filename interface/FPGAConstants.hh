@@ -455,7 +455,7 @@ static int chisqzfactbits=14;
 //Duplicate Removal
 static int minIndStubs=3;
 static bool AdjacentRemoval=true;
-static std::string RemovalType="ichi";
+static std::string RemovalType="merge";
 //"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal)
 static bool fakefit_5par=false; //if true, this would use KF 5-parameter fit for displaced tracking, false means use tracklet parameters instead (i.e. no fit)
 

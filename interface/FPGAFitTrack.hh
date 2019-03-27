@@ -10,8 +10,8 @@
 #include "DataFormats/L1TrackTrigger/interface/TTCluster.h"
 #include "SimTracker/TrackTriggerAssociation/interface/TTStubAssociationMap.h"
 #include "SimTracker/TrackTriggerAssociation/interface/TTClusterAssociationMap.h"
-
 #include "L1Trigger/TrackFindingTMTT/interface/L1track3D.h"
+#include "L1Trigger/TrackFindingTMTT/interface/Stub.h"
 #include "L1Trigger/TrackFindingTMTT/interface/KFParamsComb.h"
 #ifdef USE_HLS
 #include "L1Trigger/TrackFindingTMTT/interface/HLS/KFParamsCombCallHLS.h"
@@ -281,13 +281,13 @@ class FPGAFitTrack:public FPGAProcessBase{
 */	
 
 
-      if (printDebugKF) cout <<kfphi<<" "<<kfr<<" "<<kfz<<" "<<kfbend<<" "<<kflayer<<" "<<isbarrel<<" "<<psmodule<<" "<<endl;
-      TMTTstubptr= new TMTT::Stub(kfphi, kfr, kfz, kfbend, kflayer, psmodule, isbarrel, iphi, -alpha, settings, nullptr, L1stubID);
+      if (printDebugKF) cout <<kfphi<<" "<<kfr<<" "<<kfz<<" "<<kfbend<<" "<<kflayer<<" "<<isBarrel<<" "<<psmodule<<" "<<endl;
+      TMTT::Stub* TMTTstubptr = new TMTT::Stub(kfphi, kfr, kfz, kfbend, kflayer, psmodule, isBarrel, iphi, -alpha, settings, nullptr, L1stubID);
       TMTTstubs.push_back(TMTTstubptr);
       L1StubIndices[L1stubID++] = L1stubptr;
     }
 
-    if (printDebugKF) cout << "Made stubs: trackstublist.size() = " << trackstublist.size()<< endl;
+    if (printDebugKF) cout << "Made TMTTstubs: trackstublist.size() = " << trackstublist.size()<< endl;
 
 
     double kfrinv=tracklet->rinvapprox();
@@ -347,7 +347,7 @@ class FPGAFitTrack:public FPGAProcessBase{
     if(kf_phi_sec < 0){kf_phi_sec+=9;}      
 
 
-    TMTT::L1track3D l1track3d(settings,stubs,celllocation,helixrphi,helixrz,kf_phi_sec,kf_eta_reg,1,false);
+    TMTT::L1track3D l1track3d(settings,TMTTstubs,celllocation,helixrphi,helixrz,kf_phi_sec,kf_eta_reg,1,false);
 
     // Create Kalman track fitter.
     static bool firstPrint = true;
@@ -390,7 +390,7 @@ class FPGAFitTrack:public FPGAProcessBase{
           l1stubsFromFit.push_back(l1s);
       }
 
-      if (printDebugKF) cout<<"#stubs before/after KF fit = "<<stubs.size()<<"/"<<l1stubsFromFit.size()<<endl;
+      if (printDebugKF) cout<<"#stubs before/after KF fit = "<<TMTTstubs.size()<<"/"<<l1stubsFromFit.size()<<endl;
 
      tracklet->setFitPars(rinvfit,tracklet_phi0,trk.d0(),sinh(trk.eta()),trk.z0(),
        trk.chi2(),rinvfit,tracklet_phi0, trk.d0(), sinh(trk.eta()),

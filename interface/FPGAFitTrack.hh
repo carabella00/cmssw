@@ -505,16 +505,16 @@ class FPGAFitTrack:public FPGAProcessBase{
       continue;
      }
      if (tracklet->match(l)) {
-      matches[l-1]='1';
-      layermask|=(1<<(6-l));
-      phiresid[nlayers]=tracklet->phiresidapprox(l);
-      zresid[nlayers]=tracklet->zresidapprox(l);
-      phiresidexact[nlayers]=tracklet->phiresid(l);
-      zresidexact[nlayers]=tracklet->zresid(l);
-      iphiresid[nlayers]=tracklet->fpgaphiresid(l).value();
-      izresid[nlayers]=tracklet->fpgazresid(l).value();
-
-      layers[nlayers++]=l;
+       matches[l-1]='1';
+       layermask|=(1<<(6-l));
+       phiresid[nlayers]=tracklet->phiresidapprox(l);
+       zresid[nlayers]=tracklet->zresidapprox(l);
+       phiresidexact[nlayers]=tracklet->phiresid(l);
+       zresidexact[nlayers]=tracklet->zresid(l);
+       iphiresid[nlayers]=tracklet->fpgaphiresid(l).value();
+       izresid[nlayers]=tracklet->fpgazresid(l).value();
+       
+       layers[nlayers++]=l;
      }	
     }
 
@@ -527,7 +527,6 @@ class FPGAFitTrack:public FPGAProcessBase{
 
      if (ndisks+nlayers>=6) continue;
      if (tracklet->matchdisk(d)) {
-
       if (fabs(tracklet->alphadisk(d))<1e-20) {
        matches2[2*(5-d)]='1';
        diskmask|=(1<<(2*(5-d)+1));
@@ -1220,7 +1219,8 @@ class FPGAFitTrack:public FPGAProcessBase{
 
     indexArray.push_back(0);
     for (unsigned int j=0;j<fullmatch[i]->nMatches();j++){
-     assert(iSector_==fullmatch[i]->getFPGATracklet(j)->homeSector());
+      //cout<<"Name tracklet:"<<fullmatch[i]->getName()<<" "<<fullmatch[i]->getFPGATracklet(j)<<endl;
+      assert(iSector_==fullmatch[i]->getFPGATracklet(j)->homeSector());
     }
    }
 
@@ -1381,7 +1381,7 @@ class FPGAFitTrack:public FPGAProcessBase{
     if (match) nMatchesUniq++;
 
     if(debug1) cout<<getName()<<" : nMatches = "<<nMatches<<" "<<asinh(bestTracklet->t())<<"\n";
-
+    
     if ((hourglassExtended && nMatchesUniq>=1) || nMatchesUniq>=2) { // aedit , should've been >=2
      countFit++;
      if (fakefit_5par) {

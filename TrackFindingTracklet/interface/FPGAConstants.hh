@@ -9,6 +9,8 @@
 #define USEHYBRID
 #endif
 
+#define USEHYBRID
+
 //Uncomment to run the HLS version of the KF if using the Hybrid (instead of the C++ KF).
 //(Please also follow the instructions in L1Trigger/TrackFindingTMTT/README_HLS.txt).
 //#define USE_HLS

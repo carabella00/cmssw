@@ -68,6 +68,8 @@ public:
   
   void setDuplicate(bool flag) { duplicate_=flag; }
   void setSector(int nsec) { sector_=nsec; }
+  void setStubIDpremerge(std::vector<std::pair<int, int>> stubIDpremerge) { stubIDpremerge_ = stubIDpremerge; }
+  void setStubIDprefit(std::vector<std::pair<int, int>> stubIDprefit) { stubIDprefit_ = stubIDprefit; }
 
   int irinv() const { return irinv_; }
   int iphi0() const { return iphi0_; }
@@ -76,6 +78,8 @@ public:
   int it()    const { return it_; }
   int ichisq() const {return ichisq_;}
 
+  std::vector<std::pair<int, int>> stubIDpremerge() const { return stubIDpremerge_; }
+  std::vector<std::pair<int, int>> stubIDprefit() const { return stubIDprefit_; }
   std::map<int, int> stubID() const { return stubID_; }
   std::vector<L1TStub*> stubs() const { return l1stub_; }
   
@@ -137,6 +141,8 @@ private:
   double t_;
   double chisq_;
 
+  std::vector<std::pair<int, int>> stubIDpremerge_;
+  std::vector<std::pair<int, int>> stubIDprefit_;
   std::map<int, int> stubID_;
   std::vector<L1TStub*> l1stub_;
 

@@ -10,6 +10,8 @@ for(unsigned int ntrk=0; ntrk<tracks.size(); ntrk++) {
                                                   tracks[ntrk]->it(),
                                                   tracks[ntrk]->ichisq(),
 
+                                                  tracks[ntrk]->stubIDpremerge(),
+                                                  tracks[ntrk]->stubIDprefit(),
                                                   tracks[ntrk]->stubID(),
 
                                                   tracks[ntrk]->seed(),

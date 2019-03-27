@@ -15,13 +15,7 @@ cmsenv
 
 git init
 
-mkdir L1Trigger 
-cd L1Trigger/
-
-git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/TrackFindingTracklet.git
-git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/TrackFindingTMTT.git
-
-cd .. 
+git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git L1Trigger
 
 scramv1 b -j 8
 
@@ -34,8 +28,8 @@ cmsRun L1TrackNtupleMaker_cfg.py
 # for standalone compilcation (currently not supported with KF) 
 ##################################################################################################################
 
-git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/TrackFindingTracklet.git
+git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git
 
-cd ../TrackFindingTracklet/test
+cd L1Tracking/TrackFindingTracklet/test
 make 
 

@@ -9,8 +9,6 @@
 #define USEHYBRID
 #endif
 
-#define USEHYBRID
-
 //Uncomment to run the HLS version of the KF if using the Hybrid (instead of the C++ KF).
 //(Please also follow the instructions in L1Trigger/TrackFindingTMTT/README_HLS.txt).
 //#define USE_HLS
@@ -455,7 +453,7 @@ static int chisqphifactbits=14;
 static int chisqzfactbits=14;
 
 //Duplicate Removal
-static int minIndStubs=3;
+static int minIndStubs=3; // Not for merge removal
 static std::string RemovalType="merge";
 //"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal)
 static bool fakefit_5par=false; //if true, this would use KF 5-parameter fit for displaced tracking, false means use tracklet parameters instead (i.e. no fit)

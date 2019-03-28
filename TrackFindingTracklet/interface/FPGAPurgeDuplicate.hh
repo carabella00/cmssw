@@ -75,6 +75,11 @@ public:
     inputtracklets_.clear();
     inputtracks_.clear();
 
+    inputstubidslists_.clear();
+    inputstublists_.clear();
+    mergedstubidslists_.clear();
+    
+
     if(RemovalType!="merge") {
       for (unsigned int i=0;i<inputtrackfits_.size();i++) {
         if(inputtrackfits_[i]->nTracks()==0) continue;
@@ -154,7 +159,7 @@ public:
           
           // Fill duplicate map
           // !!FIXME!! This is completely unoptimized. Just an educated guess
-          if(nShare >=4) {
+          if(nShare >=3) {
             dupMap[itrk][jtrk] = true;
             dupMap[jtrk][itrk] = true;
           }
@@ -369,20 +374,23 @@ public:
            tracklet_phi0/kphi0pars,id0fit,
            sinh(trk.eta())/ktpars,trk.z0()/kz0pars,trk.chi2(),l1stubsFromFit);
          //cout<<" KF fit d0 is "<<trk.d0()<<"\n";
+
+          // Add track to output if it wasn't merged into another
+          FPGATrack* outtrack = tracklet->getTrack();
+          outtrack->setSector(iSector_);
+          if(trackInfo[itrk].second == true) outtrack->setDuplicate(true);
+          else outputtracklets_[trackInfo[itrk].first]->addTrack(tracklet);
+
+          // Add all tracks to standalone root file output
+          outtrack->setStubIDpremerge(inputstubidslists_[itrk]);
+          outtrack->setStubIDprefit(mergedstubidslists_[itrk]);
+          outputtracks_.push_back(outtrack);
+
         } else {
           if (printDebugKF) cout << "FPGAFitTrack:KF rejected track"<<endl;
         }
 
-        // Add track to output if it wasn't merged into another
-        FPGATrack* outtrack = tracklet->getTrack();
-        outtrack->setSector(iSector_);
-        if(trackInfo[itrk].second == true) outtrack->setDuplicate(true);
-        else outputtracklets_[trackInfo[itrk].first]->addTrack(tracklet);
 
-        // Add all tracks to standalone root file output
-        outtrack->setStubIDpremerge(inputstubidslists_[itrk]);
-        outtrack->setStubIDprefit(mergedstubidslists_[itrk]);
-        outputtracks_.push_back(outtrack);
       }
     }
     #endif

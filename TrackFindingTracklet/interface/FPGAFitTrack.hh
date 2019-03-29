@@ -348,7 +348,7 @@ class FPGAFitTrack:public FPGAProcessBase{
     if(kf_phi_sec < 0){kf_phi_sec+=9;}      
 
 
-    TMTT::L1track3D l1track3d(settings,stubs,celllocation,helixrphi,helixrz,-kfd0,kf_phi_sec,kf_eta_reg,1,false); //remember to change after fixing the d0 sign convention.
+    TMTT::L1track3D l1track3d(settings,TMTTstubs,celllocation,helixrphi,helixrz,-kfd0,kf_phi_sec,kf_eta_reg,1,false); //remember to change after fixing the d0 sign convention.
 
     // Create Kalman track fitter.
     static bool firstPrint = true;

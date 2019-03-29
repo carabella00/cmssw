@@ -7,6 +7,9 @@ namespace TMTT {
 // Set config params for HYBRID TRACKING via hard-wired consts to allow use outside CMSSW.
 
 Settings::Settings() {
+  //
+  // Meaning of these parameters explained in TrackFindingTMTT/python/TMTrackProducer_Defaults_cfi.py
+  //
   reduceLayerID_=true;
   useLayerID_=true;
   minFracMatchStubsOnReco_=-99;
@@ -23,8 +26,11 @@ Settings::Settings() {
   numPhiSectors_=9;
   kalmanRemove2PScut_=true;
   killScenario_=0;
-  kalmanMaxSkipLayers_=2;
-  kalmanDebugLevel_=0;
+  kalmanMaxSkipLayersHard_=1; // On "hard" input tracks
+  kalmanMaxSkipLayersEasy_=2; // On "easy" input tracks 
+  kalmanMaxStubsEasy_=10;  // Max. #stubs an input track can have to be defined "easy"
+  kalmanMaxStubsPerLayer_=4; // To save resources, consider at most this many stubs per layer per track.
+  kalmanDebugLevel_=1;
   //  kalmanDebugLevel_=2; // Good for debugging
   enableDigitize_=false;
   houghMinPt_=2.0;
@@ -169,6 +175,7 @@ Settings::Settings(const edm::ParameterSet& iConfig) :
   miniHoughMinPt_         ( htArraySpecRphi_.getParameter<double>             ( "MiniHoughMinPt"         ) ),
   miniHoughDontKill_      ( htArraySpecRphi_.getParameter<bool>               ( "MiniHoughDontKill"      ) ),
   miniHoughDontKillMinPt_ ( htArraySpecRphi_.getParameter<double>             ( "MiniHoughDontKillMinPt" ) ),
+  miniHoughLoadBalance_   ( htArraySpecRphi_.getParameter<unsigned int>       ( "MiniHoughLoadBalance"   ) ),
                                 
   //=== Rules governing how stubs are filled into the r-phi Hough Transform array.
   handleStripsRphiHT_     ( htFillingRphi_.getParameter<bool>                 ( "HandleStripsRphiHT"     ) ),
@@ -263,7 +270,10 @@ Settings::Settings(const edm::ParameterSet& iConfig) :
   kalmanMaxNumStubs_       ( trackFitSettings_.getParameter<unsigned int>     ( "KalmanMaxNumStubs"      ) ),
   kalmanAddBeamConstr_     ( trackFitSettings_.getParameter<bool>             ( "KalmanAddBeamConstr"    ) ),
   kalmanRemove2PScut_      ( trackFitSettings_.getParameter<bool>             ( "KalmanRemove2PScut"     ) ),
-  kalmanMaxSkipLayers_     ( trackFitSettings_.getParameter<unsigned>         ( "KalmanMaxSkipLayers"    ) ),
+  kalmanMaxSkipLayersHard_ ( trackFitSettings_.getParameter<unsigned>         ( "KalmanMaxSkipLayersHard") ),
+  kalmanMaxSkipLayersEasy_ ( trackFitSettings_.getParameter<unsigned>         ( "KalmanMaxSkipLayersEasy") ),
+  kalmanMaxStubsEasy_      ( trackFitSettings_.getParameter<unsigned>         ( "KalmanMaxStubsEasy"     ) ),
+  kalmanMaxStubsPerLayer_  ( trackFitSettings_.getParameter<unsigned>         ( "KalmanMaxStubsPerLayer" ) ),
   kalmanMultiScattTerm_    ( trackFitSettings_.getParameter<double>           ( "KalmanMultiScattTerm"   ) ),
   kalmanMultiScattFactor_  ( trackFitSettings_.getParameter<double>           ( "KalmanMultiScattFactor" ) ),
   kalmanHOtilted_          ( trackFitSettings_.getParameter<bool>             ( "KalmanHOtilted"         ) ),

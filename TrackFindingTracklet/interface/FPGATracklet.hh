@@ -595,10 +595,13 @@ public:
   }
 
   L1TStub* innerStub() {return innerStub_;}
+  FPGAStub* innerFPGAStub() {return innerFPGAStub_;}
 
   L1TStub* middleStub() {return middleStub_;}
+  FPGAStub* middleFPGAStub() {return middleFPGAStub_;}
 
   L1TStub* outerStub() {return outerStub_;}
+  FPGAStub* outerFPGAStub() {return outerFPGAStub_;}
 
   std::string addressstr() {
     std::ostringstream oss;
@@ -1283,6 +1286,7 @@ public:
         }             
 	
 	//check disk
+	if(i==3 && layerresid_[0].valid() && innerFPGAStub_->layer().value()==1) continue; // Don't add D4 if track has L1 stub
 	if(diskresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
@@ -1316,7 +1320,7 @@ public:
         }
 	
 	//check disks
-        if(i==4 && layerresid_[1].valid()) continue; // Don't add D5 if track has L1 stub
+	if(i==4 && layerresid_[1].valid()) continue; // Don't add D5 if track has L2 stub
 	if(diskresid_[i].valid()) {
 	  // two extra bits to indicate if the matched stub is local or from neighbor
 	  int location = 1;  // local
@@ -1767,17 +1771,16 @@ public:
 
   int seed() const {
     // Returns integer code for tracklet seed.
-    // Barrel: L1L2=1, L3L4=3, L5L6=6
+    // Barrel: L1L2=1, L2L3=2, L3L4=3, L5L6=6
     // Disk: D1D2=11, D3D4=13 (+/- for forward/backward disk)
-    // Overlap: L1D1=21, L2D1=22 (+/- for forward/backward disk), L3L2=2
+    // Overlap: L1D1=21, L2D1=22 (+/- for forward/backward disk)
     if(barrel_) return innerStub_->layer()+1;
     if(disk_) {
         if(innerStub_->disk() < 0) return innerStub_->disk()-10;
         else return innerStub_->disk()+10;
     }
     if(overlap_) {
-        if(innerFPGAStub_->isBarrel()) return 2;
-        else if(innerStub_->disk() < 0) return -21-outerStub_->layer();
+        if(innerStub_->disk() < 0) return -21-outerStub_->layer();
         else return 21+outerStub_->layer();
     }
     return 0;

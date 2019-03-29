@@ -21,16 +21,32 @@ public:
   void addTrack(FPGATracklet* tracklet) {
     tracks_.push_back(tracklet);
   }
+  void addStubList(std::vector<std::pair<FPGAStub*,L1TStub*>> stublist) {
+    stublists_.push_back(stublist);
+  }
+  void addStubidsList(std::vector<std::pair<int,int>> stubidslist) {
+    stubidslists_.push_back(stubidslist);
+  }
 
   unsigned int nTracks() const {return tracks_.size();}
+  unsigned int nStublists() const {return stublists_.size();}
+  unsigned int nStubidslists() const {return stubidslists_.size();}
 
   FPGATracklet* getTrack(unsigned int i) const {
     return tracks_[i];
+  }
+  std::vector<std::pair<FPGAStub*,L1TStub*>> getStublist(unsigned int i) const {
+    return stublists_[i];
+  }
+  std::vector<std::pair<int,int>> getStubidslist(unsigned int i) const {
+    return stubidslists_[i];
   }
 
   void clean() {
     //cout << "Cleaning tracks : "<<tracks_.size()<<endl;
     tracks_.clear();
+    stublists_.clear();
+    stubidslists_.clear();
   }
 
   bool foundTrack(ofstream& outres, L1SimTrack simtrk){
@@ -175,6 +191,8 @@ private:
   double phimin_;
   double phimax_;
   std::vector<FPGATracklet*> tracks_;
+  std::vector<std::vector<std::pair<FPGAStub*,L1TStub*>>> stublists_;
+  std::vector<std::vector<std::pair<int,int>>> stubidslists_;
 
 };
 

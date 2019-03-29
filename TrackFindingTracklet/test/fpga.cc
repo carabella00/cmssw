@@ -281,11 +281,11 @@ int main(const int argc, const char** argv)
 // -----------------------------------------------------------------
 #ifdef USEROOT
     fpgaEvent->reset();
-	 fpgaEvent->nevt = i;
-     for(int nst=0; nst<ev.nsimtracks(); nst++) {	 
-	   simtrk = ev.simtrack(nst);
-	   FPGAEventMCTrack *mcTrack = new FPGAEventMCTrack(simtrk.type(),simtrk.pt(),simtrk.eta(),simtrk.phi(),simtrk.vx(),simtrk.vy(),simtrk.vz());
-	   fpgaEvent->mcTracks.push_back(*mcTrack);
+    fpgaEvent->nevt = i;
+    for(int nst=0; nst<ev.nsimtracks(); nst++) {
+      simtrk = ev.simtrack(nst);
+      FPGAEventMCTrack *mcTrack = new FPGAEventMCTrack(simtrk.type(),simtrk.pt(),simtrk.eta(),simtrk.phi(),simtrk.vx(),simtrk.vy(),simtrk.vz());
+      fpgaEvent->mcTracks.push_back(*mcTrack);
     }
 #endif
 // ------------------------------------------------------------------	 

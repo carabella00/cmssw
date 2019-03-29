@@ -128,6 +128,8 @@ class FPGAEventTrack : public TObject {
     int it_;
     int ichisq_;
 
+    std::vector<std::pair<int, int>> stubIDpremerge_;
+    std::vector<std::pair<int, int>> stubIDprefit_;
     std::map<int, int> stubID_;
 
     int seed_;
@@ -144,6 +146,8 @@ class FPGAEventTrack : public TObject {
     FPGAEventTrack() { }
 
     FPGAEventTrack(int irinv, int iphi0, int iz0, int it, int ichisq,
+                   std::vector<std::pair<int, int>> stubIDpremerge,
+                   std::vector<std::pair<int, int>> stubIDprefit,
                    std::map<int, int> stubID,
                    int seed, bool duplicate, int sector, 
                    double pt, double phi0, double eta, double z0, double rinv, double chisq ) {
@@ -153,6 +157,8 @@ class FPGAEventTrack : public TObject {
         it_=it;
         ichisq_=ichisq;
 
+        stubIDpremerge_=stubIDpremerge;
+        stubIDprefit_=stubIDprefit;
         stubID_=stubID;
 
         seed_=seed;

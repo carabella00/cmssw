@@ -130,6 +130,7 @@ clean:
 	@rm -f *_cc.d
 	@rm -f *_cc.so
 	@rm -f *_dict_rdict.pcm
+	@rm -f imath.a
 
 
 

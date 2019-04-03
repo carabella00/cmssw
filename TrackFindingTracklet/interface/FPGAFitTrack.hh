@@ -13,6 +13,7 @@
 #include "L1Trigger/TrackFindingTMTT/interface/L1track3D.h"
 #include "L1Trigger/TrackFindingTMTT/interface/Stub.h"
 #include "L1Trigger/TrackFindingTMTT/interface/KFParamsComb.h"
+#include "L1Trigger/TrackFindingTracklet/interface/FPGAHybridFit.hh"
 #ifdef USE_HLS
 #include "L1Trigger/TrackFindingTMTT/interface/HLS/KFParamsCombCallHLS.h"
 #endif
@@ -229,6 +230,10 @@ class FPGAFitTrack:public FPGAProcessBase{
     }
 
 ////////////////////
+
+    FPGAHybridFit hybridFitter(iSector_);
+    hybridFitter.Fit(tracklet, trackstublist);
+    return;
 
     // !! Changes made below must be mirrored in FPGAPurgeDuplicate. !!
 

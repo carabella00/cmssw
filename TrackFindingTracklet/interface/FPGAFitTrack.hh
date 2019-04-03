@@ -232,7 +232,7 @@ class FPGAFitTrack:public FPGAProcessBase{
     FPGAHybridFit hybridFitter(iSector_);
     hybridFitter.Fit(tracklet, trackstublist);
     return;
-
+   }
 #endif
 
    static FPGATrackDerTable derTable;

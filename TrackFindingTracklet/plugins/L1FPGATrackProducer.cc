@@ -273,7 +273,11 @@ L1FPGATrackProducer::L1FPGATrackProducer(edm::ParameterSet const& iConfig) :
   // --------------------------------------------------------------------------------
   // get all constants 
   // --------------------------------------------------------------------------------
-  
+
+
+  hourglassExtended=iConfig.getUntrackedParameter<bool>("Extended",false);
+  nHelixPar=iConfig.getUntrackedParameter<int>("Hnpar",4);
+    
   krinvpars = FPGATrackletCalculator::ITC_L1L2.rinv_final.get_K();
   kphi0pars = FPGATrackletCalculator::ITC_L1L2.phi0_final.get_K();
   ktpars    = FPGATrackletCalculator::ITC_L1L2.t_final.get_K();

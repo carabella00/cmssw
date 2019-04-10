@@ -1,73 +1,69 @@
-#############################################################################################################
-#
-# L1 tracking -- this can either be compiled standalone (outside CMSSW) or within CMSSW 
-#
-#############################################################################################################
+# L1 Tracking 
 
+The L1 tracking can either be compiled standalone (outside CMSSW) or within CMSSW.
 
-#############################################################################################################
-# To compile & run within CMSSW, follow these instructions 
-#############################################################################################################
+## To compile & run within CMSSW
 
+```sh
 cmsrel CMSSW_10_4_0
 cd CMSSW_10_4_0/src
 cmsenv
 
 git init
-
 git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git L1Trigger
-
 scramv1 b -j 8
-
 cd L1Trigger/TrackFindingTracklet/test/ 
 
 cmsRun L1TrackNtupleMaker_cfg.py 
+```
 
+## To compile & run standalone (currently not supported for Hybrid)
 
-#############################################################################################################
-# To compile & run standalone (currently not supported for Hybrid), follow these instructions 
-#############################################################################################################
-
+```sh
 git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git
-
 cd L1Tracking/TrackFindingTracklet/test/
-
 make 
+```
 
-# Then to run over a file of single muon events for tilted barrel, do:
+then to run over a file of single muon events for tilted barrel, do:
 
+```sh
 ./fpga evlist_MuPt10_PU0_D4geom.txt 100 0
+```
 
-# or to run and make selection on truth tracks (for efficiency / resolution plots), do: 
-
+or to run and make selection on truth tracks (for efficiency / resolution plots), do: 
+```sh
 ./fpga evlist_MuPt10_PU0_D4geom.txt 100 1
+```
 
-******************************************************************
-* PLOTS 
-******************************************************************
+## PLOTS 
 
-*** EFFICIENCY / RESOLUTION ***
+### EFFICIENCY / RESOLUTION 
 
 If running inside CMSSW, a ROOT TTree is created from the output TTracks & truth, with typical file name TTbar_PU200_hybrid.root . To make efficiency & resolution plots, and print out performance summary:
 
+```sh
 cd TrackFindingTracklet/test/
 mkdir TrkPlots
 root
 .x L1TrackNtuplePlot.C("TTbar_PU200_hybrid")
+```
 
 If running stand-alone, to make efficiency and resolution plots (that compare the integer based emulation to the floating point algorithm), set "writeResEff=true" in FPGAConstants.h to write a .txt file with the info,
 and process it using macros in TrackFindingTracklet/test/PlotMacros/ . Warning: the efficiency isn't defined in the standard way.
 
+```sh
 root -l trackres.cc
 root -l trackeff.cc
+```
 
-
-*** DETAILED PERFORMANCE PLOTS *** 
+### DETAILED PERFORMANCE PLOTS 
 
 To generate performance plots you need to enable the relevant output (by editing cfg param named below in FPGAConstants.hh), and after run the root script (from TrackFindingTracklet/test/PlotMacros/) to generate the plots.
 
 FPGAConstants.hh            root script
 ==================================================================
+writeResEff                .L trackres/eff.cc++           trackres/eff()
 writeStubsLayer            .L stubslayer.cc++             stubslayer()
 writeStubsLayerperSector   .L stubslayerpersector.cc++    stubslayerpersector()
 writeVMOccupancy           .L vmstubs.cc++                vmstubs()
@@ -98,9 +94,7 @@ root -l neighborproj.cc
 root -l vmprojections.cc
 root -l vmmatches.cc
 
-******************************************************************
-* OTHER (stand-alone only?)
-******************************************************************
+## OTHER (stand-alone only?)
 
 To turn on/off writing the files that dump the memory content
 of the FPGA memories change the 'writememfiles' variable in the
@@ -114,9 +108,7 @@ To generate the fitpattern.txt file do:
 sort hitpattern.txt | uniq | sort -r -n -k 3 > fitpatter.txt
 
 
-******************************************************************
-* PRODUCING ROOT Tree (historic option only?)
-******************************************************************
+## PRODUCING ROOT Tree (historic option only?)
 
 To produce a ROOT-Tree with the output of the emulation:
 
@@ -136,9 +128,7 @@ The produced file, "myTest.root", will be a ROOT tree with the class structure d
 It includes all the found tracks, mc particle information, stub information.
 
 
-******************************************************************
-* Mixing PU events with signal (NOT WORKING)
-******************************************************************
+## Mixing PU events with signal (NOT WORKING)
 
 program mixPU mixes events and dumps them to stdout.
 fpga.cc now has an option of picking the input file from stdin (you just need to use stdin as the input file name)

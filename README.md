@@ -61,6 +61,7 @@ root -l trackeff.cc
 
 To generate performance plots you need to enable the relevant output (by editing cfg param named below in FPGAConstants.hh), and after run the root script (from TrackFindingTracklet/test/PlotMacros/) to generate the plots.
 
+```sh
 FPGAConstants.hh            root script
 ==================================================================
 writeResEff                .L trackres/eff.cc++           trackres/eff()
@@ -81,10 +82,11 @@ writeProjectionTransceiver .L projectiontransceiver.cc++  projectiontransceiver(
 writeMatchTransceiver      .L matchtransceiver.cc++       matchtransceiver()
 writeNMatches              .L nmatches.cc++               nmatches()
 writez0andrinv             .L z0_and_rinv.cc++            z0_and_rinv()
-
+```
 
 (*) Needs some fixing/plots not meaningful
 
+```sh
 root -l stubs.cc
 root -l stub_layer.cc
 root -l stubpairs.cc
@@ -93,6 +95,7 @@ root -l trackletlayers.cc
 root -l neighborproj.cc
 root -l vmprojections.cc
 root -l vmmatches.cc
+```
 
 ## OTHER (stand-alone only?)
 
@@ -102,11 +105,15 @@ FPGAConstants.hh file.
 
 To clean up all the output files that were produced do:
 
+```sh
 make clean
+```
 
 To generate the fitpattern.txt file do:
-sort hitpattern.txt | uniq | sort -r -n -k 3 > fitpatter.txt
 
+```sh
+sort hitpattern.txt | uniq | sort -r -n -k 3 > fitpatter.txt
+```
 
 ## PRODUCING ROOT Tree (historic option only?)
 
@@ -136,8 +143,9 @@ This way one can pipe the huge files from the mixing straight into the fpga.cc w
 
 To run on 3 muon events mixing each with two PU events do
 
+```sh
 make mixPU
 ./mixPU evlist_muminus_2_10_20000.txt 3 evlist_minbias_140PU_100.txt 2 | ./fpga stdin 6 1
-
+```
 note that in this example 6 is 2*3, so you run on all 6 events produced by the mixer.
 

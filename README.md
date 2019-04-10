@@ -36,6 +36,10 @@ or to run and make selection on truth tracks (for efficiency / resolution plots)
 ./fpga evlist_MuPt10_PU0_D4geom.txt 100 1
 ```
 
+## Configuration parameters
+
+Are hard-coded in TrackFindingTracklet/interface/FPGAConstants.hh & TrackFindingTMTT/src/Settings.cc
+
 ## PLOTS 
 
 ### EFFICIENCY / RESOLUTION 

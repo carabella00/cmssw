@@ -57,10 +57,10 @@ TTTracksFromExtendedTrackletEmulation = cms.EDProducer("L1FPGATrackProducer",
                                                # (if running on CRAB use "../../fitpattern.txt" etc instead)
                                                Extended=cms.untracked.bool(True),
                                                Hnpar=cms.untracked.int32(5),
-                                               fitPatternFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/test/fitpattern.txt'),
-                                               memoryModulesFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/test/memorymodules_hourglassExtended.dat'), #change it to extended if running on it
-                                               processingModulesFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/test/processingmodules_hourglassExtended.dat'), #change it to extended if running on it
-                                               wiresFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/test/wires_hourglassExtended.dat'), #change it to extended if running on it
-                                               DTCLinkFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/test/calcNumDTCLinks.txt'),
-                                               moduleCablingFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/test/modules_T5v3_27SP_nonant_tracklet.dat')
+                                               fitPatternFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/fitpattern.txt'),
+                                               memoryModulesFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/memorymodules_hourglassExtended.dat'), #change it to extended if running on it
+                                               processingModulesFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/processingmodules_hourglassExtended.dat'), #change it to extended if running on it
+                                               wiresFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/wires_hourglassExtended.dat'), #change it to extended if running on it
+                                               DTCLinkFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/calcNumDTCLinks.txt'),
+                                               moduleCablingFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/modules_T5v3_27SP_nonant_tracklet.dat')
     )

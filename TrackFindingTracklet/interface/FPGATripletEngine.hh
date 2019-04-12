@@ -480,7 +480,7 @@ public:
     string tableName, word;
     unsigned num;
 
-    tableName = "table_TRE/table_" + name_ + ".txt";
+    tableName = "../data/table_TRE/table_" + name_ + ".txt";
 
     fin.open (tableName, ifstream::in);
     while (!fin.eof()) {

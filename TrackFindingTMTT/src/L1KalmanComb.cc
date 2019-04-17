@@ -364,7 +364,7 @@ L1fittedTrack L1KalmanComb::fit(const L1track3D& l1track3D){
 
 
   //track information dump
-  if( getSettings()->kalmanDebugLevel() >= 2 ){
+  if( getSettings()->kalmanDebugLevel() >= 1 ){
 
     std::cout << "===============================================================================" << endl;
     std::cout << "Input track cand: [phiSec,etaReg]=[" << l1track3D.iPhiSec() << "," << l1track3D.iEtaReg() << "]";
@@ -848,7 +848,7 @@ std::vector<const kalmanState *> L1KalmanComb::doKF( const L1track3D& l1track3D,
     // Select state with largest number of stubs.
     const kalmanState* stateFinal = best_state_by_nstubs.begin()->second; // First element has largest number of stubs.
     finished_states.push_back(stateFinal);
-    if ( getSettings()->kalmanDebugLevel() >= 2 ) {
+    if ( getSettings()->kalmanDebugLevel() >= 1 ) {
       cout<<"Track found! final state selection: nLay="<<stateFinal->nStubLayers()<<" etaReg="<<l1track3D.iEtaReg();
       std::map<std::string, double> y = getTrackParams( stateFinal );
       cout<<" q/pt="<<y["qOverPt"]<<" tanL="<<y["t"]<<" z0="<<y["z0"]<<" phi0="<<y["phi0"];
@@ -858,7 +858,7 @@ std::vector<const kalmanState *> L1KalmanComb::doKF( const L1track3D& l1track3D,
       cout<<endl;
     }
   } else {
-    if ( getSettings()->kalmanDebugLevel() >= 2 ) {
+    if ( getSettings()->kalmanDebugLevel() >= 1 ) {
       cout<<"Track lost"<<endl;
     }
   }

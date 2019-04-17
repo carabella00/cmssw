@@ -474,7 +474,7 @@ public:
     ifstream fin;
     string tableName, line, word;
 
-    tableName = "table_TED/table_" + name_ + ".txt";
+    tableName = "../data/table_TED/table_" + name_ + ".txt";
 
     fin.open (tableName, ifstream::in);
     while (getline (fin, line)){

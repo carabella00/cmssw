@@ -233,9 +233,9 @@ public:
     //////////////////
     if(RemovalType=="grid") {
 
-      // Sort tracks by ichisq so that removal will keep the lower ichisq track
+      // Sort tracks by ichisq/DoF so that removal will keep the lower ichisq/DoF track
       std::sort(inputtracks_.begin(), inputtracks_.end(), [](const FPGATrack* lhs, const FPGATrack* rhs)
-          {return lhs->ichisq() < rhs->ichisq();}
+          {return lhs->ichisq()/lhs->stubID().size() < rhs->ichisq()/rhs->stubID().size();}
       );
       bool grid[35][40] = {{false}};
 
@@ -313,10 +313,10 @@ public:
           // Chi2 duplicate removal
           if(RemovalType=="ichi") {
             if((nStubP-nShare[jtrk] < minIndStubs) || (nStubS[jtrk]-nShare[jtrk] < minIndStubs)) {
-              if((int)inputtracks_[itrk]->ichisq() > (int)inputtracks_[jtrk]->ichisq()) {
+              if((int)inputtracks_[itrk]->ichisq()/inputtracks_[itrk]->stubID().size() > (int)inputtracks_[jtrk]->ichisq()/inputtracks_[jtrk]) {
                 inputtracks_[itrk]->setDuplicate(true);
               }
-              else if((int)inputtracks_[itrk]->ichisq() <= (int)inputtracks_[jtrk]->ichisq()) {
+              else if((int)inputtracks_[itrk]->ichisq()/inputtracks_[itrk]->stubID().size() <= (int)inputtracks_[jtrk]->ichisq()/inputtracks_[itrk]->stubID().size()) {
                 inputtracks_[jtrk]->setDuplicate(true);
               }
               else cout << "Error: Didn't tag either track in duplicate pair." << endl;

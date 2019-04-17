@@ -1,0 +1,24 @@
+image: gitlab-registry.cern.ch/ci-tools/ci-worker:slc6
+
+build:
+  stage: build
+  tags:
+    - docker
+    - cvmfs
+  script:
+    - pwd
+    - ls -l
+    - mkdir L1Trigger
+    - mv TrackFindingTMTT L1Trigger
+    - mv TrackFindingTracklet L1Trigger
+    - export SCRAM_ARCH=slc6_amd64_gcc700
+    - /cvmfs/cms.cern.ch/common/scramv1 project CMSSW CMSSW_10_4_0
+    - mv L1Trigger CMSSW_10_4_0/src/
+    - cd CMSSW_10_4_0/src
+    - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
+    - /cvmfs/cms.cern.ch/common/scram b
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - CMSSW_10_4_0
+

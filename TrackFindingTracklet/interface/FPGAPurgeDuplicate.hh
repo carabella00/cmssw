@@ -313,10 +313,10 @@ public:
           // Chi2 duplicate removal
           if(RemovalType=="ichi") {
             if((nStubP-nShare[jtrk] < minIndStubs) || (nStubS[jtrk]-nShare[jtrk] < minIndStubs)) {
-              if((int)inputtracks_[itrk]->ichisq()/inputtracks_[itrk]->stubID().size() > (int)inputtracks_[jtrk]->ichisq()/inputtracks_[jtrk]) {
+              if((int)inputtracks_[itrk]->ichisq()/(2*inputtracks_[itrk]->stubID().size()-4) > (int)inputtracks_[jtrk]->ichisq()/(2*inputtracks_[itrk]->stubID().size()-4)) {
                 inputtracks_[itrk]->setDuplicate(true);
               }
-              else if((int)inputtracks_[itrk]->ichisq()/inputtracks_[itrk]->stubID().size() <= (int)inputtracks_[jtrk]->ichisq()/inputtracks_[itrk]->stubID().size()) {
+              else if((int)inputtracks_[itrk]->ichisq()/(2*inputtracks_[itrk]->stubID().size()-4) <= (int)inputtracks_[jtrk]->ichisq()/(2*inputtracks_[itrk]->stubID().size()-4)) {
                 inputtracks_[jtrk]->setDuplicate(true);
               }
               else cout << "Error: Didn't tag either track in duplicate pair." << endl;

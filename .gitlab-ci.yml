@@ -21,4 +21,6 @@ build:
     expire_in: 1 day
     paths:
       - CMSSW_10_4_0
+  only:
+      - merge_requests
 

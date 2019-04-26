@@ -456,7 +456,7 @@ static int chisqzfactbits=14;
 static int minIndStubs=3; // Not for merge removal
 
 #ifdef USEHYBRID
-static std::string RemovalType="merge";
+static std::string RemovalType="ichi"; //"merge";
 #else
 static std::string RemovalType="ichi";
 #endif

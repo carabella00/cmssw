@@ -1,4 +1,4 @@
-# L1 Tracking 
+# L1 Tracking  
 
 The L1 tracking can either be compiled standalone (outside CMSSW) or within CMSSW.
 

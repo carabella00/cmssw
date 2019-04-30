@@ -10,7 +10,9 @@ cd CMSSW_10_4_0/src
 cmsenv
 
 git init
-git clone https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git L1Trigger
+git clone (-b myBranch) https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git L1Trigger
+Optional, to update your branch with changes made to the master, since your branch was created: git pull --rebase origin master)
+
 scramv1 b -j 8
 cd L1Trigger/TrackFindingTracklet/test/ 
 

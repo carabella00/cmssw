@@ -57,11 +57,12 @@ if GEOMETRY == "D17": # Tilted barrel T5 tracker
 
 elif GEOMETRY == "D21": # Tilted barrel T6 tracker
     inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/TTbar/PU200.txt')
-#   inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/SingleMuPt2to100/PU0.txt')
+    # inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/SingleMuPt2to100/PU0.txt')
+    # inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/DisplacedSingleMuPt2to100/PU0.txt')
 
 elif GEOMETRY == "TkOnly":
     inputMC = ['file:/afs/cern.ch/work/s/skinnari/public/L1TK_90X/MuMinus_1to10_TkOnly.root']
-    #inputMC = ['/store/relval/CMSSW_9_3_7/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU25ns_93X_upgrade2023_realistic_v5_2023D17PU200-v1/10000/5A8CFF7F-1E2D-E811-A7B0-0242AC130002.root']
+    # inputMC = ['/store/relval/CMSSW_9_3_7/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU25ns_93X_upgrade2023_realistic_v5_2023D17PU200-v1/10000/5A8CFF7F-1E2D-E811-A7B0-0242AC130002.root']
 
 process.source = cms.Source("PoolSource", 
                             fileNames = cms.untracked.vstring(*inputMC),
@@ -159,10 +160,10 @@ process.L1TrackNtuple = cms.EDAnalyzer('L1TrackNtupleMaker',
 process.ana = cms.Path(process.L1TrackNtuple)
 
 # use this if you want to re-run the stub making
-#process.schedule = cms.Schedule(process.TTClusterStub,process.TTClusterStubTruth,process.TTTracksEmulationWithTruth,process.ana)
+# process.schedule = cms.Schedule(process.TTClusterStub,process.TTClusterStubTruth,process.TTTracksEmulationWithTruth,process.ana)
 
 # use this if cluster/stub associators not available 
-#process.schedule = cms.Schedule(process.TTClusterStubTruth,process.TTTracksEmulationWithTruth,process.ana)
+# process.schedule = cms.Schedule(process.TTClusterStubTruth,process.TTTracksEmulationWithTruth,process.ana)
 
 # use this to only run tracking + track associator
 process.schedule = cms.Schedule(process.TTTracksEmulationWithTruth,process.ana)

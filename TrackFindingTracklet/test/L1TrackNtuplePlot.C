@@ -2222,8 +2222,8 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   // ----------------------------------------------------------------------------------------------------------------
 
   // rebin pt/phi plots
-  h_tp_pt->Rebin(4);
-  h_match_tp_pt->Rebin(4);
+  h_tp_pt->Rebin(2);
+  h_match_tp_pt->Rebin(2);
   h_tp_phi->Rebin(2);
   h_match_tp_phi->Rebin(2);
 
@@ -2374,10 +2374,6 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   h_eff_d0  ->SetAxisRange(0,1.1,"Y");
   h_eff_absd0  ->SetAxisRange(0,1.1,"Y");
 
-  if (type.Contains("Electron") || type.Contains("Pion") || type.Contains("Muon")) {
-    h_eff_pt->SetAxisRange(0,49,"X");
-    h_eff_pt_H->SetAxisRange(8,49,"X");
-  }
 
   gPad->SetGridx();
   gPad->SetGridy();

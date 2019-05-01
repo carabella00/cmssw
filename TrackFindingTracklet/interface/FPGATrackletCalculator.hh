@@ -930,7 +930,7 @@ public:
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
 	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
+	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)-1) {
 	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
 	  validprojdisk[i]=false;
 	}
@@ -1336,7 +1336,7 @@ public:
         iphiprojdisk[i]=0;
         validprojdisk[i]=false;
       }
-      if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
+      if (iphiprojdisk[i]>=(1<<nbitsphistubL123)-1) {
         iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
         validprojdisk[i]=false;
       }
@@ -1678,7 +1678,7 @@ public:
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
 
       //this is left from the original....
-      if (iphiproj[i]>=(1<<nbitsphistubL456)) {
+      if (iphiproj[i]>=(1<<nbitsphistubL456)-1) {
 	iphiproj[i]=(1<<nbitsphistubL456)-2; //-2 not to hit atExtreme
 	validproj[i] = false;
       }
@@ -1718,7 +1718,7 @@ public:
         iphiprojdisk[i]=0;
         validprojdisk[i]=false;
       }
-      if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
+      if (iphiprojdisk[i]>=(1<<nbitsphistubL123)-1) {
         iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
         validprojdisk[i]=false;
       }

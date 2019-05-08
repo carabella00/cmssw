@@ -102,6 +102,7 @@ static bool tcorrection=true;
 static bool exactderivatives=false;  //for both the integer and float
 static bool exactderivativesforfloating=true; //only for the floating point
 static bool useapprox=true; //use approximate postion based on integer representation for floating point
+static bool usephicritapprox=true; //use approximate version of phicrit cut
 static int alphashift=12;  
 static int nbitsalpha=4;  //bits used to store alpha
 static int alphaBitsTable=2; //For number of bits in track derivative table
@@ -282,6 +283,10 @@ static double dphicritmc=0.005; //lose for MC
 static double phicritminmc=phicritmin-dphicritmc;
 static double phicritmaxmc=phicritmax+dphicritmc;
 
+// these are tuned such that all tracklets passing the exact phicrit cut also
+// pass the approximate version in high-pileup events
+static int phicritapproxminmc=9253;
+static int phicritapproxmaxmc=56269;
 
 static const unsigned int NLONGVMBITS=3; 
 static const unsigned int NLONGVMRBITS=3;   //4 bins on each side (+-z)

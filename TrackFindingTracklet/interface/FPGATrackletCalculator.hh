@@ -163,6 +163,11 @@ public:
       zprojoverlap_[3]=zmeanD5;
     }
     
+    if (usephicritapprox) {
+      double phicritFactor = 0.5 * rcrit * FPGATrackletCalculator::ITC_L1L2.rinv_final.get_K() / FPGATrackletCalculator::ITC_L1L2.phi0_final.get_K();
+      if (fabs(phicritFactor - 2.) > 0.25)
+        cout << "FPGATrackletCalculator::FPGATrackletCalculator phicrit approximation may be invalid! Please check." << endl;
+    }
   }
   
   void addOutputProjection(FPGATrackletProjections* &outputProj, FPGAMemoryBase* memory){
@@ -962,8 +967,18 @@ public:
     if (!success) return false;
 
     double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
+    int phicritapprox=iphi0-2*irinv;
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc),
+         keepapprox=(phicritapprox>phicritapproxminmc)&&(phicritapprox<phicritapproxmaxmc);
+    if (debug1)
+      if (keep && !keepapprox)
+        cout << "FPGATrackletCalculator::barrelSeeding tracklet kept with exact phicrit cut but not approximate, phicritapprox: " << phicritapprox << endl;
+    if (!usephicritapprox) {
       if (!keep) return false;
+    }
+    else {
+      if (!keepapprox) return false;
+    }
     
     
     if (writeTrackletPars) {
@@ -1365,8 +1380,18 @@ public:
     if (!success) return false;
 
     double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-    if (!keep) return false;
+    int phicritapprox=iphi0-2*irinv;
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc),
+         keepapprox=(phicritapprox>phicritapproxminmc)&&(phicritapprox<phicritapproxmaxmc);
+    if (debug1)
+      if (keep && !keepapprox)
+        cout << "FPGATrackletCalculator::diskSeeding tracklet kept with exact phicrit cut but not approximate, phicritapprox: " << phicritapprox << endl;
+    if (!usephicritapprox) {
+      if (!keep) return false;
+    }
+    else {
+      if (!keepapprox) return false;
+    }
     
     if (writeTrackletParsDisk) {
       static ofstream out("trackletparsdisk.txt");
@@ -1768,12 +1793,17 @@ public:
     }
 
     double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-    if (!keep) {
-      if (debug1) {
-	cout << "FPGATrackletCalculator::OverlapSeeding fail phicrit "<<endl;
-      }
-      return false;
+    int phicritapprox=iphi0-2*irinv;
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc),
+         keepapprox=(phicritapprox>phicritapproxminmc)&&(phicritapprox<phicritapproxmaxmc);
+    if (debug1)
+      if (keep && !keepapprox)
+        cout << "FPGATrackletCalculator::overlapSeeding tracklet kept with exact phicrit cut but not approximate, phicritapprox: " << phicritapprox << endl;
+    if (!usephicritapprox) {
+      if (!keep) return false;
+    }
+    else {
+      if (!keepapprox) return false;
     }
     
 

@@ -24,3 +24,25 @@ build:
   only:
       - merge_requests
 
+
+build_standalone:
+  stage: build
+  tags:
+    - docker
+    - cvmfs
+  script:
+    - pwd
+    - ls -l
+    - mkdir L1Trigger
+    - mv TrackFindingTMTT L1Trigger
+    - mv TrackFindingTracklet L1Trigger
+    - cd L1Trigger/TrackFindingTracklet/test/
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-slc6-gcc7-opt/setup.sh
+    - make
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - L1Trigger
+  only:
+      - merge_requests
+

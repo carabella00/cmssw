@@ -2785,9 +2785,6 @@ void Histos::plotTrackEfficiency(string tName) {
   // Define lambda function to facilitate adding "tName" to directory & histogram names.
   auto addn = [tName](string s){ return TString::Format("%s_%s", s.c_str(), tName.c_str()); };
 
-  // Histograms of input truth particles (e.g. hisTPinvptForEff_), used for denominator of efficiencies, are identical, 
-  // irrespective of whether made after HT or after r-z track filter, so always use the former.
-
   TFileDirectory inputDir = fs_->mkdir(addn("Effi").Data());
   // Plot tracking efficiency
   makeEfficiencyPlot(inputDir, teffEffVsInvPt_[tName], hisRecoTPinvptForEff_[tName], hisTPinvptForEff_,
@@ -2865,9 +2862,6 @@ void Histos::plotTrackEffAfterFit(string fitName) {
 
   // Define lambda function to facilitate adding "fitName" to directory & histogram names.
   auto addn = [fitName](string s){ return TString::Format("%s_%s", s.c_str(), fitName.c_str()); };
-
-  // Histograms of input truth particles (e.g. hisTPinvptForEff_), used for denominator of efficiencies, are identical, 
-  // irrespective of whether made after HT or after r-z track filter, so always use the former.
 
   TFileDirectory inputDir = fs_->mkdir(addn("Effi").Data());
   // Plot tracking efficiency

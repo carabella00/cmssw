@@ -42,64 +42,64 @@ public:
   // Store cfg parameters.
   Histos(const Settings* settings);
 
-  ~Histos(){}
+  virtual ~Histos(){}
 
   // Book & fill all histograms.
-  void book();
-  void fill(const InputData& inputData, const matrix<Sector>& mSectors, const matrix<HTrphi>& mHtPhis, 
+  virtual void book();
+  virtual void fill(const InputData& inputData, const matrix<Sector>& mSectors, const matrix<HTrphi>& mHtPhis, 
     	    const matrix<Get3Dtracks> mGet3Dtrks, const std::map<std::string,std::vector<L1fittedTrack>>& fittedTracks);
 
   // Print tracking performance summary & make tracking efficiency histograms.
-  void endJobAnalysis();
+  virtual void endJobAnalysis();
 
   // Determine "B" parameter, used in GP firmware to allow for tilted modules.
-  void trackerGeometryAnalysis( const TrackerGeometryInfo trackerGeometryInfo );
+  virtual void trackerGeometryAnalysis( const TrackerGeometryInfo trackerGeometryInfo );
 
   // Did user request output histograms via the TFileService in their cfg?
-  bool available() const {return fs_.isAvailable();}
+  virtual  bool available() const {return fs_.isAvailable();}
 
   // Should histograms be produced?
-  bool enabled() const {return ( settings_->enableHistos() && available() );}
+  virtual bool enabled() const {return ( settings_->enableHistos() && available() );}
 
 private:
 
   // Book histograms for specific topics.
-  void bookInputData();
-  void bookEtaPhiSectors();
-  void bookRphiHT();
-  void bookRZfilters();
-  void bookStudyBusyEvents();
-  void bookTrackCands(string tName);
-  void bookTrackFitting();
+  virtual void bookInputData();
+  virtual void bookEtaPhiSectors();
+  virtual void bookRphiHT();
+  virtual void bookRZfilters();
+  virtual void bookStudyBusyEvents();
+  virtual void bookTrackCands(string tName);
+  virtual void bookTrackFitting();
 
   // Fill histograms for specific topics.
-  void fillInputData(const InputData& inputData);
-  void fillEtaPhiSectors(const InputData& inputData, const matrix<Sector>& mSectors);
-  void fillRphiHT(const matrix<HTrphi>& mHtRphis);
-  void fillRZfilters(const matrix<Get3Dtracks>& mGet3Dtrks);
-  void fillStudyBusyEvents(const InputData& inputData, const matrix<Sector>& mSectors, const matrix<HTrphi>& mHtRphis, 
+  virtual void fillInputData(const InputData& inputData);
+  virtual void fillEtaPhiSectors(const InputData& inputData, const matrix<Sector>& mSectors);
+  virtual void fillRphiHT(const matrix<HTrphi>& mHtRphis);
+  virtual void fillRZfilters(const matrix<Get3Dtracks>& mGet3Dtrks);
+  virtual void fillStudyBusyEvents(const InputData& inputData, const matrix<Sector>& mSectors, const matrix<HTrphi>& mHtRphis, 
     		           const matrix<Get3Dtracks>& mGet3Dtrks);
-  void fillTrackCands(const InputData& inputData, const vector<L1track3D>& tracks, string tName);
-  void fillTrackFitting(const InputData& inputData, const std::map<std::string,std::vector<L1fittedTrack>>& fittedTracks);
+  virtual void fillTrackCands(const InputData& inputData, const vector<L1track3D>& tracks, string tName);
+  virtual void fillTrackFitting(const InputData& inputData, const std::map<std::string,std::vector<L1fittedTrack>>& fittedTracks);
 
   // Produce plots of tracking efficiency after HZ or after r-z track filter (run at end of job)
-  void plotTrackEfficiency(bool withRZfilter);
+  virtual void plotTrackEfficiency(bool withRZfilter);
   // Produce plots of tracking efficiency after track fit (run at end of job).
-  void plotTrackEffAfterFit(string fitName);
+  virtual void plotTrackEffAfterFit(string fitName);
 
-  void makeEfficiencyPlot( TFileDirectory &inputDir, TEfficiency* outputEfficiency, TH1F* pass, TH1F* all, TString name, TString title );
+  virtual void makeEfficiencyPlot( TFileDirectory &inputDir, TEfficiency* outputEfficiency, TH1F* pass, TH1F* all, TString name, TString title );
 
 
   // Print summary of track-finding performance after HT or after r-z track filter.
-  void printTrackPerformance(bool withRZfilter);
+  virtual void printTrackPerformance(bool withRZfilter);
 
   // Print summary of track-finding performance after helix fit for given track fitter.
-  void printFitTrackPerformance(string fitName);
+  virtual void printFitTrackPerformance(string fitName);
 
   // Understand why not all tracking particles were reconstructed.
   // Returns list of tracking particles that were not reconstructed and an integer indicating why.
   // Only considers TP used for algorithmic efficiency measurement.
-  map<const TP*, string> diagnoseTracking(const vector<TP>& allTPs, const vector<L1track3D>& tracks,
+  virtual map<const TP*, string> diagnoseTracking(const vector<TP>& allTPs, const vector<L1track3D>& tracks,
 					  bool withRZfilter) const;
 
  private:

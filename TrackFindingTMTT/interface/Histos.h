@@ -90,8 +90,8 @@ private:
   virtual void makeEfficiencyPlot( TFileDirectory &inputDir, TEfficiency* outputEfficiency, TH1F* pass, TH1F* all, TString name, TString title );
 
 
-  // Print summary of track-finding performance after HT or after r-z track filter.
-  virtual void printTrackPerformance(bool withRZfilter);
+  // Print summary of track-finding performance after track pattern reco.
+  virtual void printTrackPerformance(string tName);
 
   // Print summary of track-finding performance after helix fit for given track fitter.
   virtual void printFitTrackPerformance(string fitName);

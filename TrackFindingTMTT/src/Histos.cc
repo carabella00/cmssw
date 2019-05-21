@@ -2934,11 +2934,9 @@ void Histos::makeEfficiencyPlot( TFileDirectory &inputDir, TEfficiency* outputEf
   outputEfficiency->SetTitle(title);
 }
 
-//=== Print summary of track-finding performance after HT or after r-z track filter.
+//=== Print summary of track-finding performance after track pattern reco.
 
-void Histos::printTrackPerformance(bool withRZfilter) {
-
-  string tName = withRZfilter  ?  "RZ"  :  "HT";
+void Histos::printTrackPerformance(string tName) {
 
   float numTrackCands = profNumTrackCands_[tName]->GetBinContent(1); // No. of track cands
   float numTrackCandsErr = profNumTrackCands_[tName]->GetBinError(1); // No. of track cands uncertainty
@@ -2965,10 +2963,12 @@ void Histos::printTrackPerformance(bool withRZfilter) {
   cout.precision(4);
 
   cout<<"========================================================================="<<endl;
-  if (withRZfilter) {
+  if (tName == "HT") {
     cout<<"               TRACK-FINDING SUMMARY AFTER R-Z TRACK FILTER            "<<endl;
-  } else {
+  } else if (tName == "RZ") {
     cout<<"               TRACK-FINDING SUMMARY AFTER HOUGH TRANSFORM             "<<endl;
+  } else if (tName == "TRACKLET") {
+    cout<<"               TRACK-FINDING SUMMARY AFTER TRACKLET PATTERN RECO       "<<endl;
   }
   cout<<"Number of track candidates found per event = "<<numTrackCands<<" +- "<<numTrackCandsErr<<endl;
   cout<<"                     with mean stubs/track = "<<meanStubsPerTrack<<endl; 
@@ -3030,11 +3030,19 @@ void Histos::endJobAnalysis() {
   // Don't bother producing summary if user didn't request histograms via TFileService in their cfg.
   if ( ! this->enabled() ) return;
 
-  // Produce plots of tracking efficiency using track candidates found after HT.
-  this->plotTrackEfficiency("HT");
+  if (settings_->hybrid()) {
 
-  // Optionally produce plots of tracking efficiency using track candidates found after r-z track filter.
-  if (ranRZfilter_) this->plotTrackEfficiency("RZ");
+    // Produce plots of tracking efficieny after tracklet pattern reco.
+    this->plotTrackEfficiency("TRACKLET");
+
+  } else {
+
+    // Produce plots of tracking efficiency using track candidates found after HT.
+    this->plotTrackEfficiency("HT");
+
+    // Optionally produce plots of tracking efficiency using track candidates found after r-z track filter.
+    if (ranRZfilter_) this->plotTrackEfficiency("RZ");
+  }
 
   // Produce more plots of tracking efficiency using track candidates after track fit.
   for (auto &fitName : trackFitters_) {
@@ -3110,10 +3118,15 @@ void Histos::endJobAnalysis() {
   }
   cout<<endl;
 
-  //--- Print summary of track-finding performance after HT
-  this->printTrackPerformance(false);
-  //--- Optionally print summary of track-finding performance after r-z track filter.
-  if (ranRZfilter_) this->printTrackPerformance(true);
+  if (settings_->hybrid()) {
+    //--- Print summary of tracklet pattern reco
+    this->printTrackPerformance("TRACKLET");
+  } else {
+    //--- Print summary of track-finding performance after HT
+    this->printTrackPerformance("HT");
+    //--- Optionally print summary of track-finding performance after r-z track filter.
+    if (ranRZfilter_) this->printTrackPerformance("RZ");
+  }
 
   //--- Print summary of track-finding performance after helix fit, for each track fitting algorithm used.
   for (const string& fitName : trackFitters_) {
@@ -3121,23 +3134,25 @@ void Histos::endJobAnalysis() {
   }
   cout << "=========================================================================" << endl;
 
-  // Check that stub filling was consistent with known limitations of firmware design.
+  if (not settings_->hybrid()) {
+    // Check that stub filling was consistent with known limitations of HT firmware design.
 
-  cout<<endl<<"Max. |gradients| of stub lines in HT array is: r-phi = "<<HTrphi::maxLineGrad()<<endl;
+    cout<<endl<<"Max. |gradients| of stub lines in HT array is: r-phi = "<<HTrphi::maxLineGrad()<<endl;
 
-  if (HTrphi::maxLineGrad() > 1.) {
+    if (HTrphi::maxLineGrad() > 1.) {
 
-    cout<<"WARNING: Line |gradient| exceeds 1, which firmware will not be able to cope with! Please adjust HT array size to avoid this."<<endl;
+      cout<<"WARNING: Line |gradient| exceeds 1, which firmware will not be able to cope with! Please adjust HT array size to avoid this."<<endl;
 
-  } else if (HTrphi::fracErrorsTypeA() > 0.) {
+    } else if (HTrphi::fracErrorsTypeA() > 0.) {
 
-    cout<<"WARNING: Despite line gradients being less than one, some fraction of HT columns have filled cells with no filled neighbours in W, SW or NW direction. Firmware will object to this! ";
-    cout<<"This fraction = "<<HTrphi::fracErrorsTypeA()<<" for r-phi HT"<<endl; 
+      cout<<"WARNING: Despite line gradients being less than one, some fraction of HT columns have filled cells with no filled neighbours in W, SW or NW direction. Firmware will object to this! ";
+      cout<<"This fraction = "<<HTrphi::fracErrorsTypeA()<<" for r-phi HT"<<endl; 
 
-  } else if (HTrphi::fracErrorsTypeB() > 0.) {
+    } else if (HTrphi::fracErrorsTypeB() > 0.) {
 
-    cout<<"WARNING: Despite line gradients being less than one, some fraction of HT columns recorded individual stubs being added to more than two cells! Thomas firmware will object to this! "; 
-    cout<<"This fraction = "<<HTrphi::fracErrorsTypeB()<<" for r-phi HT"<<endl;   
+      cout<<"WARNING: Despite line gradients being less than one, some fraction of HT columns recorded individual stubs being added to more than two cells! Thomas firmware will object to this! "; 
+      cout<<"This fraction = "<<HTrphi::fracErrorsTypeB()<<" for r-phi HT"<<endl;   
+    }
   }
 
   // Check for presence of common MC bug.

@@ -83,7 +83,7 @@ private:
   virtual void fillTrackFitting(const InputData& inputData, const std::map<std::string,std::vector<L1fittedTrack>>& fittedTracks);
 
   // Produce plots of tracking efficiency after HZ or after r-z track filter (run at end of job)
-  virtual void plotTrackEfficiency(bool withRZfilter);
+  virtual void plotTrackEfficiency(string tName);
   // Produce plots of tracking efficiency after track fit (run at end of job).
   virtual void plotTrackEffAfterFit(string fitName);
 

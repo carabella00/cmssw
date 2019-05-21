@@ -2780,9 +2780,7 @@ void Histos::fillTrackFitting( const InputData& inputData, const map<string,vect
 
 //=== Produce plots of tracking efficiency after HT or after r-z track filter (run at end of job).
 
-void Histos::plotTrackEfficiency(bool withRZfilter) {
-
-  string tName = withRZfilter  ?  "RZ"  :  "HT";
+void Histos::plotTrackEfficiency(string tName) {
 
   // Define lambda function to facilitate adding "tName" to directory & histogram names.
   auto addn = [tName](string s){ return TString::Format("%s_%s", s.c_str(), tName.c_str()); };
@@ -3039,10 +3037,10 @@ void Histos::endJobAnalysis() {
   if ( ! this->enabled() ) return;
 
   // Produce plots of tracking efficiency using track candidates found after HT.
-  this->plotTrackEfficiency(false);
+  this->plotTrackEfficiency("HT");
 
   // Optionally produce plots of tracking efficiency using track candidates found after r-z track filter.
-  if (ranRZfilter_) this->plotTrackEfficiency(true);
+  if (ranRZfilter_) this->plotTrackEfficiency("RZ");
 
   // Produce more plots of tracking efficiency using track candidates after track fit.
   for (auto &fitName : trackFitters_) {

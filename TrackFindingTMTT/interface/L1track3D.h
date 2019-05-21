@@ -52,6 +52,7 @@ public:
   //--- Set/get optional info for specific track types.
 
   // Tracklet seeding layer pair (from FPGATracklet::seedIndex())
+  // 0-7 = "L1L2","L2L3","L3L4","L5L6","D1D2","D3D4","L1D1","L2D1"
   void setSeedLayerType(unsigned int seedLayerType) {seedLayerType_ = seedLayerType;}
   unsigned int seedLayerType() const {return seedLayerType_;}
 

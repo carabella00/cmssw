@@ -61,7 +61,7 @@ void Histos::book() {
   // Book histograms checking filling of r-phi HT array.
   this->bookRphiHT();
   // Book histograms about r-z track filters.
-  this->bookRZfilters();
+  if (ranRZfilter_) this->bookRZfilters();
   // Book histograms for studying freak, extra large events at HT.
   this->bookStudyBusyEvents();
   // Book histograms studying 3D track candidates found after HT.
@@ -87,7 +87,7 @@ void Histos::fill(const InputData& inputData, const matrix<Sector>& mSectors, co
   // Fill histograms checking filling of r-phi HT array.
   this->fillRphiHT(mHtRphis);
   // Fill histograms about r-z track filters.
-  this->fillRZfilters(mGet3Dtrks);
+  if (ranRZfilter_) this->fillRZfilters(mGet3Dtrks);
   // Fill histograms for studying freak, extra large events at HT.
   this->fillStudyBusyEvents(inputData, mSectors, mHtRphis, mGet3Dtrks);
   // Fill histograms studying 3D track candidates found after HT.
@@ -116,7 +116,7 @@ void Histos::fill(const InputData& inputData, const matrix<Sector>& mSectors, co
 
 //=== Book histograms using input stubs and tracking particles.
 
-void Histos::bookInputData() {
+TFileDirectory Histos::bookInputData() {
   TFileDirectory inputDir = fs_->mkdir("InputData");
 
   // N.B. Histograms of the kinematics and production vertex of tracking particles
@@ -170,7 +170,6 @@ void Histos::bookInputData() {
   hisNumPSLayersPerTP_pions_    = inputDir.make<TH1F>("NumPSLayersPerTP_pions","; Number of PS layers per TP for alg. eff.",50,-0.5,49.5);
   hisNum2SLayersPerTP_pions_    = inputDir.make<TH1F>("Num2SLayersPerTP_pions","; Number of 2S layers per TP for alg. eff.",50,-0.5,49.5);
 
-
   hisNumLayersPerTP_lowPt_    = inputDir.make<TH1F>("NumLayersPerTP_lowPt","; Number of layers per TP for alg. eff.",50,-0.5,49.5);
   hisNumPSLayersPerTP_lowPt_    = inputDir.make<TH1F>("NumPSLayersPerTP_lowPt","; Number of PS layers per TP for alg. eff.",50,-0.5,49.5);
   hisNum2SLayersPerTP_lowPt_    = inputDir.make<TH1F>("Num2SLayersPerTP_lowPt","; Number of 2S layers per TP for alg. eff.",50,-0.5,49.5);
@@ -183,8 +182,8 @@ void Histos::bookInputData() {
   hisNumPSLayersPerTP_highPt_    = inputDir.make<TH1F>("NumPSLayersPerTP_highPt","; Number of PS layers per TP for alg. eff.",50,-0.5,49.5);
   hisNum2SLayersPerTP_highPt_    = inputDir.make<TH1F>("Num2SLayersPerTP_highPt","; Number of 2S layers per TP for alg. eff.",50,-0.5,49.5);
 
-
   // Study efficiency of tightened front end-electronics cuts.
+
   hisStubKillFE_          = inputDir.make<TProfile>("StubKillFE","; barrelLayer or 10+endcapRing; Stub fraction rejected by readout chip",30,-0.5,29.5);
   hisStubIneffiVsInvPt_   = inputDir.make<TProfile>("StubIneffiVsPt","; 1/Pt; Inefficiency of readout chip for good stubs",30,0.0,1.0);
   hisStubIneffiVsEta_     = inputDir.make<TProfile>("StubIneffiVsEta","; |#eta|; Inefficiency of readout chip for good stubs",30,0.0,3.0);
@@ -253,6 +252,8 @@ void Histos::bookInputData() {
   hisTPinvptForAlgEff_inJetPtG30_ = inputDir.make<TH1F>("TPinvptForAlgEff_inJetPtG30", "; 1/Pt of TP (used for effi. measurement);",24,0.,1.5*maxAbsQoverPt);
   hisTPinvptForAlgEff_inJetPtG100_ = inputDir.make<TH1F>("TPinvptForAlgEff_inJetPtG100", "; 1/Pt of TP (used for effi. measurement);",24,0.,1.5*maxAbsQoverPt);
   hisTPinvptForAlgEff_inJetPtG200_ = inputDir.make<TH1F>("TPinvptForAlgEff_inJetPtG200", "; 1/Pt of TP (used for effi. measurement);",24,0.,1.5*maxAbsQoverPt);
+
+  return inputDir;
 }
 
 //=== Fill histograms using input stubs and tracking particles.
@@ -657,7 +658,7 @@ void Histos::fillInputData(const InputData& inputData) {
 
 //=== Book histograms checking if (eta,phi) sector defis(nition choices are good.
 
-void Histos::bookEtaPhiSectors() {
+TFileDirectory Histos::bookEtaPhiSectors() {
   TFileDirectory inputDir = fs_->mkdir("CheckSectors");
 
   // Check if TP lose stubs because not all in same sector.
@@ -681,6 +682,8 @@ void Histos::bookEtaPhiSectors() {
   // Check which tracker layers are present in each eta sector.
   hisLayerIDvsEtaSec_ = inputDir.make<TH2F>("LayerIDvsEtaSec",";#eta sector; layer ID",nEta,-0.5,nEta-0.5,20,0.5,20.5);
   hisLayerIDreducedvsEtaSec_ = inputDir.make<TH2F>("LayerIDreducedvsEtaSec",";#eta sector; reduced layer ID",nEta,-0.5,nEta-0.5,20,0.5,20.5);
+
+  return inputDir;
 }
 
 //=== Fill histograms checking if (eta,phi) sector definition choices are good.
@@ -792,7 +795,7 @@ void Histos::fillEtaPhiSectors(const InputData& inputData, const matrix<Sector>&
 
 //=== Book histograms checking filling of r-phi HT array.
 
-void Histos::bookRphiHT() {
+TFileDirectory Histos::bookRphiHT() {
 
   TFileDirectory inputDir = fs_->mkdir("HTrphi");
 
@@ -928,6 +931,8 @@ void Histos::bookRphiHT() {
   hisNumStubsInCellVsEta_ = inputDir.make<TH2F>("NumStubsInCellVsEta","; no. of stubs per HT cell summed over phi sector; #eta region",100,-0.5,499.5, numEtaRegions_, -0.5, numEtaRegions_ - 0.5);
 
   hisStubsOnRphiTracksPerHT_ = inputDir.make<TH1F>("StubsOnRphiTracksPerHT","; Number of stubs assigned to tracks per r#phi HT array",500,-0.5,499.5);
+
+  return inputDir;
 }
 
 //=== Fill histograms checking filling of r-phi HT array.
@@ -1005,45 +1010,38 @@ void Histos::fillRphiHT(const matrix<HTrphi>& mHtRphis) {
 
 //=== Book histograms about r-z track filters (or other filters applied after r-phi HT array).
 
-void Histos::bookRZfilters() {
+TFileDirectory Histos::bookRZfilters() {
 
-  // Only book histograms if one of the r-z filters was in use.
-  if (ranRZfilter_) {
+  TFileDirectory inputDir = fs_->mkdir("RZfilters");
 
-    TFileDirectory inputDir = fs_->mkdir("RZfilters");
-
-    //--- Histograms for Seed Filter
-    if (settings_->rzFilterName() == "SeedFilter") {
-      // Check number of track seeds that r-z filters must check.
-      hisNumSeedCombinations_ = inputDir.make<TH1F>("NumSeedCombinations_","; Number of seed combinations per track cand; no. seeds ; ", 50, -0.5 , 49.5);
-      hisNumGoodSeedCombinations_ = inputDir.make<TH1F>("NumGoodSeedCombinations_","; Number of good seed combinations per track cand; ", 30, -0.5 , 29.5);
-    }
+  //--- Histograms for Seed Filter
+  if (settings_->rzFilterName() == "SeedFilter") {
+    // Check number of track seeds that r-z filters must check.
+    hisNumSeedCombinations_ = inputDir.make<TH1F>("NumSeedCombinations_","; Number of seed combinations per track cand; no. seeds ; ", 50, -0.5 , 49.5);
+    hisNumGoodSeedCombinations_ = inputDir.make<TH1F>("NumGoodSeedCombinations_","; Number of good seed combinations per track cand; ", 30, -0.5 , 29.5);
   }
+  return inputDir;
 }
 
 //=== Fill histograms about r-z track filters.
 
 void Histos::fillRZfilters(const matrix<Get3Dtracks>& mGet3Dtrks) {
 
-  // Only fill histograms if one of the r-z filters was in use.
-  if (ranRZfilter_) {
+  for (unsigned int iEtaReg = 0; iEtaReg < numEtaRegions_; iEtaReg++) {
+    for (unsigned int iPhiSec = 0; iPhiSec < numPhiSectors_; iPhiSec++) {
+      const Get3Dtracks& get3Dtrk = mGet3Dtrks(iPhiSec, iEtaReg);
 
-    for (unsigned int iEtaReg = 0; iEtaReg < numEtaRegions_; iEtaReg++) {
-      for (unsigned int iPhiSec = 0; iPhiSec < numPhiSectors_; iPhiSec++) {
-	const Get3Dtracks& get3Dtrk = mGet3Dtrks(iPhiSec, iEtaReg);
-
-	//--- Histograms for Seed Filter
-	if (settings_->rzFilterName() == "SeedFilter") {
-	  // Check number of track seeds per sector that r-z "seed" filter checked.
-	  const vector<unsigned int>  numSeedComb = get3Dtrk.getRZfilter().numSeedCombsPerTrk();
-	  for (const unsigned int& num : numSeedComb) {
-	    hisNumSeedCombinations_->Fill(num) ;
-	  }
-	  // Same again, but this time only considering seeds the r-z filters defined as "good".
-	  const vector<unsigned int>  numGoodSeedComb = get3Dtrk.getRZfilter().numGoodSeedCombsPerTrk();
-	  for (const unsigned int& num : numGoodSeedComb) {
-	    hisNumGoodSeedCombinations_->Fill(num) ;
-	  }
+      //--- Histograms for Seed Filter
+      if (settings_->rzFilterName() == "SeedFilter") {
+	// Check number of track seeds per sector that r-z "seed" filter checked.
+	const vector<unsigned int>  numSeedComb = get3Dtrk.getRZfilter().numSeedCombsPerTrk();
+	for (const unsigned int& num : numSeedComb) {
+	  hisNumSeedCombinations_->Fill(num) ;
+	}
+	// Same again, but this time only considering seeds the r-z filters defined as "good".
+	const vector<unsigned int>  numGoodSeedComb = get3Dtrk.getRZfilter().numGoodSeedCombsPerTrk();
+	for (const unsigned int& num : numGoodSeedComb) {
+	  hisNumGoodSeedCombinations_->Fill(num) ;
 	}
       }
     }
@@ -1052,7 +1050,7 @@ void Histos::fillRZfilters(const matrix<Get3Dtracks>& mGet3Dtrks) {
 
 //=== Book histograms studying track candidates found by Hough Transform.
 
-void Histos::bookTrackCands(string tName) {
+TFileDirectory Histos::bookTrackCands(string tName) {
 
   // Now book histograms for studying tracking in general.
 
@@ -1200,6 +1198,8 @@ void Histos::bookTrackCands(string tName) {
   //hisWrongSignStubRZ_nBend_[tName] = inputDir.make<TH2F>(addn("WrongSignStubRZ_nBend"),"RZ of stubs with negative bend, but with wrong sign; z (cm); radius (cm); No. stubs in tracker",100,-280,280,100,0,130);
 
   hisNumStubsOnLayer_[tName] = inputDir.make<TH1F>(addn("NumStubsOnLayer"),"; Layer occupancy;",16,1,17); 
+
+  return inputDir;
 }
 
 //=== Fill histograms studying track candidates found before track fit is run.
@@ -1337,10 +1337,12 @@ void Histos::fillTrackCands(const InputData& inputData, const vector<L1track3D>&
   for (const L1track3D& trk : tracks) {
     hisNumTracksVsQoverPt_[tName]->Fill(trk.qOverPt()); // Plot reconstructed q/Pt of track cands.
     hisStubsPerTrack_[tName]->Fill(trk.getNumStubs());  // Stubs per track.
-    // For genuine tracks, check how often they have too many stubs to be stored in cell memory. (Perhaps worse for high Pt particles in jets?).
     const TP* tp = trk.getMatchedTP();
-    if (tp != nullptr) {
-      if (tp->useForAlgEff()) profExcessStubsPerTrackVsPt_[tName]->Fill(1./tp->pt(), trk.getNumStubs() > 16);
+    if (TMTT) {
+      // For genuine tracks, check how often they have too many stubs to be stored in cell memory. (Perhaps worse for high Pt particles in jets?).
+      if (tp != nullptr) {
+        if (tp->useForAlgEff()) profExcessStubsPerTrackVsPt_[tName]->Fill(1./tp->pt(), trk.getNumStubs() > 16);
+      }
     }
     hisLayersPerTrack_[tName]->Fill(trk.getNumLayers()); // Number of reduced layers with stubs per track.
     hisPSLayersPerTrack_[tName]->Fill( Utility::countLayers(settings_, trk.getStubs(), false, true) ); // Number of reduced PS layers with stubs per track.
@@ -1822,7 +1824,7 @@ map<const TP*, string> Histos::diagnoseTracking(const vector<TP>& allTPs, const 
 
 //=== Book histograms studying freak, large events with too many stubs.
 
-void Histos::bookStudyBusyEvents() {
+TFileDirectory Histos::bookStudyBusyEvents() {
 
   TFileDirectory inputDir = fs_->mkdir("BusyEvents");
 
@@ -1861,6 +1863,8 @@ void Histos::bookStudyBusyEvents() {
     hisSumPtTPphysics_[tn]    = inputDir.make<TH1F>(("SumPtTPphysics"+(tn)).c_str(),    ("; Sum Pt physics TP"+(en)).c_str(), 100,  0.0, 100.);
     hisSumPtTPpileup_[tn]     = inputDir.make<TH1F>(("SumPtTPpileup"+(tn)).c_str(),     ("; Sum Pt pileup TP"+(en)).c_str(),  100,  0.0, 100.);
   }
+
+  return inputDir;
 }
 
 //=== Fill histograms studying freak, large events with too many stubs at HT.
@@ -2041,12 +2045,14 @@ void Histos::fillStudyBusyEvents(const InputData& inputData, const matrix<Sector
 
 //=== Book histograms for studying track fitting.
 
-void Histos::bookTrackFitting() {
+map<string, TFileDirectory> Histos::bookTrackFitting() {
  
   const float maxEta = settings_->maxStubEta();
   const float maxAbsQoverPt = 1./houghMinPt_; // Max. |q/Pt| covered by  HT array.
  
   // Book histograms for 4 and 5 parameter helix fits.
+
+  map<string, TFileDirectory> inputDirMap;
 
   for (const string& fitName : trackFitters_ ) {
 
@@ -2055,6 +2061,7 @@ void Histos::bookTrackFitting() {
 
     //std::cout << "Booking histograms for " << fitName << std::endl;
     TFileDirectory inputDir = fs_->mkdir( fitName );
+    inputDirMap[fitName] = inputDir;
  
     profNumFitTracks_[fitName] = inputDir.make<TProfile>(addn("NumFitTracks"), "; class; # of fitted tracks", 11, 0.5, 11.5, -0.5, 9.9e6);
     profNumFitTracks_[fitName]->GetXaxis()->SetBinLabel(7, "TP for eff fitted");
@@ -2253,6 +2260,8 @@ void Histos::bookTrackFitting() {
     hisPerfFitTPphisecForAlgEff_[fitName]  = inputDir.make<TH1F>(addn("PerfFitTPphisecForAlgEff") ,"; #phi sector of TP (used for perf. alg. effi. measurement);",nPhi,-0.5,nPhi-0.5);
     hisPerfFitTPetasecForAlgEff_[fitName]  = inputDir.make<TH1F>(addn("PerfFitTPetasecForAlgEff") ,"; #eta sector of TP (used for perf. alg. effi. measurement);",nEta,-0.5,nEta-0.5);
   }
+
+  return inputDirMap;
 }
 
 //=== Fill histograms for studying track fitting.
@@ -2780,7 +2789,7 @@ void Histos::fillTrackFitting( const InputData& inputData, const map<string,vect
 
 //=== Produce plots of tracking efficiency after HT or after r-z track filter (run at end of job).
 
-void Histos::plotTrackEfficiency(string tName) {
+TFileDirectory Histos::plotTrackEfficiency(string tName) {
 
   // Define lambda function to facilitate adding "tName" to directory & histogram names.
   auto addn = [tName](string s){ return TString::Format("%s_%s", s.c_str(), tName.c_str()); };
@@ -2854,11 +2863,13 @@ void Histos::plotTrackEfficiency(string tName) {
 		      addn("PerfAlgEffVsPhiSec"),"; #phi sector; Tracking perfect efficiency");
   makeEfficiencyPlot( inputDir, teffPerfAlgEffVsEtaSec_[tName], hisPerfRecoTPetasecForAlgEff_[tName], hisTPetasecForAlgEff_,
 		      addn("PerfAlgEffVsEtaSec"),"; #eta sector; Tracking perfect efficiency");
+
+  return inputDir;
 }
 
 //=== Produce plots of tracking efficiency after track fit (run at end of job).
 
-void Histos::plotTrackEffAfterFit(string fitName) {
+TFileDirectory Histos::plotTrackEffAfterFit(string fitName) {
 
   // Define lambda function to facilitate adding "fitName" to directory & histogram names.
   auto addn = [fitName](string s){ return TString::Format("%s_%s", s.c_str(), fitName.c_str()); };
@@ -2925,6 +2936,8 @@ void Histos::plotTrackEffAfterFit(string fitName) {
 		      addn("PerfAlgEffFitVsPhiSec"),"; #phi sector; Tracking perfect efficiency");
   makeEfficiencyPlot( inputDir, teffPerfAlgEffFitVsEtaSec_[fitName], hisPerfFitTPetasecForAlgEff_[fitName], hisTPetasecForAlgEff_,
 		      addn("PerfAlgEffFitVsEtaSec"),"; #eta sector; Tracking perfect efficiency");
+
+  return inputDir;
 }
 
 void Histos::makeEfficiencyPlot( TFileDirectory &inputDir, TEfficiency* outputEfficiency, TH1F* pass, TH1F* all, TString name, TString title ) {

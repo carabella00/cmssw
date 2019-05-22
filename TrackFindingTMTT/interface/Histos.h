@@ -61,16 +61,16 @@ public:
   // Should histograms be produced?
   virtual bool enabled() const {return ( settings_->enableHistos() && available() );}
 
-private:
+protected:
 
   // Book histograms for specific topics.
-  virtual void bookInputData();
-  virtual void bookEtaPhiSectors();
-  virtual void bookRphiHT();
-  virtual void bookRZfilters();
-  virtual void bookStudyBusyEvents();
-  virtual void bookTrackCands(string tName);
-  virtual void bookTrackFitting();
+  virtual TFileDirectory bookInputData();
+  virtual TFileDirectory bookEtaPhiSectors();
+  virtual TFileDirectory bookRphiHT();
+  virtual TFileDirectory bookRZfilters();
+  virtual TFileDirectory bookStudyBusyEvents();
+  virtual TFileDirectory bookTrackCands(string tName);
+  virtual map<string, TFileDirectory> bookTrackFitting();
 
   // Fill histograms for specific topics.
   virtual void fillInputData(const InputData& inputData);
@@ -83,12 +83,11 @@ private:
   virtual void fillTrackFitting(const InputData& inputData, const std::map<std::string,std::vector<L1fittedTrack>>& fittedTracks);
 
   // Produce plots of tracking efficiency after HZ or after r-z track filter (run at end of job)
-  virtual void plotTrackEfficiency(string tName);
+  virtual TFileDirectory plotTrackEfficiency(string tName);
   // Produce plots of tracking efficiency after track fit (run at end of job).
-  virtual void plotTrackEffAfterFit(string fitName);
+  virtual TFileDirectory plotTrackEffAfterFit(string fitName);
 
   virtual void makeEfficiencyPlot( TFileDirectory &inputDir, TEfficiency* outputEfficiency, TH1F* pass, TH1F* all, TString name, TString title );
-
 
   // Print summary of track-finding performance after track pattern reco.
   virtual void printTrackPerformance(string tName);
@@ -102,7 +101,7 @@ private:
   virtual map<const TP*, string> diagnoseTracking(const vector<TP>& allTPs, const vector<L1track3D>& tracks,
 					  bool withRZfilter) const;
 
- private:
+ protected:
 
   // Configuration parameters.
   const Settings *settings_; 

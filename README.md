@@ -10,8 +10,9 @@ cd CMSSW_10_4_0/src
 cmsenv
 
 git init
-git clone (-b myBranch) https://gitlab.cern.ch/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git L1Trigger
-Optional, to update your branch with changes made to the master, since your branch was created: git pull --rebase origin master)
+git clone (-b myBranch) ssh://git@gitlab.cern.ch:7999/cms-tracker-phase2-backend-development/BE_software/L1Tracking.git L1Trigger
+
+Optional: to update your branch with changes made to the master, since your branch was created: git pull --rebase origin master)
 
 scramv1 b -j 8
 cd L1Trigger/TrackFindingTracklet/test/ 
@@ -55,6 +56,9 @@ root
 .x L1TrackNtuplePlot.C("TTbar_PU200_hybrid")
 ```
 
+(You can make similar plots for the tracks available before the track fit or before duplicate removal by disabling these algos.
+To do this, edit FPGAConstants.hh, setting fakefit=true and/or RemovalType="").
+
 If running stand-alone, to make efficiency and resolution plots (that compare the integer based emulation to the floating point algorithm), set "writeResEff=true" in FPGAConstants.h to write a .txt file with the info,
 and process it using macros in TrackFindingTracklet/test/PlotMacros/ . Warning: the efficiency isn't defined in the standard way.
 
@@ -63,7 +67,12 @@ root -l trackres.cc
 root -l trackeff.cc
 ```
 
-### DETAILED PERFORMANCE PLOTS 
+### DETAILED PERFORMANCE PLOTS (via hist utility)
+
+Anders Ryd talk https://indico.cern.ch/event/781634/sessions/305061/#20190314 explains how to make plots & access truth/assoc
+info at any point in code. But this utility is not yet fully working.
+
+### DETAILED PERFORMANCE PLOTS (via txt files)
 
 To generate performance plots you need to enable the relevant output (by editing cfg param named below in FPGAConstants.hh), and after run the root script (from TrackFindingTracklet/test/PlotMacros/) to generate the plots.
 

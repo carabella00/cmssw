@@ -457,16 +457,15 @@ static int chisqzfactbits=14;
 
 //Duplicate Removal
 static int minIndStubs=3; // Not for merge removal
-
-//static std::string RemovalType=""; // Run without duplicate removal
+//"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal), "merge" (hybrid dup removal)
 #ifdef USEHYBRID
 static std::string RemovalType="ichi"; // "merge" option loses 2% efficiency;
 #else
 static std::string RemovalType="ichi";
 #endif
+//static std::string RemovalType=""; // Run without duplicate removal
 
-//"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal)
-static bool fakefit=false; //if true, this would use KF 5-parameter fit for displaced tracking, false means use tracklet parameters instead (i.e. no fit)
+static bool fakefit=false; //if true, run a dummy fit, producing TTracks directly from output of tracklet pattern reco stage.
 
 #endif
 

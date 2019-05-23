@@ -87,7 +87,6 @@ run_plotScript:
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - cd L1Trigger/TrackFindingTracklet/test/
     - ls -trlh
-    - mkdir TrkPlots
     - root -q -b -l -x 'L1TrackNtuplePlot.C("TTbar_PU200_hybrid")'
     - echo $?
   dependencies:

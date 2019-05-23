@@ -460,7 +460,7 @@ static int minIndStubs=3; // Not for merge removal
 
 //static std::string RemovalType=""; // Run without duplicate removal
 #ifdef USEHYBRID
-static std::string RemovalType="ichi"; // "merge" option loses 2% efficiency;
+static std::string RemovalType="merge"; // "merge" option loses 2% efficiency;
 #else
 static std::string RemovalType="ichi";
 #endif

@@ -459,7 +459,7 @@ static int chisqzfactbits=14;
 static int minIndStubs=3; // Not for merge removal
 //"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal), "merge" (hybrid dup removal)
 #ifdef USEHYBRID
-static std::string RemovalType="ichi"; // "merge" option loses 2% efficiency;
+static std::string RemovalType="merge"; // "merge" option loses 2% efficiency;
 #else
 static std::string RemovalType="ichi";
 #endif

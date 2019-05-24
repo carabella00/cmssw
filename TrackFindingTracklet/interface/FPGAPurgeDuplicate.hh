@@ -107,7 +107,7 @@ public:
       // Get vectors from TrackFit and save them
       // inputtracklets: FPGATracklet objects from the FitTrack (not actually fit yet)
       // inputstublists: L1Stubs for that track
-      // inputstubidslists: FPGAStub stubIDs for that 3rack
+      // inputstubidslists: FPGAStub stubIDs for that track
       // mergedstubidslists: the same as inputstubidslists, but will be used during duplicate removal
       for(unsigned int i=0;i<inputtrackfits_.size();i++) {
         if(inputtrackfits_[i]->nStublists()==0) continue;
@@ -203,9 +203,7 @@ public:
           
           // Fill duplicate map
           // !!FIXME!! This is completely unoptimized. Just an educated guess
-  //        if (nShare >=3) {
           if (nShareUR >=3) {
-  //        if (false) {
             dupMap[itrk][jtrk] = true;
             dupMap[jtrk][itrk] = true;
           }

@@ -1037,10 +1037,8 @@ public:
     int irinv,iphi0,id0,it,iz0;
     bool validproj[4];
     int iphiproj[4],izproj[4],iphider[4],izder[4];
-    bool minusNeighbor[4],plusNeighbor[4];
     bool validprojdisk[5];
     int iphiprojdisk[5],irprojdisk[5],iphiderdisk[5],irderdisk[5];
-    bool minusNeighborDisk[5],plusNeighborDisk[5];
       
     //store the binary results
     irinv = rinvapprox / krinv;
@@ -1059,9 +1057,6 @@ public:
       validproj[i] = true;
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
-      
-      minusNeighbor[i]=false;
-      plusNeighbor[i]=false;
 
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1) {
@@ -1099,9 +1094,6 @@ public:
 
 	iphiderdisk[i] = phiderdiskapprox[i] / kphiderdisk;
 	irderdisk[i]   = rderdiskapprox[i] / krderdisk;
-      
-	minusNeighborDisk[i]=false;
-	plusNeighborDisk[i]=false;
      
 	if (iphiprojdisk[i]<0) {
 	  iphiprojdisk[i]=0;
@@ -1154,28 +1146,8 @@ public:
     bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
     if (!keep) return false;
     
-    for(unsigned int j=0;j<toZ_.size();j++){
-      if (minusNeighborDisk[j]) {
-	phiprojdiskapprox[j]+=dphisector;
-	phiprojdisk[j]+=dphisector;
-      }
-      if (plusNeighborDisk[j]) {
-	phiprojdiskapprox[j]-=dphisector;
-	phiprojdisk[j]-=dphisector;
-      }
     }
-	  
-    for(unsigned int j=0;j<toR_.size();j++){
-      if (minusNeighbor[j]) {
-	phiprojapprox[j]+=dphisector;
-	phiproj[j]+=dphisector;
-      }
-      if (plusNeighbor[j]) {
-	phiprojapprox[j]-=dphisector;
-	phiproj[j]-=dphisector;
-      }	    
     }
-    
     
     if (writeTrackletPars) {
       static ofstream out("trackletpars.txt");
@@ -1351,10 +1323,8 @@ public:
     int irinv,iphi0,id0,it,iz0;
     bool validproj[4];
     int iphiproj[4],izproj[4],iphider[4],izder[4];
-    bool minusNeighbor[4],plusNeighbor[4];
     bool validprojdisk[5];
     int iphiprojdisk[5],irprojdisk[5],iphiderdisk[5],irderdisk[5];
-    bool minusNeighborDisk[5],plusNeighborDisk[5];
       
     //store the binary results
     irinv = rinvapprox / krinv;
@@ -1374,9 +1344,6 @@ public:
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
       
-      minusNeighbor[i]=false;
-      plusNeighbor[i]=false;
- 
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1) {
 	iphiproj[i]=(1<<nbitsphistubL456)-2; //-2 not to hit atExtreme
@@ -1414,9 +1381,6 @@ public:
 	iphiderdisk[i] = phiderdiskapprox[i] / kphiderdisk;
 	irderdisk[i]   = rderdiskapprox[i] / krderdisk;
       
-	minusNeighborDisk[i]=false;
-	plusNeighborDisk[i]=false;
-
 	if (iphiprojdisk[i]<0) {
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
@@ -1470,28 +1434,8 @@ public:
       cout<<phicrit<< "\t"<<phicritminmc<<"\t"<<phicritmaxmc<<"\n";
     if (!keep) return false;
     
-    for(unsigned int j=0;j<toZ_.size();j++){
-      if (minusNeighborDisk[j]) {
-	phiprojdiskapprox[j]+=dphisector;
-	phiprojdisk[j]+=dphisector;
-      }
-      if (plusNeighborDisk[j]) {
-	phiprojdiskapprox[j]-=dphisector;
-	phiprojdisk[j]-=dphisector;
-      }
     }
-	  
-    for(unsigned int j=0;j<toR_.size();j++){
-      if (minusNeighbor[j]) {
-	phiprojapprox[j]+=dphisector;
-	phiproj[j]+=dphisector;
-      }
-      if (plusNeighbor[j]) {
-	phiprojapprox[j]-=dphisector;
-	phiproj[j]-=dphisector;
-      }	    
     }
-    
     
     if (writeTrackletPars) {
       static ofstream out("trackletpars.txt");
@@ -1661,10 +1605,8 @@ public:
     int irinv,iphi0,id0,it,iz0;
     bool validproj[4];
     int iphiproj[4],izproj[4],iphider[4],izder[4];
-    bool minusNeighbor[4],plusNeighbor[4];
     bool validprojdisk[5];
     int iphiprojdisk[5],irprojdisk[5],iphiderdisk[5],irderdisk[5];
-    bool minusNeighborDisk[5],plusNeighborDisk[5];
       
     //store the binary results
     irinv = rinvapprox / krinv;
@@ -1684,9 +1626,6 @@ public:
       if (izproj[i]<-(1<<(nbitszprojL123-1))) validproj[i]=false;
       if (izproj[i]>=(1<<(nbitszprojL123-1))) validproj[i]=false;
       
-      minusNeighbor[i]=false;
-      plusNeighbor[i]=false;
- 
       //this is left from the original....
       if (iphiproj[i]>=(1<<nbitsphistubL456)-1) {
 	iphiproj[i]=(1<<nbitsphistubL456)-2; //-2 not to hit atExtreme
@@ -1724,9 +1663,6 @@ public:
 	iphiderdisk[i] = phiderdiskapprox[i] / kphiderdisk;
 	irderdisk[i]   = rderdiskapprox[i] / krderdisk;
       
-	minusNeighborDisk[i]=false;
-	plusNeighborDisk[i]=false;
-
 	if (iphiprojdisk[i]<0) {
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
@@ -1778,28 +1714,7 @@ public:
     bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
     if (!keep) return false;
     
-    for(unsigned int j=0;j<toZ_.size();j++){
-      if (minusNeighborDisk[j]) {
-	phiprojdiskapprox[j]+=dphisector;
-	phiprojdisk[j]+=dphisector;
-      }
-      if (plusNeighborDisk[j]) {
-	phiprojdiskapprox[j]-=dphisector;
-	phiprojdisk[j]-=dphisector;
-      }
     }
-	  
-    for(unsigned int j=0;j<toR_.size();j++){
-      if (minusNeighbor[j]) {
-	phiprojapprox[j]+=dphisector;
-	phiproj[j]+=dphisector;
-      }
-      if (plusNeighbor[j]) {
-	phiprojapprox[j]-=dphisector;
-	phiproj[j]-=dphisector;
-      }	    
-    }
-    
     
     if (writeTrackletPars) {
       static ofstream out("trackletpars.txt");

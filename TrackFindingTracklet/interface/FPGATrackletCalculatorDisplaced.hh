@@ -1133,10 +1133,17 @@ public:
     if (!success) return false;
 
     double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-    if (!keep) return false;
-    
+    int phicritapprox=iphi0-2*irinv;
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc),
+         keepapprox=(phicritapprox>phicritapproxminmc)&&(phicritapprox<phicritapproxmaxmc);
+    if (debug1)
+      if (keep && !keepapprox)
+        cout << "FPGATrackletCalculatorDisplaced::LLLSeeding tracklet kept with exact phicrit cut but not approximate, phicritapprox: " << phicritapprox << endl;
+    if (!usephicritapprox) {
+      if (!keep) return false;
     }
+    else {
+      if (!keepapprox) return false;
     }
     
     if (writeTrackletPars) {
@@ -1409,12 +1416,17 @@ public:
     if (!success) return false;
 
     double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-    if(debug1)
-      cout<<phicrit<< "\t"<<phicritminmc<<"\t"<<phicritmaxmc<<"\n";
-    if (!keep) return false;
-    
+    int phicritapprox=iphi0-2*irinv;
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc),
+         keepapprox=(phicritapprox>phicritapproxminmc)&&(phicritapprox<phicritapproxmaxmc);
+    if (debug1)
+      if (keep && !keepapprox)
+        cout << "FPGATrackletCalculatorDisplaced::DDLSeeding tracklet kept with exact phicrit cut but not approximate, phicritapprox: " << phicritapprox << endl;
+    if (!usephicritapprox) {
+      if (!keep) return false;
     }
+    else {
+      if (!keepapprox) return false;
     }
     
     if (writeTrackletPars) {
@@ -1681,9 +1693,17 @@ public:
     if (!success) return false;
 
     double phicrit=phi0approx-asin(0.5*rcrit*rinvapprox);
-    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc);
-    if (!keep) return false;
-    
+    int phicritapprox=iphi0-2*irinv;
+    bool keep=(phicrit>phicritminmc)&&(phicrit<phicritmaxmc),
+         keepapprox=(phicritapprox>phicritapproxminmc)&&(phicritapprox<phicritapproxmaxmc);
+    if (debug1)
+      if (keep && !keepapprox)
+        cout << "FPGATrackletCalculatorDisplaced::LLDSeeding tracklet kept with exact phicrit cut but not approximate, phicritapprox: " << phicritapprox << endl;
+    if (!usephicritapprox) {
+      if (!keep) return false;
+    }
+    else {
+      if (!keepapprox) return false;
     }
     
     if (writeTrackletPars) {

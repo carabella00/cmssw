@@ -1094,27 +1094,17 @@ public:
 
 	iphiderdisk[i] = phiderdiskapprox[i] / kphiderdisk;
 	irderdisk[i]   = rderdiskapprox[i] / krderdisk;
-     
-	if (iphiprojdisk[i]<0) {
-	  iphiprojdisk[i]=0;
-	  validprojdisk[i]=false;
-	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
-	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
-	  validprojdisk[i]=false;
-	}
-      
 	//"protection" from the original
-	if (iphiprojdisk[i]<0) {
+	if (iphiprojdisk[i]<=0) {
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
 	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
+	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)-1) {
 	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
 	  validprojdisk[i]=false;
 	}
 	
-	if(irprojdisk[i]< 20. / krprojdisk || irprojdisk[i] > 120. / krprojdisk ){
+	if(rprojdiskapprox[i]< 20. || rprojdiskapprox[i] > 120.){
 	  validprojdisk[i]=false;
 	  irprojdisk[i] = 0;
 	  iphiprojdisk[i] = 0;
@@ -1381,25 +1371,15 @@ public:
 	iphiderdisk[i] = phiderdiskapprox[i] / kphiderdisk;
 	irderdisk[i]   = rderdiskapprox[i] / krderdisk;
       
-	if (iphiprojdisk[i]<0) {
+	if (iphiprojdisk[i]<=0) {
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
 	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
+	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)-1) {
 	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
 	  validprojdisk[i]=false;
 	}
       
-	//"protection" from the original
-	if (iphiprojdisk[i]<0) {
-	  iphiprojdisk[i]=0;
-	  validprojdisk[i]=false;
-	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
-	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
-	  validprojdisk[i]=false;
-	}
-	
 	if(irprojdisk[i]< 20. / krprojdisk || irprojdisk[i] > 120. / krprojdisk ){
 	  validprojdisk[i]=false;
 	  irprojdisk[i] = 0;
@@ -1663,25 +1643,15 @@ public:
 	iphiderdisk[i] = phiderdiskapprox[i] / kphiderdisk;
 	irderdisk[i]   = rderdiskapprox[i] / krderdisk;
       
-	if (iphiprojdisk[i]<0) {
+	if (iphiprojdisk[i]<=0) {
 	  iphiprojdisk[i]=0;
 	  validprojdisk[i]=false;
 	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
+	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)-1) {
 	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
 	  validprojdisk[i]=false;
 	}
       
-	//"protection" from the original
-	if (iphiprojdisk[i]<0) {
-	  iphiprojdisk[i]=0;
-	  validprojdisk[i]=false;
-	}
-	if (iphiprojdisk[i]>=(1<<nbitsphistubL123)) {
-	  iphiprojdisk[i]=(1<<nbitsphistubL123)-1;
-	  validprojdisk[i]=false;
-	}
-	
 	if(irprojdisk[i]< 20. / krprojdisk || irprojdisk[i] > 120. / krprojdisk ){
 	  validprojdisk[i]=false;
 	  irprojdisk[i] = 0;

@@ -8,6 +8,7 @@ import os
 process = cms.Process("L1TrackNtuple")
 
 GEOMETRY = "D21"
+#GEOMETRY = "D41" # <== to run on D41 samples, please change flag "geomTDR" to *false* in ../interface/FPGAConstants.hh 
 
  
 ############################################################
@@ -19,11 +20,7 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 
-if GEOMETRY == "D10": 
-    print "using geometry " + GEOMETRY + " (flat)"
-    process.load('Configuration.Geometry.GeometryExtended2023D10Reco_cff')
-    process.load('Configuration.Geometry.GeometryExtended2023D10_cff')
-elif GEOMETRY == "D17": 
+if GEOMETRY == "D17": 
     print "using geometry " + GEOMETRY + " (tilted)"
     process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
     process.load('Configuration.Geometry.GeometryExtended2023D17_cff')
@@ -31,6 +28,10 @@ elif GEOMETRY == "D21":
     print "using geometry " + GEOMETRY + " (tilted)"
     process.load('Configuration.Geometry.GeometryExtended2023D21Reco_cff')
     process.load('Configuration.Geometry.GeometryExtended2023D21_cff')
+elif GEOMETRY == "D41": 
+    print "using geometry " + GEOMETRY + " (tilted)"
+    process.load('Configuration.Geometry.GeometryExtended2023D41Reco_cff')
+    process.load('Configuration.Geometry.GeometryExtended2023D41_cff')
 elif GEOMETRY == "TkOnly": 
     print "using standalone tilted (T5) tracker geometry" 
     process.load('L1Trigger.TrackTrigger.TkOnlyTiltedGeom_cff')
@@ -60,10 +61,15 @@ elif GEOMETRY == "D21": # Tilted barrel T6 tracker
     # inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/SingleMuPt2to100/PU0.txt')
     # inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/DisplacedSingleMuPt2to100/PU0.txt')
 
+elif GEOMETRY == "D41":
+    inputMC = ['/store/relval/CMSSW_10_6_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU25ns_106X_upgrade2023_realistic_v2_2023D41PU200-v1/10000/FEA5D564-937A-8D4B-9C9A-696EFC05AB58.root']
+
 elif GEOMETRY == "TkOnly":
     inputMC = ['file:/afs/cern.ch/work/s/skinnari/public/L1TK_90X/MuMinus_1to10_TkOnly.root']
-    # inputMC = ['/store/relval/CMSSW_9_3_7/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU25ns_93X_upgrade2023_realistic_v5_2023D17PU200-v1/10000/5A8CFF7F-1E2D-E811-A7B0-0242AC130002.root']
 
+else:
+    print "this is not a valid geometry!!!"
+    
 process.source = cms.Source("PoolSource", 
                             fileNames = cms.untracked.vstring(*inputMC),
                             inputCommands = cms.untracked.vstring(
@@ -86,9 +92,6 @@ process.load('L1Trigger.TrackTrigger.TrackTrigger_cff')
 from L1Trigger.TrackTrigger.TTStubAlgorithmRegister_cfi import *
 process.load("SimTracker.TrackTriggerAssociation.TrackTriggerAssociator_cff")
 
-if GEOMETRY == "D10": 
-    TTStubAlgorithm_official_Phase2TrackerDigi_.zMatchingPS = cms.bool(False)
-
 if GEOMETRY != "TkOnly":
     from SimTracker.TrackTriggerAssociation.TTClusterAssociation_cfi import *
     TTClusterAssociatorFromPixelDigis.digiSimLinks = cms.InputTag("simSiPixelDigis","Tracker")
@@ -98,7 +101,7 @@ process.TTClusterStubTruth = cms.Path(process.TrackTriggerAssociatorClustersStub
 
 from L1Trigger.TrackFindingTracklet.Tracklet_cfi import *
 
-### floating-point version
+## floating-point simulation
 #process.load("L1Trigger.TrackFindingTracklet.L1TrackletTracks_cff")
 #if GEOMETRY == "D10": 
 #    TTTracksFromTracklet.trackerGeometry = cms.untracked.string("flat")
@@ -108,14 +111,14 @@ from L1Trigger.TrackFindingTracklet.Tracklet_cfi import *
 #process.TTTracksWithTruth = cms.Path(process.L1TrackletTracksWithAssociators)
 
 
-### emulation instead 
+## emulation 
 process.load("L1Trigger.TrackFindingTracklet.L1TrackletEmulationTracks_cff")
 process.TTTracksEmulation = cms.Path(process.L1TrackletEmulationTracks)
 process.TTTracksEmulationWithTruth = cms.Path(process.L1TrackletEmulationTracksWithAssociators)
 #TTTracksFromTrackletEmulation.asciiFileName = cms.untracked.string("evlist.txt")
-#TTTracksFromTrackletEmulation.failscenario = cms.untracked.int32(0)
 
-### Extended (displaced) emulation
+
+## Extended (displaced) emulation
 # process.load("L1Trigger.TrackFindingTracklet.L1ExtendedTrackletEmulationTracks_cff")
 # process.TTTracksExtendedEmulation = cms.Path(process.L1ExtendedTrackletEmulationTracks)
 # process.TTTracksExtendedEmulationWithTruth = cms.Path(process.L1ExtendedTrackletEmulationTracksWithAssociators)

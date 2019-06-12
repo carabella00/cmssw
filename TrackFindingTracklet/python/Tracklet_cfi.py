@@ -11,7 +11,6 @@ TTTracksFromTracklet = cms.EDProducer("L1TrackProducer",
                                       BeamSpotSource = cms.InputTag("offlineBeamSpot"),
                                       asciiFileName = cms.untracked.string(""),
                                       failscenario = cms.untracked.int32(0),
-                                      #GenJetInputTag = cms.InputTag("ak4GenJets", ""),
                                       trackerGeometryType  = cms.untracked.string("")  #tilted barrel is assumed, use "flat" if running on flat
     )
 
@@ -64,3 +63,4 @@ TTTracksFromExtendedTrackletEmulation = cms.EDProducer("L1FPGATrackProducer",
                                                DTCLinkFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/calcNumDTCLinks.txt'),
                                                moduleCablingFile  = cms.FileInPath('L1Trigger/TrackFindingTracklet/data/modules_T5v3_27SP_nonant_tracklet.dat')
     )
+

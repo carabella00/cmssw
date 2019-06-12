@@ -64,10 +64,6 @@
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/SiPixelDetId/interface/PixelChannelIdentifier.h"
 #include "TrackingTools/GeomPropagators/interface/HelixArbitraryPlaneCrossing.h"
-////////////////////////
-// FAST SIMULATION STUFF
-#include "FastSimulation/Particle/interface/RawParticle.h"
-#include "FastSimulation/BaseParticlePropagator/interface/BaseParticlePropagator.h"
 
 ////////////////////////////
 // DETECTOR GEOMETRY HEADERS
@@ -92,12 +88,10 @@
 #include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementVector.h"
 #include "DataFormats/GeometrySurface/interface/BoundPlane.h"
 
-//#include "SLHCUpgradeSimulations/L1TrackTrigger/interface/StubPtConsistency.h"
+#include "L1Trigger/TrackTrigger/interface/StubPtConsistency.h"
 
 #include "L1Trigger/TrackFindingTracklet/interface/StubKiller.h"
 
-//#include "DataFormats/JetReco/interface/GenJetCollection.h"
-//#include "DataFormats/JetReco/interface/GenJet.h"
 
 
 //////////////
@@ -189,9 +183,6 @@ private:
   edm::EDGetTokenT< std::vector< TrackingParticle > > TrackingParticleToken_;
   edm::EDGetTokenT< std::vector< TrackingVertex > > TrackingVertexToken_;
 
-  //edm::InputTag GenJetInputTag;
-  //edm::EDGetTokenT< std::vector<reco::GenJet> > GenJetToken_;
-
 
   /// ///////////////// ///
   /// MANDATORY METHODS ///
@@ -222,9 +213,6 @@ L1TrackProducer::L1TrackProducer(edm::ParameterSet const& iConfig) :
   ttStubMCTruthToken_(consumes< TTStubAssociationMap< Ref_Phase2TrackerDigi_ > >(MCTruthStubInputTag)),
   TrackingParticleToken_(consumes< std::vector< TrackingParticle > >(TrackingParticleInputTag)),
   TrackingVertexToken_(consumes< std::vector< TrackingVertex > >(TrackingVertexInputTag))//,
-
-  //GenJetInputTag(iConfig.getParameter<edm::InputTag>("GenJetInputTag")),
-  //GenJetToken_ (consumes< std::vector< reco::GenJet > >(GenJetInputTag))
 
 {
 
@@ -366,24 +354,6 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   const TrackerGeometry* const theTrackerGeom = tGeomHandle.product();
 
 
-  /*
-  edm::Handle< std::vector< reco::GenJet > > GenJetHandle;
-  iEvent.getByToken(GenJetToken_, GenJetHandle);
-
-  bool keepevent = true;
-  if (GenJetHandle.isValid()) {
-    int ij=0;
-    std::vector<reco::GenJet>::const_iterator iterGenJet;
-    for ( iterGenJet = GenJetHandle->begin(); iterGenJet != GenJetHandle->end(); ++iterGenJet ) {
-      reco::GenJet myJet = reco::GenJet(*iterGenJet);
-      ij++;
-      //cout << "myJet " << ij << " pt = " << myJet.pt() << endl;
-      if (myJet.pt() > 500) keepevent = false;
-    }
-  }
-  */
-
-
   ////////////////////////
   // GET THE PRIMITIVES //
   edm::Handle< edmNew::DetSetVector< TTStub< Ref_Phase2TrackerDigi_ > > >    Phase2TrackerDigiTTStubHandle;
@@ -406,8 +376,6 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector< TrackingParticle >::const_iterator iterTP;
   for (iterTP = TrackingParticleHandle->begin(); iterTP != TrackingParticleHandle->end(); ++iterTP) {
 
-    //if (!keepevent) break;
- 
     edm::Ptr< TrackingParticle > tp_ptr(TrackingParticleHandle, this_tp);
     this_tp++;
 
@@ -459,8 +427,6 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   for (auto gd=theTrackerGeom->dets().begin(); gd != theTrackerGeom->dets().end(); gd++) {
     
-    //if (!keepevent) break;
-
     DetId detid = (*gd)->geographicalId();
     if(detid.subdetId()!=StripSubdetector::TOB && detid.subdetId()!=StripSubdetector::TID ) continue; // only run on OT
     if(!tTopo->isLower(detid) ) continue; // loop on the stacks: choose the lower arbitrarily
@@ -686,7 +652,6 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //////////////////////////
   // NOW RUN THE L1 tracking
   
-  //if (asciiEventOutName_!="" && keepevent) {
   if (asciiEventOutName_!="") {
     ev.write(asciiEventOut_);
   }
@@ -751,14 +716,10 @@ void L1TrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     // pt consistency
-    //float consistency4par = StubPtConsistency::getConsistency(aTrack, theStackedGeometry, mMagneticFieldStrength, 4); 
-    //aTrack.setStubPtConsistency(consistency4par, 4);
-    aTrack.setStubPtConsistency(-1, 4);
-
-    //float consistency5par = StubPtConsistency::getConsistency(aTrack, theStackedGeometry, mMagneticFieldStrength, 5); 
-    //aTrack.setStubPtConsistency(consistency5par,5);
-    aTrack.setStubPtConsistency(-1,5);
-
+    float consistency4par = StubPtConsistency::getConsistency(aTrack, theTrackerGeom, tTopo, mMagneticFieldStrength, 4);
+    aTrack.setStubPtConsistency(consistency4par, 4);
+    float consistency5par = StubPtConsistency::getConsistency(aTrack, theTrackerGeom, tTopo, mMagneticFieldStrength, 5);
+    aTrack.setStubPtConsistency(consistency5par,5);
 
     L1TkTracksForOutput->push_back(aTrack);
 

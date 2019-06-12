@@ -174,11 +174,9 @@ public:
 
           // Get primary track stubids
           std::vector<std::pair<int,int>> stubsTrk1 = inputstubidslists_[itrk];
-          int nStubP = stubsTrk1.size();
 
           // Get and count secondary track stubids
           std::vector<std::pair<int,int>> stubsTrk2 = inputstubidslists_[jtrk];
-          int nStubS = stubsTrk2.size();
 
           // Count shared stubs
           int nShare = 0;

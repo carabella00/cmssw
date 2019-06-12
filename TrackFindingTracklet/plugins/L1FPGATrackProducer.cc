@@ -65,10 +65,6 @@
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/SiPixelDetId/interface/PixelChannelIdentifier.h"
 #include "TrackingTools/GeomPropagators/interface/HelixArbitraryPlaneCrossing.h"
-////////////////////////
-// FAST SIMULATION STUFF
-#include "FastSimulation/Particle/interface/RawParticle.h"
-#include "FastSimulation/BaseParticlePropagator/interface/BaseParticlePropagator.h"
 
 ////////////////////////////
 // DETECTOR GEOMETRY HEADERS
@@ -305,21 +301,25 @@ L1FPGATrackProducer::L1FPGATrackProducer(edm::ParameterSet const& iConfig) :
   }
 
   // adding capability of booking histograms internal to tracklet steps
-  histimp=new FPGAHistImp;
-  TH1::AddDirectory(kTRUE); 
-  histimp->init();
-  histimp->bookLayerResidual();
-  histimp->bookDiskResidual();
-  histimp->bookTrackletParams();
-  histimp->bookSeedEff();
+  if (bookHistos) {
+    histimp=new FPGAHistImp;
+    TH1::AddDirectory(kTRUE); 
+    histimp->init();
+    histimp->bookLayerResidual();
+    histimp->bookDiskResidual();
+    histimp->bookTrackletParams();
+    histimp->bookSeedEff();
 
-  FPGAGlobal::histograms()=histimp;
+    FPGAGlobal::histograms()=histimp;
+  }
 
 
   sectors=new FPGASector*[NSector];
 
-  cout << "cabling DTC links :     "<<DTCLinkFile.fullPath()<<endl;
-  cout << "module cabling :     "<<moduleCablingFile.fullPath()<<endl;
+  if (debug1) {
+    cout << "cabling DTC links :     "<<DTCLinkFile.fullPath()<<endl;
+    cout << "module cabling :     "<<moduleCablingFile.fullPath()<<endl;
+  }
 
   cabling.init(DTCLinkFile.fullPath().c_str(),moduleCablingFile.fullPath().c_str());
 
@@ -327,16 +327,18 @@ L1FPGATrackProducer::L1FPGATrackProducer(edm::ParameterSet const& iConfig) :
     sectors[i]=new FPGASector(i);
   }
 
-  cout << "fit pattern :     "<<fitPatternFile.fullPath()<<endl;
-  cout << "process modules : "<<processingModulesFile.fullPath()<<endl;
-  cout << "memory modules :  "<<memoryModulesFile.fullPath()<<endl;
-  cout << "wires          :  "<<wiresFile.fullPath()<<endl;
+  if (debug1) {
+    cout << "fit pattern :     "<<fitPatternFile.fullPath()<<endl;
+    cout << "process modules : "<<processingModulesFile.fullPath()<<endl;
+    cout << "memory modules :  "<<memoryModulesFile.fullPath()<<endl;
+    cout << "wires          :  "<<wiresFile.fullPath()<<endl;
+  }
 
   fitpatternfile=fitPatternFile.fullPath();
 
 
-  cout << "Will read memory modules file"<<endl;
-
+  if (debug1) cout << "Will read memory modules file"<<endl;
+  
   ifstream inmem(memoryModulesFile.fullPath().c_str());
   assert(inmem.good());
 
@@ -354,7 +356,8 @@ L1FPGATrackProducer::L1FPGATrackProducer(edm::ParameterSet const& iConfig) :
   }
 
 
-  cout << "Will read processing modules file"<<endl;
+  if (debug1) cout << "Will read processing modules file"<<endl;
+  
 
   ifstream inproc(processingModulesFile.fullPath().c_str());
   assert(inproc.good());
@@ -373,7 +376,8 @@ L1FPGATrackProducer::L1FPGATrackProducer(edm::ParameterSet const& iConfig) :
   }
 
 
-  cout << "Will read wiring information"<<endl;
+  if (debug1) cout << "Will read wiring information"<<endl;
+  
 
   ifstream inwire(wiresFile.fullPath().c_str());
   assert(inwire.good());
@@ -413,7 +417,9 @@ L1FPGATrackProducer::~L1FPGATrackProducer()
     asciiEventOut_.close();
   }
 
-  histimp->close();
+  if (bookHistos) {
+    histimp->close();
+  }
 
 }
 
@@ -987,10 +993,8 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     // pt consistency
     float consistency4par = StubPtConsistency::getConsistency(aTrack, theTrackerGeom, tTopo,  mMagneticFieldStrength, 4);
     aTrack.setStubPtConsistency(consistency4par, 4);
-    //aTrack.setStubPtConsistency(-1.0, 4);
     float consistency5par = StubPtConsistency::getConsistency(aTrack, theTrackerGeom, tTopo, mMagneticFieldStrength, 5);
     aTrack.setStubPtConsistency(consistency5par,5);
-    //aTrack.setStubPtConsistency(-1.0,5);
 
     L1TkTracksForOutput->push_back(aTrack);
 

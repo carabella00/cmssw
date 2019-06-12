@@ -5,8 +5,8 @@ The L1 tracking can either be compiled standalone (outside CMSSW) or within CMSS
 ## To compile & run within CMSSW
 
 ```sh
-cmsrel CMSSW_10_4_0
-cd CMSSW_10_4_0/src
+cmsrel CMSSW_10_6_0
+cd CMSSW_10_6_0/src
 cmsenv
 
 git init
@@ -14,10 +14,13 @@ git clone (-b myBranch) ssh://git@gitlab.cern.ch:7999/cms-tracker-phase2-backend
 
 Optional: to update your branch with changes made to the master, since your branch was created: git pull --rebase origin master)
 
-scramv1 b -j 8
+scram b -j 8
 cd L1Trigger/TrackFindingTracklet/test/ 
 
 cmsRun L1TrackNtupleMaker_cfg.py 
+
+By default, the above runs on D21 samples. To run on D41 geometry, need to both change the flag in L1TrackNtupleMaker_cfg.py as well as change flag "geomTDR" to false in TrackFindingTracklet/interface/FPGAConstants.hh
+
 ```
 
 ## To compile & run standalone (currently not supported for Hybrid)

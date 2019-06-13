@@ -968,13 +968,10 @@ class FPGAFitTrack:public FPGAProcessBase{
    }
 
    // Divide by degrees of freedom
-   chisqfit=chisqfit/(2*n-4);
-   chisqfitexact=chisqfitexact/(2*n-4);
-   ichisqfit=ichisqfit/(2*n-4);
-
-   //    cout << "chisqfit  = " << chisqfit << "  div16 = " << chisqfit/(1<<4) << endl;
-   //    cout << "ichisqfit = " << ichisqfit << "  div16 = " << ichisqfit/(1<<4) << endl;
-
+   // NOT ANYMORE! Raw chisquare!
+   //chisqfit=chisqfit/(2*n-4);
+   //chisqfitexact=chisqfitexact/(2*n-4);
+   //ichisqfit=ichisqfit/(2*n-4);
 
    // Experimental strategy:
    //    if(ichisqfit < (1<<8));
@@ -983,12 +980,16 @@ class FPGAFitTrack:public FPGAProcessBase{
    //    else if(ichisqfit < (1<<20)) ichisqfit = (1<<9)+(1<<8)+(ichisqfit>>12);
    //    else ichisqfit = (1<<10)-1;
 
-   if(ichisqfit >= (1<<11)) {
+   // Cap out at 15 bits -- Any larger is useless
+   // Chisquare per DOF capped out at 11 bits, so 15 is an educated guess
+   if(ichisqfit >= (1<<15)) {
     //cout << "CHISQUARE (" << ichisqfit << ") LARGER THAN 11 BITS!!" << endl;
-    ichisqfit = (1<<11)-1;
+    ichisqfit = (1<<15)-1;
    }
 
-   ichisqfit = ichisqfit>>3;
+   // Eliminate lower bits to fit in 8 bits
+   ichisqfit = ichisqfit>>7;
+   // Probably redundant... enforce 8 bit cap
    if(ichisqfit >= (1<<8)) ichisqfit = (1<<8)-1;
 
 

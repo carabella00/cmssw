@@ -2289,7 +2289,7 @@ void Histos::fillTrackFitting( const InputData& inputData, const map<string,vect
       const TP* tp = fitTrk.getMatchedTP();
       if (tp != nullptr) nFitsMatchingTP++;
       // Count fitted tracks per nonant.
-      unsigned int iNonant = floor(fitTrk.iPhiSec()*numPhiNonants/(numPhiSectors_)); // phi nonant number
+      unsigned int iNonant = ( numPhiSectors_ > 0 ) ? floor(fitTrk.iPhiSec()*numPhiNonants/(numPhiSectors_)) : 0; // phi nonant number
       nFitTracksPerNonant[iNonant]++;
       nFitTracksPerSector[pair<unsigned int, unsigned int>(fitTrk.iPhiSec(), fitTrk.iEtaReg())]++;
     }

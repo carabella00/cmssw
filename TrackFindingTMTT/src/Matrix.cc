@@ -263,7 +263,7 @@ Matrix<T> Matrix<T>::operator+(const T& rhs) {
 template<typename T>
 Matrix<T> Matrix<T>::operator-(const T& rhs) {
   Matrix result(rows, cols, 0.0);
- 
+
   for (unsigned i=0; i<rows; i++) {
     for (unsigned j=0; j<cols; j++) {
       result(i,j) = this->mat[i][j] - rhs;
@@ -292,6 +292,8 @@ template<typename T>
 Matrix<T> Matrix<T>::operator/(const T& rhs) {
   Matrix result(rows, cols, 0.0);
  
+  if ( rhs == 0 ) return result;
+
   for (unsigned i=0; i<rows; i++) {
     for (unsigned j=0; j<cols; j++) {
       result(i,j) = this->mat[i][j] / rhs;

@@ -107,7 +107,7 @@ public:
       // Get vectors from TrackFit and save them
       // inputtracklets: FPGATracklet objects from the FitTrack (not actually fit yet)
       // inputstublists: L1Stubs for that track
-      // inputstubidslists: FPGAStub stubIDs for that track
+      // inputstubidslists: FPGAStub stubIDs for that 3rack
       // mergedstubidslists: the same as inputstubidslists, but will be used during duplicate removal
       for(unsigned int i=0;i<inputtrackfits_.size();i++) {
         if(inputtrackfits_[i]->nStublists()==0) continue;
@@ -178,36 +178,88 @@ public:
           // Get and count secondary track stubids
           std::vector<std::pair<int,int>> stubsTrk2 = inputstubidslists_[jtrk];
 
-          // Count shared stubs
-          int nShare = 0;
-          // Count number of Unique Regions (UR) that share stubs
+          // Count number of Unique Regions (UR) that share stubs, and the number of UR that each track hits
           int nShareUR = 0;
-          bool URArray[16];
-          for (int i=0; i<16; i++) { URArray[i] = false; };
-
-          for(std::vector<std::pair<int, int>>::iterator  st1=stubsTrk1.begin(); st1!=stubsTrk1.end(); st1++) {
-            for(std::vector<std::pair<int, int>>::iterator  st2=stubsTrk2.begin(); st2!=stubsTrk2.end(); st2++) {
-              if(st1->first==st2->first && st1->second==st2->second)
-              {
-                nShare++;
-                int i = st1->first;
-                 int reg = (i>0&&i<10)*(i-1) + (i>10)*(i-5) - (i<0)*i;
-                if (!URArray[reg])
+          int nURStubTrk1 = 0;
+          int nURStubTrk2 = 0;
+          if (MergeComparison == "CompareAll") {
+            bool URArray[16];
+            for (int i=0; i<16; i++) { URArray[i] = false; };
+            for(std::vector<std::pair<int, int>>::iterator  st1=stubsTrk1.begin(); st1!=stubsTrk1.end(); st1++) {
+              for(std::vector<std::pair<int, int>>::iterator  st2=stubsTrk2.begin(); st2!=stubsTrk2.end(); st2++) {
+                if(st1->first==st2->first && st1->second==st2->second)
                 {
-                  nShareUR ++;
-                  URArray[reg] = true;
+                  // Converts region encoded in st1->first to an index in the Unique Region (UR) array
+                  int i = st1->first;
+                  int reg = (i>0&&i<10)*(i-1) + (i>10)*(i-5) - (i<0)*i;
+                  if (!URArray[reg])
+                  {
+                    nShareUR ++;
+                    URArray[reg] = true;
+                  }
                 }
               }
             }
+          } else if (MergeComparison == "CompareBest") {
+            std::vector<std::pair<FPGAStub*,L1TStub*>> fullStubslistsTrk1 = inputstublists_[itrk];
+            std::vector<std::pair<FPGAStub*,L1TStub*>> fullStubslistsTrk2 = inputstublists_[jtrk];
+            // Arrays to store the index of the best stub in each region
+            int URStubidsTrk1[16];
+            int URStubidsTrk2[16];
+            for (int i=0; i<16; i++)
+            {
+              URStubidsTrk1[i] = -1;
+              URStubidsTrk2[i] = -1;
+            }
+            // For each stub on the first track, find the stub with the best residual and store its index in the URStubidsTrk1 array
+            for(unsigned int stcount=0; stcount<stubsTrk1.size(); stcount ++)
+            {
+              int i = stubsTrk1[stcount].first;
+              int reg = (i>0&&i<10)*(i-1) + (i>10)*(i-5) - (i<0)*i;
+              double nres = getPhiRes(inputtracklets_[itrk],fullStubslistsTrk1[stcount].first);
+              double ores = 0;
+              if (URStubidsTrk1[reg] != -1) ores = getPhiRes(inputtracklets_[itrk],fullStubslistsTrk1[URStubidsTrk1[reg]].first);
+              if (URStubidsTrk1[reg] == -1 || nres < ores)
+              {
+                URStubidsTrk1[reg] = stcount;
+              }
+            }
+            // For each stub on the second track, find the stub with the best residual and store its index in the URStubidsTrk1 array
+            for(unsigned int stcount=0; stcount<stubsTrk2.size(); stcount ++)
+            {
+              int i = stubsTrk2[stcount].first;
+              int reg = (i>0&&i<10)*(i-1) + (i>10)*(i-5) - (i<0)*i;
+              double nres = getPhiRes(inputtracklets_[jtrk],fullStubslistsTrk2[stcount].first);
+              double ores;
+              if (URStubidsTrk2[reg] != -1) ores = getPhiRes(inputtracklets_[jtrk],fullStubslistsTrk2[URStubidsTrk2[reg]].first);
+              if (URStubidsTrk2[reg] == -1 || nres < ores)
+              {
+                URStubidsTrk2[reg] = stcount;
+              }
+            }
+            // For all 16 regions (6 layers and 10 disks), count the number of regions who's best stub on both tracks are the same
+            for (int i=0; i<16; i++)
+            {
+              int t1i = URStubidsTrk1[i];
+              int t2i = URStubidsTrk2[i];
+              if (t1i != -1 && t2i != -1 && stubsTrk1[t1i].first == stubsTrk2[t2i].first && stubsTrk1[t1i].second == stubsTrk2[t2i].second) nShareUR ++;
+            }
+            // Calculate the number of unique regions hit by each track, so that this number can be used in calculating the number of independent
+            // stubs on a track (not enabled/used by default)
+            for (int i=0; i<16; i++)
+            {
+              if (URStubidsTrk1[i] != -1) nURStubTrk1 ++;
+              if (URStubidsTrk2[i] != -1) nURStubTrk2 ++;
+            } 
           }
-          
+
           // Fill duplicate map
           // !!FIXME!! This is completely unoptimized. Just an educated guess
-          if (nShareUR >=3) {
+          if (nShareUR >=3) { // For number of shared stub merge condition
+//          if (nURStubTrk1-nShareUR <= 2 || nURStubTrk2-nShareUR <= 2) { // For number of independent stub merge condition
             dupMap[itrk][jtrk] = true;
             dupMap[jtrk][itrk] = true;
           }
-          
         }
       }
 
@@ -416,6 +468,43 @@ public:
 
   
 private:
+
+  double getPhiRes(FPGATracklet* curTracklet, FPGAStub* curStub)
+  {
+    double phiproj;
+    double stubphi;
+    double phires;
+    // Get phi position of stub
+    stubphi = curStub->stubphi();
+    // Get region that the stub is in (Layer 1->6, Disk 1->5)
+    int Layer = curStub->layer().value() + 1;
+    int Disk = curStub->disk().value();
+    // Get phi projection of tracklet
+    int seedindex = curTracklet->seedIndex();
+    // If this stub is a seed stub, set projection=phi, so that res=0
+    if ((seedindex == 0 && (Layer == 1 || Layer == 2)) ||
+       (seedindex == 1 && (Layer == 3 || Layer == 4)) ||
+       (seedindex == 2 && (Layer == 5 || Layer == 6)) ||
+       (seedindex == 3 && (abs(Disk) ==  1 || abs(Disk) ==  2)) ||
+       (seedindex == 4 && (abs(Disk) ==  3 || abs(Disk) ==  4)) ||
+       (seedindex == 5 && (Layer == 1 || abs(Disk) ==  1)) ||
+       (seedindex == 6 && (Layer == 2 || abs(Disk) ==  1)) ||
+       (seedindex == 7 && (Layer == 2 || abs(Disk) ==  0))) {
+      phiproj = stubphi;
+    // Otherwise, get projection of tracklet
+    } else if (Layer != 0) {
+      phiproj = curTracklet->phiproj(Layer);
+    } else if (Disk != 0) {
+      phiproj = curTracklet->phiprojdisk(Disk);
+    } else {
+      cout << "Layer: " << Layer << "  --  Disk: " << Disk << endl;
+      cout << "Stub is not layer or disk in getPhiRes" << endl;
+      assert(0);
+    }
+    // Calculate residual
+    phires = fabs(stubphi-phiproj);
+    return phires;
+  }
 
   std::vector<FPGATrack*> inputtracks_;
   std::vector<std::vector<std::pair<FPGAStub*,L1TStub*>>> inputstublists_;

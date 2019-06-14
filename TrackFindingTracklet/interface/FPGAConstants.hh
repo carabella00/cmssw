@@ -488,6 +488,9 @@ static int minIndStubs=3; // not used with merge removal
 //"ichi" (pairwise, keep track with best ichisq), "nstub" (pairwise, keep track with more stubs), "grid" (TMTT-like removal), "" (no removal), "merge" (hybrid dup removal)
 #ifdef USEHYBRID
 static std::string RemovalType="merge";
+// "CompareBest" (recommended) Compares only the best stub in each track for each region (best = smallest phi residual) and will merge the two tracks if stubs are shared in three or more regions
+// "CompareAll" Compares all stubs in a region, looking for matches, and will merge the two tracks if stubs are shared in three or more regions
+static std::string MergeComparison="CompareBest";
 #else
 static std::string RemovalType="ichi";
 #endif

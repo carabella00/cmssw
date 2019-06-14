@@ -79,7 +79,7 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
     L1Tk_maxChi2dof = L1Tk_TIGHT_maxChi2dof;
   }
   
-  bool doDetailedPlots = false; //turn on to make full set of plots
+  bool doDetailedPlots = true; //turn on to make full set of plots
   bool doGausFit = false;       //do gaussian fit for resolution vs eta/pt plots
   bool doLooseMatch = false;    //looser MC truth matching
 
@@ -95,6 +95,14 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   int n_match_eta2p5 = 0;
   int n_match_eta1p75 = 0;
   int n_match_eta1p0 = 0;
+  int n_all_ptg2 = 0;
+  int n_all_ptg8 = 0;
+  int n_all_pt2to8 = 0;
+  int n_all_ptg40 = 0;
+  int n_match_ptg2 = 0;
+  int n_match_ptg8 = 0;
+  int n_match_pt2to8 = 0;
+  int n_match_ptg40 = 0;
 
   // counters for total track rates 
   int ntrk_pt2 = 0;
@@ -865,6 +873,11 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
 	if (fabs(tp_eta->at(it)) < 1.0) n_all_eta1p0++;
 	else if (fabs(tp_eta->at(it)) < 1.75) n_all_eta1p75++;
 	else n_all_eta2p5++;
+
+        if (fabs(tp_pt->at(it)) > 2.0) n_all_ptg2++;
+        if (fabs(tp_pt->at(it)) > 2.0 && fabs(tp_pt->at(it)) < 8.0) n_all_pt2to8++;
+        if (fabs(tp_pt->at(it)) > 8.0) n_all_ptg8++;
+        if (fabs(tp_pt->at(it)) > 40.0) n_all_ptg40++;
 	
 	h_tp_eta->Fill(tp_eta->at(it));
 	h_tp_phi->Fill(tp_phi->at(it));
@@ -990,6 +1003,11 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
 	if (fabs(tp_eta->at(it)) < 1.0) n_match_eta1p0++;
 	else if (fabs(tp_eta->at(it)) < 1.75) n_match_eta1p75++;
 	else n_match_eta2p5++;
+
+        if (fabs(tp_pt->at(it)) > 2.0) n_match_ptg2++;
+        if (fabs(tp_pt->at(it)) > 2.0 && fabs(tp_pt->at(it)) < 8.0) n_match_pt2to8++;
+        if (fabs(tp_pt->at(it)) > 8.0) n_match_ptg8++;
+        if (fabs(tp_pt->at(it)) > 40.0) n_match_ptg40++;
 	
 	if (tp_pt->at(it) < 3.0) h_match_tp_eta_23->Fill(tp_eta->at(it));
 	else if (tp_pt->at(it) < 5.0) h_match_tp_eta_35->Fill(tp_eta->at(it));
@@ -2968,6 +2986,19 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   N = (float) n_all_eta1p0 + n_all_eta1p75 + n_all_eta2p5;
   k = (float) n_match_eta1p0 + n_match_eta1p75 + n_match_eta2p5;
   if (fabs(N)>0) cout << "combined efficiency for |eta| < 2.5 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
+
+  k = (float)n_match_ptg2;
+  N = (float)n_all_ptg2;
+  if (fabs(N)>0) cout << "efficiency for pt > 2.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  k = (float)n_match_pt2to8;
+  N = (float)n_all_pt2to8;
+  if (fabs(N)>0) cout << "efficiency for 2.0 < pt < 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  k = (float)n_match_ptg8;
+  N = (float)n_all_ptg8;
+  if (fabs(N)>0) cout << "efficiency for pt > 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  k = (float)n_match_ptg40;
+  N = (float)n_all_ptg40;
+  if (fabs(N)>0) cout << "efficiency for pt > 40.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
 
   // track rates
   cout << "# TP/event (pt > 2.0) = " << (float)ntp_pt2/nevt << endl;

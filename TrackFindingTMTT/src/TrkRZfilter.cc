@@ -178,7 +178,7 @@ vector<const Stub*> TrkRZfilter::seedFilter(const std::vector<const Stub*>& stub
                         double z0 = s1->z() + (-s1->z()+s0->z())*s1->r()/(s1->r()-s0->r()); // Estimate a value of z at the beam spot using the two seeding stubs
                         //double z0err = s1->zErr() + ( s1->zErr() + s0->zErr() )*s1->r()/fabs(s1->r()-s0->r()) + fabs(-s1->z()+s0->z())*(s1->rErr()*fabs(s1->r()-s0->r()) + s1->r()*(s1->rErr() + s0->rErr()) )/((s1->r()-s0->r())*(s1->r()-s0->r())); 
                         float zTrk = s1->z() + (-s1->z()+s0->z())*(s1->r()-chosenRofZ_)/(s1->r()-s0->r()); // Estimate a value of z at a chosen Radius using the two seeding stubs
-                        float zTrkErr = s1->zErr() + ( s1->zErr() + s0->zErr() )*fabs(s1->r()-chosenRofZ_)/fabs(s1->r()-s0->r()) + fabs(-s1->z()+s0->z())*(s1->rErr()*fabs(s1->r()-s0->r()) + fabs(s1->r()-chosenRofZ_)*(s1->rErr() + s0->rErr()) )/((s1->r()-s0->r())*(s1->r()-s0->r()));
+                        // float zTrkErr = s1->zErr() + ( s1->zErr() + s0->zErr() )*fabs(s1->r()-chosenRofZ_)/fabs(s1->r()-s0->r()) + fabs(-s1->z()+s0->z())*(s1->rErr()*fabs(s1->r()-s0->r()) + fabs(s1->r()-chosenRofZ_)*(s1->rErr() + s0->rErr()) )/((s1->r()-s0->r())*(s1->r()-s0->r()));
                         float leftZtrk = zTrk*fabs(s1->r()-s0->r());
                         float rightZmin = zTrkMinSector_*fabs(s1->r()-s0->r());
                         float rightZmax = zTrkMaxSector_*fabs(s1->r()-s0->r());
@@ -276,11 +276,9 @@ vector<const Stub*> TrkRZfilter::seedFilter(const std::vector<const Stub*>& stub
     if((settings_->debug()==4 or print) and settings_->enableDigitize()){
         std::vector<const Stub* > matchedStubs;
         unsigned int nMatchedLayersBest;
-        const TP* matchedTP = Utility::matchingTP(settings_, stubs, nMatchedLayersBest, matchedStubs);
 
         std::vector<const Stub* > matchedFiltStubs;
         unsigned int nMatchedFiltLayersBest;
-        const TP* matchedfiltTP = Utility::matchingTP(settings_, filteredStubs, nMatchedFiltLayersBest, matchedFiltStubs);
         
         if(nMatchedLayersBest >= minNumMatchLayers_ && Utility::countLayers(settings_, filteredStubs) < Utility::numLayerCut("SEED", settings_, iPhiSec_, iEtaReg_, fabs(trkQoverPt))) {
             cout << " ******* NOT ENOUGH LAYERS *******" << endl;

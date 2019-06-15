@@ -1871,6 +1871,7 @@ public:
     if (seedlayer==0&&abs(seeddisk)==3) seedindex=4;  //D3D4
     if (seedlayer==1&&abs(seeddisk)==1) seedindex=5;  //L1D1
     if (seedlayer==2&&abs(seeddisk)==1) seedindex=6;  //L2D1
+    if (seedlayer==2&&abs(seeddisk)==0) seedindex=7;  //L2L3
 
     if (seedindex<0) {
       cout << "seedlayer abs(seeddisk) : "<<seedlayer<<" "<<abs(seeddisk)<<endl;

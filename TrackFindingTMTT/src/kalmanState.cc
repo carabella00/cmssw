@@ -28,7 +28,8 @@ kalmanState::kalmanState( const L1track3D& candidate, unsigned n_skipped, unsign
     stubCluster_ = stubCluster;
     chi2_ = chi2;
 
-    const kalmanState *state = this;
+    // EJC CLANG complains about this line, 
+    // const kalmanState *state = this;
 
     r_ = 0.1;
     z_ = 0;
@@ -236,7 +237,7 @@ void kalmanState::dump( ostream &os, const TP *tp, bool all )const
 	const kalmanState *state = last_state();
 	if( state ){
 	    state->dump( os, tp, all );
-	    state = state->last_state();
+	    // state = state->last_state();
 	}
 	else return;
     }

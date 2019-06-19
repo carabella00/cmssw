@@ -2507,14 +2507,12 @@ void Histos::fillTrackFitting( const InputData& inputData, const map<string,vect
 	  double phiExtra = settings_->kalmanMultiScattTerm()/(tp->pt());
 	  double phiExtra2 = phiExtra * phiExtra;
 	  float sigmaPhi2 = sigmaPhi2_raw + phiExtra2;
-	  float sigmaPhi = sqrt(sigmaPhi2);
 	  if (s->tiltedBarrel()) {
 	    float tilt = s->moduleTilt();
 	    float scaleTilted = sin(tilt) + cos(tilt)*(tp->tanLambda());
 	    float scaleTilted2 = scaleTilted*scaleTilted;
 	    sigmaZ2 *= scaleTilted2;
 	  }
-	  float sigmaZ    = sqrt(sigmaZ2);
 	  if (trueStub) {
 	    recalcChiSquared_1_rphi += pow((deltaPhi), 2) / sigmaPhi2;
 	    recalcChiSquared_1_rz += pow(deltaRorZ, 2) / sigmaZ2;
@@ -2598,6 +2596,9 @@ void Histos::fillTrackFitting( const InputData& inputData, const map<string,vect
 	      cout<<"  RECALC CHI2="<<recalcChiSquared_2<<" & DELTA CHI2: rphi="<<V00 * pow(deltaPhi_proj, 2)<<" rz="<<V11 * pow(deltaZ_proj, 2)<<endl<<endl;
 	    }
 	  }
+
+    float sigmaPhi = sqrt(sigmaPhi2);
+    float sigmaZ    = sqrt(sigmaZ2);
 
 	  if (recalc_method2) {
 	    // Plot residuals from method 2.

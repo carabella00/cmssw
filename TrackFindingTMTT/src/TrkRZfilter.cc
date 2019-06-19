@@ -272,47 +272,50 @@ vector<const Stub*> TrkRZfilter::seedFilter(const std::vector<const Stub*>& stub
         }
     }
 
-    // Print Missing Track information if debug variable is set to 4
-    if((settings_->debug()==4 or print) and settings_->enableDigitize()){
-        std::vector<const Stub* > matchedStubs;
-        unsigned int nMatchedLayersBest;
 
-        std::vector<const Stub* > matchedFiltStubs;
-        unsigned int nMatchedFiltLayersBest;
+    // EJC Commented out, as nMatchedLayersBest is never set, so CLANG complains
+    // EJC Leave code in case it is useful for whoever is reading this in the future
+    // Print Missing Track information if debug variable is set to 4
+    // if((settings_->debug()==4 or print) and settings_->enableDigitize()){
+    //     std::vector<const Stub* > matchedStubs;
+    //     unsigned int nMatchedLayersBest;
+
+    //     std::vector<const Stub* > matchedFiltStubs;
+    //     unsigned int nMatchedFiltLayersBest;
         
-        if(nMatchedLayersBest >= minNumMatchLayers_ && Utility::countLayers(settings_, filteredStubs) < Utility::numLayerCut("SEED", settings_, iPhiSec_, iEtaReg_, fabs(trkQoverPt))) {
-            cout << " ******* NOT ENOUGH LAYERS *******" << endl;
-            cout << " ====== TP stubs ====== " << endl;
-            for(const Stub* st: matchedStubs){
-                cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
-            }
-            cout << "num layers "<< oldNumLay << endl;
-            cout << " ====== Matched TP stubs ====== " << endl;
-            for(const Stub* st: filteredStubs){
-                cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
-            }
-        } else if(nMatchedLayersBest >= minNumMatchLayers_ && nMatchedFiltLayersBest < minNumMatchLayers_){
-            cout << " ******* NOT ENOUGH MATCHED LAYERS *******" << endl;
-            cout << " ====== TP stubs ====== " << endl;
-            for(const Stub* st: matchedStubs){
-                cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
-            }
-            cout << " ====== Matched TP stubs ====== " << endl;
-            for(const Stub* st: filteredStubs){
-                cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
-            }
-      } else if(nMatchedLayersBest >= minNumMatchLayers_ && nMatchedFiltLayersBest >= minNumMatchLayers_ ){
-            cout << " ******* Track Found *******" << endl;
-            cout << " ====== Cell Stubs ====== " << endl;
-            for(const Stub* st: stubs){
-                cout << "z: "<< st->digitalStub().iDigi_Z() << ", rT: "<< st->digitalStub().iDigi_Rt() << ", id:" << st->layerId() << endl;
-            }
-            cout << " ====== Matched TP stubs ====== " << endl;
-            for(const Stub* st: filteredStubs){
-                cout << "z: "<< st->digitalStub().iDigi_Z() << ", rT: "<< st->digitalStub().iDigi_Rt() << ", id:" << st->layerId() << endl;
-            }
-        }
-    }
+    //     if(nMatchedLayersBest >= minNumMatchLayers_ && Utility::countLayers(settings_, filteredStubs) < Utility::numLayerCut("SEED", settings_, iPhiSec_, iEtaReg_, fabs(trkQoverPt))) {
+    //         cout << " ******* NOT ENOUGH LAYERS *******" << endl;
+    //         cout << " ====== TP stubs ====== " << endl;
+    //         for(const Stub* st: matchedStubs){
+    //             cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
+    //         }
+    //         cout << "num layers "<< oldNumLay << endl;
+    //         cout << " ====== Matched TP stubs ====== " << endl;
+    //         for(const Stub* st: filteredStubs){
+    //             cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
+    //         }
+    //     } else if(nMatchedLayersBest >= minNumMatchLayers_ && nMatchedFiltLayersBest < minNumMatchLayers_){
+    //         cout << " ******* NOT ENOUGH MATCHED LAYERS *******" << endl;
+    //         cout << " ====== TP stubs ====== " << endl;
+    //         for(const Stub* st: matchedStubs){
+    //             cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
+    //         }
+    //         cout << " ====== Matched TP stubs ====== " << endl;
+    //         for(const Stub* st: filteredStubs){
+    //             cout << "z: "<< st->z() << ", r: "<< st->r() << ", id:" << st->layerId() << endl;
+    //         }
+    //   } else if(nMatchedLayersBest >= minNumMatchLayers_ && nMatchedFiltLayersBest >= minNumMatchLayers_ ){
+    //         cout << " ******* Track Found *******" << endl;
+    //         cout << " ====== Cell Stubs ====== " << endl;
+    //         for(const Stub* st: stubs){
+    //             cout << "z: "<< st->digitalStub().iDigi_Z() << ", rT: "<< st->digitalStub().iDigi_Rt() << ", id:" << st->layerId() << endl;
+    //         }
+    //         cout << " ====== Matched TP stubs ====== " << endl;
+    //         for(const Stub* st: filteredStubs){
+    //             cout << "z: "<< st->digitalStub().iDigi_Z() << ", rT: "<< st->digitalStub().iDigi_Rt() << ", id:" << st->layerId() << endl;
+    //         }
+    //     }
+    // }
 
     // Note number of seed combinations used for this track.
     numSeedCombsPerTrk_.push_back(numSeedCombinations);

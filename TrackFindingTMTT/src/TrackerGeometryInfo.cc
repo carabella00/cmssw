@@ -28,8 +28,8 @@ void TrackerGeometryInfo::getTiltedModuleInfo(const Settings* settings, const Tr
     // Only do this for the "lower" sensor
     if ( tiltedBarrel && isLower ) {
 
-      int type   = 2*theTrackerTopo->tobSide(detId)-3; // -1 for tilted-, 1 for tilted+, 3 for flat
-      double corr   = (barrelNTiltedModules_+1)/2.;
+      // int type   = 2*theTrackerTopo->tobSide(detId)-3; // -1 for tilted-, 1 for tilted+, 3 for flat
+      // double corr   = (barrelNTiltedModules_+1)/2.;
 
       double minZOfThisModule = fabs(gd->surface().zSpan().first);
       double maxZOfThisModule = fabs(gd->surface().zSpan().second);

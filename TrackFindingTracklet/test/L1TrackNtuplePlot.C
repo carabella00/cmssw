@@ -1,5 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
-// Basic example script for making tracking performance plots using the ntuples produced by L1TrackNtupleMaker.cc
+// Basic example ROOT script for making tracking performance plots using the ntuples produced by L1TrackNtupleMaker.cc
+//
+//    e.g.  .x  L1TrackNtuplePlot.C("TTbar_PU200_hybrid")
+// 
 // By Louise Skinnari, June 2013  
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -1084,7 +1087,7 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
       // ----------------------------------------------------------------------------------------------------------------
       // fill resolution vs. pt histograms    
       for (int im=0; im<nRANGE; im++) {
-	if ( (tp_pt->at(it) > (float)im*5.0) && (tp_pt->at(it) < (float)im*5.0+5.0) ) {
+	if ( (tp_pt->at(it) > (float)im*5.0) && (tp_pt->at(it) < (float)(im+1)*5.0) ) {
 	  h_resVsPt_pt[im]   ->Fill(matchtrk_pt->at(it)  - tp_pt->at(it));
 	  h_resVsPt_ptRel[im]->Fill((matchtrk_pt->at(it) - tp_pt->at(it))/tp_pt->at(it));
 	  h_resVsPt_eta[im]  ->Fill(matchtrk_eta->at(it) - tp_eta->at(it));
@@ -1125,20 +1128,21 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
       }
 
       for (int im=4; im<nRANGE_L+4; im++) {
-	if ( (tp_pt->at(it) > (float)im*0.5 ) && (tp_pt->at(it) <= (float)im*0.5+0.5) ) {
+	if ( (tp_pt->at(it) > (float)im*0.5 ) && (tp_pt->at(it) <= (float)(im+1)*0.5) ) {
 	  h_absResVsPt_pt_L[im-4]   ->Fill( fabs( matchtrk_pt->at(it)  - tp_pt->at(it) ));
 	  h_absResVsPt_ptRel_L[im-4]->Fill( fabs( (matchtrk_pt->at(it) - tp_pt->at(it)) )/tp_pt->at(it) );
 	  h_absResVsPt_z0_L[im-4]   ->Fill( fabs( matchtrk_z0->at(it)  - tp_z0->at(it) ) );
 	  h_absResVsPt_phi_L[im-4]  ->Fill( fabs( matchtrk_phi->at(it) - tp_phi->at(it) ) );
 	  h_absResVsPt_eta_L[im-4]  ->Fill( fabs( matchtrk_eta->at(it) - tp_eta->at(it) ) );
+	  h_absResVsPt_d0_L[im-4]   ->Fill( fabs( matchtrk_d0->at(it)  - tp_d0->at(it) ) );
 	}
       }
 
       // ----------------------------------------------------------------------------------------------------------------
       // fill resolution vs. eta histograms
       for (int im=0; im<nETARANGE; im++) {
-	if ( (fabs(tp_eta->at(it)) > (float)im*0.1) && (fabs(tp_eta->at(it)) < (float)im*0.1+0.1) ) {
-	//if ( (fabs(tp_eta->at(it)) > (float)im*0.2) && (fabs(tp_eta->at(it)) < (float)im*0.2+0.2) ) {
+	if ( (fabs(tp_eta->at(it)) > (float)im*0.1) && (fabs(tp_eta->at(it)) < (float)(im+1)*0.1) ) {
+	//if ( (fabs(tp_eta->at(it)) > (float)im*0.2) && (fabs(tp_eta->at(it)) < (float)(im+1)*0.2) ) {
 	 h_resVsEta_ptRel[im]->Fill((matchtrk_pt->at(it) - tp_pt->at(it))/tp_pt->at(it));
 	 h_resVsEta_eta[im]  ->Fill(matchtrk_eta->at(it) - tp_eta->at(it));
 	 h_resVsEta_phi[im]  ->Fill(matchtrk_phi->at(it) - tp_phi->at(it));
@@ -1193,7 +1197,7 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
       // ----------------------------------------------------------------------------------------------------------------
       // fill resolution vs. phi histograms    
       for (int im=0; im<nPHIRANGE; im++) {
-	if ( (tp_phi->at(it) > (float)im*0.2-3.2) && (tp_phi->at(it) < (float)im*0.2-3.0) ) {
+	if ( (tp_phi->at(it) > (float)im*0.2-3.2) && (tp_phi->at(it) < (float)(im+1)*0.2-3.2) ) {
 	  h_absResVsPhi_pt[im]   ->Fill( fabs(matchtrk_pt->at(it)  - tp_pt->at(it)) );
 	  h_absResVsPhi_ptRel[im]->Fill( fabs((matchtrk_pt->at(it) - tp_pt->at(it)) )/tp_pt->at(it));
 	}

@@ -928,8 +928,7 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     aTrack.setMomentum(p34par,4);
     aTrack.setRInv(track->rinv(),4);
-    // for emulation, the chisq() function returns the chi2/dof. change for consistency (can always calculated the chi2/dof later).
-    double tmpchi2 = track->chisq()*(2*track->stubs().size()-4);
+    double tmpchi2 = track->chisq();
     aTrack.setChi2(tmpchi2,4);
 
 
@@ -945,7 +944,7 @@ void L1FPGATrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     aTrack.setMomentum(p35par,5);
     aTrack.setRInv(track->rinv(),5);
-    double tmpchi25 = track->chisq()*(2*track->stubs().size()-5);
+    double tmpchi25 = track->chisq();
     aTrack.setChi2(tmpchi25,5);
 
 

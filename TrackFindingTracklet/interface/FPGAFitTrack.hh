@@ -1190,7 +1190,7 @@ class FPGAFitTrack:public FPGAProcessBase{
 
     std::vector<std::pair<FPGAStub*,L1TStub*>> trackstublist;
     std::vector<std::pair<int,int>> stubidslist;
-    if ((hourglassExtended && nMatchesUniq>=1) || nMatchesUniq>=2) { // aedit , should've been >=2
+    if (nMatchesUniq>=2) {
       countFit++;
       if (fakefit) {
         trackFitFake(bestTracklet);

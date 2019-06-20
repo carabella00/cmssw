@@ -90,7 +90,8 @@ public:
   double vx() const { return vx_; }
   double vy() const { return vy_; }
   double vz() const { return vz_; }
-  double d0() const { return hypot(vx_,vy_); }
+  double dxy() const { return -vx() * sin(phi()) + vy() * cos(phi()); }
+  double d0() const { return -dxy(); }
   int charge() const {
      if (type_==11) return -1;
      if (type_==13) return -1;

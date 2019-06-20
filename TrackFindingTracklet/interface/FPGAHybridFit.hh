@@ -122,7 +122,7 @@ class FPGAHybridFit{
       if(kf_phi_sec < 0){kf_phi_sec+=9;}      
 
 
-      TMTT::L1track3D l1track3d(settings,TMTTstubs,celllocation,helixrphi,helixrz,-kfd0,kf_phi_sec,kf_eta_reg,1,false); //remember to change after fixing the d0 sign convention.
+      TMTT::L1track3D l1track3d(settings,TMTTstubs,celllocation,helixrphi,helixrz,kfd0,kf_phi_sec,kf_eta_reg,1,false); //remember to change after fixing the d0 sign convention.
       unsigned int seedType = tracklet->getISeed();
       unsigned int numPS = tracklet->PSseed(); // Function PSseed() is out of date!
       l1track3d.setSeedLayerType(seedType);

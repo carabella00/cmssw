@@ -1907,7 +1907,7 @@ void exacttracklet(double r1, double z1, double phi1,
     phi0 = atan(1.)*2 + atan2(y0,x0);
 
     phi0 += -phimin_+(phimax_-phimin_)/6.0; 
-    d0 = R1 - sqrt(x0*x0+y0*y0);
+    d0 = -R1 + sqrt(x0*x0+y0*y0);
     //sign of rinv:
     double dphi = phi3 - atan2(y0,x0);
     if(dphi> 3.1415927) dphi -= 6.283185;

@@ -1555,7 +1555,6 @@ bool L1KalmanComb::isOverlap( const Stub* a, const Stub*b, OVERLAP_TYPE type ){
       if( fabs( b->z() - a->z() ) > 0.5 * b->stripLength() || fabs( reco::deltaPhi( b->phi(), sectorPhi() ) * b->r() - reco::deltaPhi( a->phi(), sectorPhi() ) * a->r() ) > 0.5 * b->stripPitch() ) return false;
     }
     else{
-      dr = DeltaRForClustering( a->endcapRing() ); 
       if( fabs( b->r() - a->r() ) > 0.5 * b->stripLength() || fabs( reco::deltaPhi( b->phi(), sectorPhi() ) * b->r() - reco::deltaPhi( a->phi(), sectorPhi() ) * a->r() ) > 0.5 * b->stripPitch() ) return false;
     }
     return true;

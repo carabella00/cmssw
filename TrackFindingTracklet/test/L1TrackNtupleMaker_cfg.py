@@ -53,13 +53,16 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 # Get list of MC datasets from repo, or specify yourself.
 
+def getTxtFile(txtFileName): 
+  return FileUtils.loadListFromFile(os.environ['CMSSW_BASE']+'/src/'+txtFileName)
+
 if GEOMETRY == "D17": # Tilted barrel T5 tracker
-    inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/937/RelVal/TTbar/PU200.txt')
+  inputMC = getTxtFile('L1Trigger/TrackFindingTMTT/test/MCsamples/937/RelVal/TTbar/PU200.txt')
 
 elif GEOMETRY == "D21": # Tilted barrel T6 tracker
-    inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/TTbar/PU200.txt')
-    # inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/SingleMuPt2to100/PU0.txt')
-    # inputMC = FileUtils.loadListFromFile('../../TrackFindingTMTT/test/MCsamples/1040/RelVal/DisplacedSingleMuPt2to100/PU0.txt')
+  inputMC = getTxtFile('L1Trigger/TrackFindingTMTT/test/MCsamples/1040/RelVal/TTbar/PU200.txt')
+  #inputMC = getTxtFile('L1Trigger/TrackFindingTMTT/test/MCsamples/1040/RelVal/SingleMuPt2to100/PU0.txt')
+  #inputMC = getTxtFile('L1Trigger/TrackFindingTMTT/test/MCsamples/1040/RelVal/DisplacedSingleMuPt2to100/PU0.txt')
 
 elif GEOMETRY == "D41":
     inputMC = ['/store/relval/CMSSW_10_6_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU25ns_106X_upgrade2023_realistic_v2_2023D41PU200-v1/10000/FEA5D564-937A-8D4B-9C9A-696EFC05AB58.root']

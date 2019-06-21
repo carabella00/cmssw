@@ -330,7 +330,7 @@ static const double rinnerdisk=22.0;
 //static const int NMAXstub  = 250;
 //static const int NMAXroute = 250;
 
-static const unsigned int MAXOFFSET=0; //set to 0 to enable regular truncation or 10000 to disable it.
+static const unsigned int MAXOFFSET=10000; //set to 0 to enable regular truncation or 10000 to disable it.
 
 static const unsigned int MAXSTUBSLINK = 108 + MAXOFFSET; //Max stubs per link
 static const unsigned int MAXLAYERROUTER = 108 + MAXOFFSET; //Max stubs handled by layer router

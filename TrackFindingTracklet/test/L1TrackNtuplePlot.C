@@ -1,5 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
-// Basic example script for making tracking performance plots using the ntuples produced by L1TrackNtupleMaker.cc
+// Basic example ROOT script for making tracking performance plots using the ntuples produced by L1TrackNtupleMaker.cc
+//
+//    e.g.  .x  L1TrackNtuplePlot.C("TTbar_PU200_hybrid")
+// 
 // By Louise Skinnari, June 2013  
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -25,6 +28,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -1084,7 +1088,7 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
       // ----------------------------------------------------------------------------------------------------------------
       // fill resolution vs. pt histograms    
       for (int im=0; im<nRANGE; im++) {
-	if ( (tp_pt->at(it) > (float)im*5.0) && (tp_pt->at(it) < (float)im*5.0+5.0) ) {
+	if ( (tp_pt->at(it) > (float)im*5.0) && (tp_pt->at(it) < (float)(im+1)*5.0) ) {
 	  h_resVsPt_pt[im]   ->Fill(matchtrk_pt->at(it)  - tp_pt->at(it));
 	  h_resVsPt_ptRel[im]->Fill((matchtrk_pt->at(it) - tp_pt->at(it))/tp_pt->at(it));
 	  h_resVsPt_eta[im]  ->Fill(matchtrk_eta->at(it) - tp_eta->at(it));
@@ -1125,20 +1129,21 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
       }
 
       for (int im=4; im<nRANGE_L+4; im++) {
-	if ( (tp_pt->at(it) > (float)im*0.5 ) && (tp_pt->at(it) <= (float)im*0.5+0.5) ) {
+	if ( (tp_pt->at(it) > (float)im*0.5 ) && (tp_pt->at(it) <= (float)(im+1)*0.5) ) {
 	  h_absResVsPt_pt_L[im-4]   ->Fill( fabs( matchtrk_pt->at(it)  - tp_pt->at(it) ));
 	  h_absResVsPt_ptRel_L[im-4]->Fill( fabs( (matchtrk_pt->at(it) - tp_pt->at(it)) )/tp_pt->at(it) );
 	  h_absResVsPt_z0_L[im-4]   ->Fill( fabs( matchtrk_z0->at(it)  - tp_z0->at(it) ) );
 	  h_absResVsPt_phi_L[im-4]  ->Fill( fabs( matchtrk_phi->at(it) - tp_phi->at(it) ) );
 	  h_absResVsPt_eta_L[im-4]  ->Fill( fabs( matchtrk_eta->at(it) - tp_eta->at(it) ) );
+	  h_absResVsPt_d0_L[im-4]   ->Fill( fabs( matchtrk_d0->at(it)  - tp_d0->at(it) ) );
 	}
       }
 
       // ----------------------------------------------------------------------------------------------------------------
       // fill resolution vs. eta histograms
       for (int im=0; im<nETARANGE; im++) {
-	if ( (fabs(tp_eta->at(it)) > (float)im*0.1) && (fabs(tp_eta->at(it)) < (float)im*0.1+0.1) ) {
-	//if ( (fabs(tp_eta->at(it)) > (float)im*0.2) && (fabs(tp_eta->at(it)) < (float)im*0.2+0.2) ) {
+	if ( (fabs(tp_eta->at(it)) > (float)im*0.1) && (fabs(tp_eta->at(it)) < (float)(im+1)*0.1) ) {
+	//if ( (fabs(tp_eta->at(it)) > (float)im*0.2) && (fabs(tp_eta->at(it)) < (float)(im+1)*0.2) ) {
 	 h_resVsEta_ptRel[im]->Fill((matchtrk_pt->at(it) - tp_pt->at(it))/tp_pt->at(it));
 	 h_resVsEta_eta[im]  ->Fill(matchtrk_eta->at(it) - tp_eta->at(it));
 	 h_resVsEta_phi[im]  ->Fill(matchtrk_phi->at(it) - tp_phi->at(it));
@@ -1193,7 +1198,7 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
       // ----------------------------------------------------------------------------------------------------------------
       // fill resolution vs. phi histograms    
       for (int im=0; im<nPHIRANGE; im++) {
-	if ( (tp_phi->at(it) > (float)im*0.2-3.2) && (tp_phi->at(it) < (float)im*0.2-3.0) ) {
+	if ( (tp_phi->at(it) > (float)im*0.2-3.2) && (tp_phi->at(it) < (float)(im+1)*0.2-3.2) ) {
 	  h_absResVsPhi_pt[im]   ->Fill( fabs(matchtrk_pt->at(it)  - tp_pt->at(it)) );
 	  h_absResVsPhi_ptRel[im]->Fill( fabs((matchtrk_pt->at(it) - tp_pt->at(it)) )/tp_pt->at(it));
 	}
@@ -2982,17 +2987,17 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   if (fabs(N)>0) cout << "efficiency for 1.0 < |eta| < 1.75 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   k = (float)n_match_eta2p5;
   N = (float)n_all_eta2p5;
-  if (fabs(N)>0) cout << "efficiency for 1.75 < |eta| < 2.5 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  if (fabs(N)>0) cout << "efficiency for 1.75 < |eta| < "<<std::min(TP_maxEta, 2.5f)<<" = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   N = (float) n_all_eta1p0 + n_all_eta1p75 + n_all_eta2p5;
   k = (float) n_match_eta1p0 + n_match_eta1p75 + n_match_eta2p5;
-  if (fabs(N)>0) cout << "combined efficiency for |eta| < 2.5 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
+  if (fabs(N)>0) cout << "combined efficiency for |eta| < "<<std::min(TP_maxEta, 2.5f)<<" = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
 
   k = (float)n_match_ptg2;
   N = (float)n_all_ptg2;
-  if (fabs(N)>0) cout << "efficiency for pt > 2.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  if (fabs(N)>0) cout << "efficiency for pt > "<<std::max(TP_minPt, 2.0f)<<" = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   k = (float)n_match_pt2to8;
   N = (float)n_all_pt2to8;
-  if (fabs(N)>0) cout << "efficiency for 2.0 < pt < 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  if (fabs(N)>0) cout << "efficiency for "<<std::max(TP_minPt, 2.0f)<<" < pt < 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   k = (float)n_match_ptg8;
   N = (float)n_all_ptg8;
   if (fabs(N)>0) cout << "efficiency for pt > 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
@@ -3001,11 +3006,11 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   if (fabs(N)>0) cout << "efficiency for pt > 40.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
 
   // track rates
-  cout << "# TP/event (pt > 2.0) = " << (float)ntp_pt2/nevt << endl;
+  cout << "# TP/event (pt > "<<std::max(TP_minPt, 2.0f)<<") = " << (float)ntp_pt2/nevt << endl;
   cout << "# TP/event (pt > 3.0) = " << (float)ntp_pt3/nevt << endl;
   cout << "# TP/event (pt > 10.0) = " << (float)ntp_pt10/nevt << endl;
 
-  cout << "# tracks/event (pt > 2.0) = " << (float)ntrk_pt2/nevt << endl;
+  cout << "# tracks/event (pt > "<<std::max(TP_minPt, 2.0f)<<") = " << (float)ntrk_pt2/nevt << endl;
   cout << "# tracks/event (pt > 3.0) = " << (float)ntrk_pt3/nevt << endl;
   cout << "# tracks/event (pt > 10.0) = " << (float)ntrk_pt10/nevt << endl;
 

@@ -28,6 +28,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -2986,17 +2987,17 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   if (fabs(N)>0) cout << "efficiency for 1.0 < |eta| < 1.75 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   k = (float)n_match_eta2p5;
   N = (float)n_all_eta2p5;
-  if (fabs(N)>0) cout << "efficiency for 1.75 < |eta| < 2.5 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  if (fabs(N)>0) cout << "efficiency for 1.75 < |eta| < "<<std::min(TP_maxEta, 2.5f)<<" = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   N = (float) n_all_eta1p0 + n_all_eta1p75 + n_all_eta2p5;
   k = (float) n_match_eta1p0 + n_match_eta1p75 + n_match_eta2p5;
-  if (fabs(N)>0) cout << "combined efficiency for |eta| < 2.5 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
+  if (fabs(N)>0) cout << "combined efficiency for |eta| < "<<std::min(TP_maxEta, 2.5f)<<" = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
 
   k = (float)n_match_ptg2;
   N = (float)n_all_ptg2;
-  if (fabs(N)>0) cout << "efficiency for pt > 2.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  if (fabs(N)>0) cout << "efficiency for pt > "<<std::max(TP_minPt, 2.0f)<<" = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   k = (float)n_match_pt2to8;
   N = (float)n_all_pt2to8;
-  if (fabs(N)>0) cout << "efficiency for 2.0 < pt < 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
+  if (fabs(N)>0) cout << "efficiency for "<<std::max(TP_minPt, 2.0f)<<" < pt < 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
   k = (float)n_match_ptg8;
   N = (float)n_all_ptg8;
   if (fabs(N)>0) cout << "efficiency for pt > 8.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl;
@@ -3005,11 +3006,11 @@ void L1TrackNtuplePlot(TString type, TString treeName="", int TP_select_injet=0,
   if (fabs(N)>0) cout << "efficiency for pt > 40.0 = " << k/N*100.0 << " +- " << 1.0/N*sqrt(k*(1.0 - k/N))*100.0 << endl << endl;
 
   // track rates
-  cout << "# TP/event (pt > 2.0) = " << (float)ntp_pt2/nevt << endl;
+  cout << "# TP/event (pt > "<<std::max(TP_minPt, 2.0f)<<") = " << (float)ntp_pt2/nevt << endl;
   cout << "# TP/event (pt > 3.0) = " << (float)ntp_pt3/nevt << endl;
   cout << "# TP/event (pt > 10.0) = " << (float)ntp_pt10/nevt << endl;
 
-  cout << "# tracks/event (pt > 2.0) = " << (float)ntrk_pt2/nevt << endl;
+  cout << "# tracks/event (pt > "<<std::max(TP_minPt, 2.0f)<<") = " << (float)ntrk_pt2/nevt << endl;
   cout << "# tracks/event (pt > 3.0) = " << (float)ntrk_pt3/nevt << endl;
   cout << "# tracks/event (pt > 10.0) = " << (float)ntrk_pt10/nevt << endl;
 

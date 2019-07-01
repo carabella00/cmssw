@@ -1,4 +1,4 @@
-image: gitlab-registry.cern.ch/ci-tools/ci-worker:slc6
+image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
 
 stages:
   - build
@@ -16,16 +16,16 @@ build_cmssw:
     - mkdir L1Trigger
     - mv TrackFindingTMTT L1Trigger
     - mv TrackFindingTracklet L1Trigger
-    - export SCRAM_ARCH=slc6_amd64_gcc700
-    - /cvmfs/cms.cern.ch/common/scramv1 project CMSSW CMSSW_10_4_0
-    - mv L1Trigger CMSSW_10_4_0/src/
-    - cd CMSSW_10_4_0/src
+    - export SCRAM_ARCH=slc7_amd64_gcc700
+    - /cvmfs/cms.cern.ch/common/scramv1 project CMSSW CMSSW_10_6_0
+    - mv L1Trigger CMSSW_10_6_0/src/
+    - cd CMSSW_10_6_0/src
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - /cvmfs/cms.cern.ch/common/scram b
   artifacts:
     expire_in: 1 day
     paths:
-      - CMSSW_10_4_0
+      - CMSSW_10_6_0
   only:
       - merge_requests
 
@@ -42,7 +42,7 @@ build_standalone:
     - mv TrackFindingTMTT L1Trigger
     - mv TrackFindingTracklet L1Trigger
     - cd L1Trigger/TrackFindingTracklet/test/
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-slc6-gcc7-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-centos7-gcc7-opt/setup.sh
     - make
   artifacts:
     expire_in: 1 day
@@ -57,14 +57,14 @@ run_cmssw:
     - docker
     - cvmfs
   script:
-    - cd CMSSW_10_4_0/src/
+    - cd CMSSW_10_6_0/src/
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - cd L1Trigger/TrackFindingTracklet/test/
     - export CMS_PATH=/cvmfs/cms-ib.cern.ch/
     - echo "process.source.fileNames = cms.untracked.vstring('file:CI/skimmedForCI.root')" >> L1TrackNtupleMaker_cfg.py
     - echo "process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))" >> L1TrackNtupleMaker_cfg.py
     - echo "process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)" >> L1TrackNtupleMaker_cfg.py
-    - echo cat L1TrackNtupleMaker_cfg.py
+    - cat L1TrackNtupleMaker_cfg.py
     - cmsRun L1TrackNtupleMaker_cfg.py
     - ls -trlh
   dependencies:
@@ -72,7 +72,7 @@ run_cmssw:
   artifacts:
     expire_in: 1 day
     paths:
-      - CMSSW_10_4_0
+      - CMSSW_10_6_0
   only:
     - merge_requests
 
@@ -82,8 +82,8 @@ run_plotScript:
     - docker
     - cvmfs
   script:
-    - yum install -y -q http://linuxsoft.cern.ch/wlcg/sl6/x86_64/HEP_OSlibs_SL6-1.1.6-1.el6.x86_64.rpm
-    - cd CMSSW_10_4_0/src/
+    - yum install -y -q http://linuxsoft.cern.ch/wlcg/centos7/x86_64/HEP_OSlibs-7.2.9-1.el7.cern.x86_64.rpm
+    - cd CMSSW_10_6_0/src/
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - cd L1Trigger/TrackFindingTracklet/test/
     - ls -trlh
@@ -94,6 +94,6 @@ run_plotScript:
   artifacts:
     expire_in: 1 day
     paths:
-      - CMSSW_10_4_0
+      - CMSSW_10_6_0
   only:
     - merge_requests

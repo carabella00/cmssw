@@ -1,4 +1,4 @@
-image: gitlab-registry.cern.ch/ci-tools/ci-worker:slc6
+image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
 
 stages:
   - build
@@ -17,15 +17,15 @@ build_cmssw:
     - mv TrackFindingTMTT L1Trigger
     - mv TrackFindingTracklet L1Trigger
     - export SCRAM_ARCH=slc6_amd64_gcc700
-    - /cvmfs/cms.cern.ch/common/scramv1 project CMSSW CMSSW_10_4_0
-    - mv L1Trigger CMSSW_10_4_0/src/
-    - cd CMSSW_10_4_0/src
+    - /cvmfs/cms.cern.ch/common/scramv1 project CMSSW CMSSW_10_6_0
+    - mv L1Trigger CMSSW_10_6_0/src/
+    - cd CMSSW_10_6_0/src
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - /cvmfs/cms.cern.ch/common/scram b
   artifacts:
     expire_in: 1 day
     paths:
-      - CMSSW_10_4_0
+      - CMSSW_10_6_0
   only:
       - merge_requests
 
@@ -42,7 +42,7 @@ build_standalone:
     - mv TrackFindingTMTT L1Trigger
     - mv TrackFindingTracklet L1Trigger
     - cd L1Trigger/TrackFindingTracklet/test/
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-slc6-gcc7-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-centos7-gcc7-opt/setup.sh
     - make
   artifacts:
     expire_in: 1 day
@@ -57,7 +57,7 @@ run_cmssw:
     - docker
     - cvmfs
   script:
-    - cd CMSSW_10_4_0/src/
+    - cd CMSSW_10_6_0/src/
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - cd L1Trigger/TrackFindingTracklet/test/
     - export CMS_PATH=/cvmfs/cms-ib.cern.ch/
@@ -72,7 +72,7 @@ run_cmssw:
   artifacts:
     expire_in: 1 day
     paths:
-      - CMSSW_10_4_0
+      - CMSSW_10_6_0
   only:
     - merge_requests
 
@@ -83,7 +83,7 @@ run_plotScript:
     - cvmfs
   script:
     - yum install -y -q http://linuxsoft.cern.ch/wlcg/sl6/x86_64/HEP_OSlibs_SL6-1.1.6-1.el6.x86_64.rpm
-    - cd CMSSW_10_4_0/src/
+    - cd CMSSW_10_6_0/src/
     - eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
     - cd L1Trigger/TrackFindingTracklet/test/
     - ls -trlh
@@ -94,6 +94,6 @@ run_plotScript:
   artifacts:
     expire_in: 1 day
     paths:
-      - CMSSW_10_4_0
+      - CMSSW_10_6_0
   only:
     - merge_requests

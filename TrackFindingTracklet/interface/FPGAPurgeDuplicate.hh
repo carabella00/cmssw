@@ -489,7 +489,11 @@ private:
        (seedindex == 4 && (abs(Disk) ==  3 || abs(Disk) ==  4)) ||
        (seedindex == 5 && (Layer == 1 || abs(Disk) ==  1)) ||
        (seedindex == 6 && (Layer == 2 || abs(Disk) ==  1)) ||
-       (seedindex == 7 && (Layer == 2 || abs(Disk) ==  0))) {
+       (seedindex == 7 && (Layer == 2 || abs(Disk) ==  0)) ||
+       (seedindex == 8 && (Layer == 2 || Layer == 3 || Layer == 4)) ||
+       (seedindex == 9 && (Layer == 4 || Layer == 5 || Layer == 6)) ||
+       (seedindex == 10 && (Layer == 2 || Layer == 3 || abs(Disk) == 1)) ||
+       (seedindex == 11 && (Layer == 2 || abs(Disk) == 1 || abs(Disk) == 2))){
       phiproj = stubphi;
     // Otherwise, get projection of tracklet
     } else if (Layer != 0) {

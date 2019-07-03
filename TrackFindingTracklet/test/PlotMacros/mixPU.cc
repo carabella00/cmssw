@@ -1,7 +1,7 @@
 
 
 #include <iostream>
-#include "slhcevent.hh"
+#include "slhcevent.h"
 
 
 int main(const int argc, const char** argv)

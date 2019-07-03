@@ -14,19 +14,19 @@
 #include <TLegend.h>
 #include <TLatex.h>
 
-#include "../interface/FPGAConstants.hh"
-#include "../interface/IMATH_TrackletCalculator.hh"
+#include "../interface/Constants.h"
+#include "../interface/IMATH_TrackletCalculator.h"
 
-#include "../interface/slhcevent.hh"
+#include "../interface/slhcevent.h"
 
-#include "../interface/FPGASector.hh"
-#include "../interface/FPGACabling.hh"
-#include "../interface/FPGAWord.hh"
-#include "../interface/FPGATimer.hh"
-#include "../interface/FPGAVariance.hh"
+#include "../interface/Sector.h"
+#include "../interface/Cabling.h"
+#include "../interface/FPGAWord.h"
+#include "../interface/CPUTimer.h"
+#include "../interface/StubVariance.h"
 
-#include "../interface/FPGAGlobal.hh"
-#include "../interface/FPGAHistImp.hh"
+#include "../interface/GlobalHistTruth.h"
+#include "../interface/HistImp.h"
 
 #ifdef IMATH_ROOT
 TFile* var_base::h_file_=0;
@@ -50,15 +50,15 @@ int main(const int argc, const char** argv)
 {
   cout << "dphisectorHG = "<<dphisectorHG<<endl;
 
-  krinvpars = FPGATrackletCalculator::ITC_L1L2.rinv_final.get_K();
-  kphi0pars = FPGATrackletCalculator::ITC_L1L2.phi0_final.get_K();
+  krinvpars = TrackletCalculator::ITC_L1L2.rinv_final.get_K();
+  kphi0pars = TrackletCalculator::ITC_L1L2.phi0_final.get_K();
   kd0pars   = kd0;
-  ktpars    = FPGATrackletCalculator::ITC_L1L2.t_final.get_K();
-  kz0pars   = FPGATrackletCalculator::ITC_L1L2.z0_final.get_K();
+  ktpars    = TrackletCalculator::ITC_L1L2.t_final.get_K();
+  kz0pars   = TrackletCalculator::ITC_L1L2.z0_final.get_K();
 
   krdisk = kr;
   kzpars = kz;  
-  krprojshiftdisk = FPGATrackletCalculator::ITC_L1L2.rD_0_final.get_K();
+  krprojshiftdisk = TrackletCalculator::ITC_L1L2.rD_0_final.get_K();
 
   //those can be made more transparent...
   kphiproj123=kphi0pars*4;
@@ -91,21 +91,21 @@ int main(const int argc, const char** argv)
   cout << endl;
   cout << "=========================================================" << endl;
 
-#include "../plugins/WriteInvTables.inc"
-#include "../plugins/WriteDesign.inc"
+#include "../plugins/WriteInvTables.icc"
+#include "../plugins/WriteDesign.icc"
   
   using namespace std;
   if (argc<4)
     cout << "Need to specify the input ascii file and the number of events to run on and if you want to filter on MC truth" << endl;
 
-  FPGAHistImp* histimp=new FPGAHistImp;
+  HistImp* histimp=new HistImp;
   histimp->init();
   histimp->bookLayerResidual();
   histimp->bookDiskResidual();
   histimp->bookTrackletParams();
   histimp->bookSeedEff();
   
-  FPGAGlobal::histograms()=histimp;
+  GlobalHistTruth::histograms()=histimp;
   
   int nevents = atoi(argv[2]);
 
@@ -146,16 +146,16 @@ int main(const int argc, const char** argv)
 
 
 // Define Sectors (boards)	 
-  FPGASector** sectors=new FPGASector*[NSector];
+  Sector** sectors=new Sector*[NSector];
 
-  FPGACabling cabling;
+  Cabling cabling;
 
   cabling.init("../data/calcNumDTCLinks.txt","../data/modules_T5v3_27SP_nonant_tracklet.dat");
 
 
   
   for (unsigned int i=0;i<NSector;i++) {
-    sectors[i]=new FPGASector(i);
+    sectors[i]=new Sector(i);
   }  
 
 
@@ -235,21 +235,21 @@ int main(const int argc, const char** argv)
   ofstream skimout;
   if (skimfile!="") skimout.open(skimfile.c_str());
 
-  FPGATimer readTimer;
-  FPGATimer cleanTimer;
-  FPGATimer addStubTimer;
-  FPGATimer VMRouterTimer;  
-  FPGATimer TETimer;
-  FPGATimer TEDTimer;
-  FPGATimer TRETimer;
-  FPGATimer TCTimer;
-  FPGATimer TCDTimer;
-  FPGATimer PRTimer;
-  FPGATimer METimer;
-  FPGATimer MCTimer;
-  FPGATimer MPTimer;
-  FPGATimer FTTimer;
-  FPGATimer PDTimer;
+  CPUTimer readTimer;
+  CPUTimer cleanTimer;
+  CPUTimer addStubTimer;
+  CPUTimer VMRouterTimer;  
+  CPUTimer TETimer;
+  CPUTimer TEDTimer;
+  CPUTimer TRETimer;
+  CPUTimer TCTimer;
+  CPUTimer TCDTimer;
+  CPUTimer PRTimer;
+  CPUTimer METimer;
+  CPUTimer MCTimer;
+  CPUTimer MPTimer;
+  CPUTimer FTTimer;
+  CPUTimer PDTimer;
 
   if (writeSeeds) {
     ofstream fout("seeds.txt", ofstream::out);
@@ -271,7 +271,7 @@ int main(const int argc, const char** argv)
     }
     readTimer.stop();
 
-    FPGAGlobal::event()=&ev;
+    GlobalHistTruth::event()=&ev;
 
     
     L1SimTrack simtrk;
@@ -396,7 +396,7 @@ int main(const int argc, const char** argv)
     }
 
     if (writeVariance) {
-      FPGAVariance variance(ev);
+      StubVariance variance(ev);
     }
 
 
@@ -405,7 +405,7 @@ int main(const int argc, const char** argv)
 
     cout <<"Process event: "<<i<<" with "<<ev.nstubs()<<" stubs and "<<ev.nsimtracks()<<" simtracks"<<endl;
 
-    std::vector<FPGATrack*> tracks;
+    std::vector<Track*> tracks;
 
     //cout << "tracks.size() "<<tracks.size()<<endl;
 
@@ -553,7 +553,7 @@ int main(const int argc, const char** argv)
 
   // dump what was found   
 //	 printf("Track Parameters: \n");
-//	 for(std::vector<FPGATrack*>::iterator trk=tracks.begin(); trk!=tracks.end(); trk++){
+//	 for(std::vector<Track*>::iterator trk=tracks.begin(); trk!=tracks.end(); trk++){
 //	   printf("irinv = %i \n", (*trk)->irinv() );
 //		 printf("iphi0 = %i \n", (*trk)->iphi0() );
 //		 printf("iz0   = %i \n", (*trk)->iz0() );

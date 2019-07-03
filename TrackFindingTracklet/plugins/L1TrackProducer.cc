@@ -33,10 +33,10 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h" 
 #include "DataFormats/Common/interface/DetSetVector.h"
 
-#include "L1Trigger/TrackFindingTracklet/interface/slhcevent.hh"
-#include "L1Trigger/TrackFindingTracklet/interface/L1TBarrel.hh"
-#include "L1Trigger/TrackFindingTracklet/interface/L1TDisk.hh"
-#include "L1Trigger/TrackFindingTracklet/interface/L1TStub.hh"
+#include "L1Trigger/TrackFindingTracklet/interface/slhcevent.h"
+#include "L1Trigger/TrackFindingTracklet/interface/L1TBarrel.h"
+#include "L1Trigger/TrackFindingTracklet/interface/L1TDisk.h"
+#include "L1Trigger/TrackFindingTracklet/interface/L1TStub.h"
 
 #include "SimDataFormats/TrackingHit/interface/PSimHitContainer.h"
 #include "SimDataFormats/TrackingHit/interface/PSimHit.h"

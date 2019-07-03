@@ -34,10 +34,10 @@ for(unsigned int ntrk=0; ntrk<tracks.size(); ntrk++) {
 for (unsigned int k=0; k<NSector; k++){
 
   if(sectors[k]->getStubs().size() == 0) continue;
-  std::vector<std::pair<FPGAStub*,L1TStub*>> stubList = sectors[k]->getStubs();
+  std::vector<std::pair<Stub*,L1TStub*>> stubList = sectors[k]->getStubs();
   for(unsigned int nSt=0; nSt<stubList.size(); nSt++) {
 
-    // L1TStub first (will be added to FPGAStub)
+    // L1TStub first (will be added to Stub)
     L1TStub* lstub = stubList.at(nSt).second;
 
     FPGAEventL1Stub *fpgaEvtL1Stub = new FPGAEventL1Stub(
@@ -63,8 +63,8 @@ for (unsigned int k=0; k<NSector; k++){
     fpgaEvent->l1stubs.push_back(*fpgaEvtL1Stub);
 
 
-    // FPGAStub second
-    FPGAStub* fstub = stubList.at(nSt).first;
+    // Stub second
+    Stub* fstub = stubList.at(nSt).first;
 
     // Initialize some constants
     int irbits = 0;

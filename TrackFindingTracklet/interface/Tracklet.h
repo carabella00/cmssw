@@ -1872,6 +1872,18 @@ public:
     if (seedlayer==1&&abs(seeddisk)==1) seedindex=5;  //L1D1
     if (seedlayer==2&&abs(seeddisk)==1) seedindex=6;  //L2D1
     if (seedlayer==2&&abs(seeddisk)==0) seedindex=7;  //L2L3
+    if (middleFPGAStub_&&seedlayer==2&&seeddisk==0) seedindex = 8; // L3L4L2
+    if (middleFPGAStub_&&seedlayer==4&&seeddisk==0) seedindex = 9; // L5L6L4
+    if (middleFPGAStub_&&seedlayer==2&&abs(seeddisk)==1) {
+      int l1 = (innerFPGAStub_ && innerFPGAStub_->isBarrel()) ? innerStub_->layer()+1 : 999,
+          l2 = (middleFPGAStub_ && middleFPGAStub_->isBarrel()) ? middleStub_->layer()+1 : 999,
+          l3 = (outerFPGAStub_ && outerFPGAStub_->isBarrel()) ? outerStub_->layer()+1 : 999;
+      if (l1+l2+l3 < 1998) { // If two stubs are layer stubs
+        seedindex = 10; // L2L3D1
+      } else {
+        seedindex = 11; // D1D2L2
+      }
+    }
 
     if (seedindex<0) {
       cout << "seedlayer abs(seeddisk) : "<<seedlayer<<" "<<abs(seeddisk)<<endl;
